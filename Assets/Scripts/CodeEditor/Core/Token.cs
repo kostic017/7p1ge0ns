@@ -1,4 +1,4 @@
-﻿namespace Assets.Scripts.Editor
+﻿namespace CodeEditor.Core
 {
     class Token
     {

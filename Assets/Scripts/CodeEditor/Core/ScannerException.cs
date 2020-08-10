@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Assets.Scripts.Editor
+namespace CodeEditor.Core
 {
     class ScannerException : Exception
     {
