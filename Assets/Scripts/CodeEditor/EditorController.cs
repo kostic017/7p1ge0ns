@@ -1,26 +1,36 @@
-﻿using TMPro;
+﻿using System.Linq;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EditorController : MonoBehaviour
 {
+    public Image caret;
     public TMP_Text codeField;
     public TMP_Text gutterField;
 
-    private string code;
-    private int charIndex;
-    private int lineIndex;
+    int line;
+    int column;
+    Vector2 textDim;
+    List<string> code;
 
     void Start()
     {
-        code = codeField.text;
+        textDim = codeField.GetPreferredValues(".");
+        code = codeField.text.Split('\n').ToList();
+        caret.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, textDim.x);
+        caret.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, textDim.y);
         UpdateLineNumbers();
     }
 
     void Update()
     {
         HandleTextInput();
+        HandleSpecialInput();
+        PositionCaret();
         UpdateLineNumbers();
-        codeField.text = code;
+        codeField.text = string.Join("\n", code);
     }
 
     void HandleTextInput()
@@ -31,55 +41,90 @@ public class EditorController : MonoBehaviour
             
             if (c == '\b')
             {
-                if (charIndex > 0)
+                if (column > 0)
                 {
-                    char deletedChar = code[charIndex - 1];
-                    code = code.Remove(charIndex - 1, 1);
-                    --charIndex;
-                    if (deletedChar == '\n')
-                    {
-                        --lineIndex;
-                    }
+                    code[line] = code[line].Remove(column - 1, 1);
+                    --column;
+                }
+                else if (line > 0)
+                {
+                    code[line - 1] += code[line];
+                    code.RemoveAt(line);
+                    --line;
                 }
             }
             else
             {
                 if (c == '\n' || c == '\r')
                 {
-                    ++lineIndex;
-                    InsertChar('\n');
+                    code.Insert(line, "");
+                    ++line;
                 }
                 else
                 {
                     InsertChar(c);
                 }
-                ++charIndex;
+                ++column;
+            }
+        }
+    }
+
+    void HandleSpecialInput()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            if (column > 0)
+            {
+                --column;
+            }
+            else
+            {
+                column = code[line - 1].Length - 1;
+                --line;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            if (column < code[line].Length - 1)
+            {
+                ++column;
+            }
+            else
+            {
+                column = 0;
+                ++line;
             }
         }
     }
 
     void InsertChar(char c)
     {
-        if (string.IsNullOrEmpty(code) || charIndex == code.Length)
+        if (column < code[line].Length)
         {
-            code += c;
+            code[line] = code[line].Insert(column, c.ToString());
         }
         else
         {
-            code = code.Insert(charIndex, c.ToString());
+            code[line] += c;
         }
+    }
+
+    void PositionCaret()
+    {
+        caret.rectTransform.localPosition = new Vector2(
+            column * textDim.x + caret.rectTransform.rect.width * 0.5f,
+            codeField.rectTransform.rect.height - line * textDim.y - caret.rectTransform.rect.height * 0.5f
+        );
     }
 
     void UpdateLineNumbers()
     {
-        int lines = codeField.text.Split('\n').Length;
-
         string text = "";
-        for (int i = 1; i <= lines; ++i)
+        for (int i = 1; i <= code.Count; ++i)
         {
             text += i + "\n";
         }
-
         gutterField.text = text;
     }
 }
