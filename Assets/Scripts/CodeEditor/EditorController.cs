@@ -44,6 +44,7 @@ public class EditorController : MonoBehaviour
                 }
                 else if (line > 0)
                 {
+                    column = code[line - 1].Length;
                     code[line - 1] += code[line];
                     code.RemoveAt(line);
                     --line;
@@ -53,14 +54,23 @@ public class EditorController : MonoBehaviour
             {
                 if (c == '\n' || c == '\r')
                 {
-                    code.Insert(line, "");
+                    if (column < code[line].Length)
+                    {
+                        code.Insert(line + 1, code[line].Substring(column));
+                        code[line] = code[line].Remove(column);
+                    }
+                    else
+                    {
+                        code.Insert(line + 1, "");
+                    }
                     ++line;
+                    column = 0;
                 }
                 else
                 {
                     InsertChar(c);
+                    ++column;
                 }
-                ++column;
             }
         }
     }
@@ -75,14 +85,14 @@ public class EditorController : MonoBehaviour
             }
             else
             {
-                column = code[line - 1].Length - 1;
+                column = code[line - 1].Length;
                 --line;
             }
         }
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if (column < code[line].Length - 1)
+            if (column < code[line].Length)
             {
                 ++column;
             }
@@ -108,10 +118,13 @@ public class EditorController : MonoBehaviour
 
     void PositionCaret()
     {
-        codeField.text = code[line].Substring(0, column).Replace(' ', '.');
+        string linesUpToCaret = string.Join("\n.", code.Take(line + 1));
+        string charsUpToCaret = code[line].Substring(0, column).Replace(' ', '.');
+
+        codeField.text = charsUpToCaret;
         float caretX = codeField.preferredWidth;
 
-        codeField.text = string.Join("\n", code.Take(line + 1)).TrimEnd('\n');
+        codeField.text = linesUpToCaret;
         float caretY = codeField.preferredHeight;
 
         caret.rectTransform.localPosition = new Vector2(caretX, codeField.rectTransform.rect.height - caretY);
