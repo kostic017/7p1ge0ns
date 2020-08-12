@@ -171,6 +171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 619dc738ca86b624c87182e30f381363, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blinkRate: 0.7
   caret: {fileID: 1316727588}
   codeField: {fileID: 981697003}
   gutterField: {fileID: 684206455}

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class EditorController : MonoBehaviour
 {
+    public float blinkRate;
     public Image caret;
     public TMP_Text codeField;
     public TMP_Text gutterField;
@@ -13,6 +14,7 @@ public class EditorController : MonoBehaviour
     int line;
     int column;
     int lastColumn;
+    float blinkTimer;
     List<string> code;
 
     void Start()
@@ -26,6 +28,7 @@ public class EditorController : MonoBehaviour
         HandleTextInput();
         HandleSpecialInput();
         PositionCaret();
+        BlinkCaret();
         UpdateLineNumbers();
         codeField.text = string.Join("\n", code);
     }
@@ -165,6 +168,16 @@ public class EditorController : MonoBehaviour
         float caretY = codeField.preferredHeight;
 
         caret.rectTransform.localPosition = new Vector2(caretX, codeField.rectTransform.rect.height - caretY);
+    }
+
+    void BlinkCaret()
+    {
+        blinkTimer += Time.deltaTime;
+        if (blinkTimer >= blinkRate)
+        {
+            blinkTimer = 0;
+            caret.enabled = !caret.enabled;
+        }
     }
 
     void UpdateLineNumbers()
