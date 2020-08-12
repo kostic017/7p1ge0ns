@@ -7,14 +7,20 @@ using UnityEngine.UI;
 public class EditorController : MonoBehaviour
 {
     public float blinkRate;
+    public float lastInputRate;
+    
     public Image caret;
+    
     public TMP_Text codeField;
     public TMP_Text gutterField;
 
     int line;
     int column;
     int lastColumn;
+    
     float blinkTimer;
+    float lastInputTime;
+    
     List<string> code;
 
     void Start()
@@ -43,11 +49,13 @@ public class EditorController : MonoBehaviour
             {
                 if (column > 0)
                 {
+                    lastInputTime = Time.time;
                     code[line] = code[line].Remove(column - 1, 1);
                     --column;
                 }
                 else if (line > 0)
                 {
+                    lastInputTime = Time.time;
                     column = code[line - 1].Length;
                     code[line - 1] += code[line];
                     code.RemoveAt(line);
@@ -69,10 +77,21 @@ public class EditorController : MonoBehaviour
                     }
                     ++line;
                     column = 0;
+                    lastInputTime = Time.time;
                 }
                 else
                 {
-                    InsertChar(c);
+                    lastInputTime = Time.time;
+
+                    if (column < code[line].Length)
+                    {
+                        code[line] = code[line].Insert(column, c.ToString());
+                    }
+                    else
+                    {
+                        code[line] += c;
+                    }
+
                     ++column;
                 }
             }
@@ -88,11 +107,13 @@ public class EditorController : MonoBehaviour
             {
                 --column;
                 lastColumn = column;
+                lastInputTime = Time.time;
             }
             else if (line > 0)
             {
                 --line;
                 column = lastColumn = code[line].Length;
+                lastInputTime = Time.time;
             }
         }
 
@@ -102,11 +123,13 @@ public class EditorController : MonoBehaviour
             {
                 ++column;
                 lastColumn = column;
+                lastInputTime = Time.time;
             }
             else if (line < code.Count - 1)
             {
                 ++line;
                 column = lastColumn = 0;
+                lastInputTime = Time.time;
             }
         }
 
@@ -115,6 +138,7 @@ public class EditorController : MonoBehaviour
             if (line > 0)
             {
                 --line;
+                lastInputTime = Time.time;
                 if (lastColumn > code[line].Length)
                 {
                     column = code[line].Length;
@@ -131,6 +155,7 @@ public class EditorController : MonoBehaviour
             if (line < code.Count - 1)
             {
                 ++line;
+                lastInputTime = Time.time;
                 if (lastColumn > code[line].Length)
                 {
                     column = code[line].Length;
@@ -140,18 +165,6 @@ public class EditorController : MonoBehaviour
                     column = lastColumn;
                 }
             }
-        }
-    }
-
-    void InsertChar(char c)
-    {
-        if (column < code[line].Length)
-        {
-            code[line] = code[line].Insert(column, c.ToString());
-        }
-        else
-        {
-            code[line] += c;
         }
     }
 
@@ -173,7 +186,12 @@ public class EditorController : MonoBehaviour
     void BlinkCaret()
     {
         blinkTimer += Time.deltaTime;
-        if (blinkTimer >= blinkRate)
+        if (Time.time - lastInputTime < lastInputRate)
+        {
+            blinkTimer = 0;
+            caret.enabled = true;    
+        }
+        else if (blinkTimer >= blinkRate)
         {
             blinkTimer = 0;
             caret.enabled = !caret.enabled;
