@@ -166,6 +166,21 @@ public class EditorController : MonoBehaviour
                 }
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Delete))
+        {
+            if (column < code[line].Length)
+            {
+                code[line] = code[line].Remove(column, 1);
+                lastInputTime = Time.time;
+            }
+            else if (line < code.Count - 1)
+            {
+                code[line] += code[line + 1];
+                code.RemoveAt(line + 1);
+                lastInputTime = Time.time;
+            }
+        }
     }
 
     void PositionCaret()
