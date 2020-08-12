@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +12,7 @@ public class EditorController : MonoBehaviour
 
     int line;
     int column;
+    int lastColumn;
     List<string> code;
 
     void Start()
@@ -31,7 +32,7 @@ public class EditorController : MonoBehaviour
 
     void HandleTextInput()
     {
-        string input = Input.inputString;
+        string input = Input.inputString; // the text that the pressed keys would write into a text field
         foreach (char c in input)
         {
             
@@ -72,6 +73,7 @@ public class EditorController : MonoBehaviour
                     ++column;
                 }
             }
+            lastColumn = column;
         }
     }
 
@@ -82,11 +84,12 @@ public class EditorController : MonoBehaviour
             if (column > 0)
             {
                 --column;
+                lastColumn = column;
             }
-            else
+            else if (line > 0)
             {
-                column = code[line - 1].Length;
                 --line;
+                column = lastColumn = code[line].Length;
             }
         }
 
@@ -95,11 +98,44 @@ public class EditorController : MonoBehaviour
             if (column < code[line].Length)
             {
                 ++column;
+                lastColumn = column;
             }
-            else
+            else if (line < code.Count - 1)
             {
-                column = 0;
                 ++line;
+                column = lastColumn = 0;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            if (line > 0)
+            {
+                --line;
+                if (lastColumn > code[line].Length)
+                {
+                    column = code[line].Length;
+                }
+                else
+                {
+                    column = lastColumn;
+                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            if (line < code.Count - 1)
+            {
+                ++line;
+                if (lastColumn > code[line].Length)
+                {
+                    column = code[line].Length;
+                }
+                else
+                {
+                    column = lastColumn;
+                }
             }
         }
     }
@@ -118,7 +154,8 @@ public class EditorController : MonoBehaviour
 
     void PositionCaret()
     {
-        string linesUpToCaret = string.Join("\n.", code.Take(line + 1));
+        // '.' is there because empty lines and spaces are ignored from calculations
+        string linesUpToCaret = string.Join("\n.", code.Take(line + 1)) + ".";
         string charsUpToCaret = code[line].Substring(0, column).Replace(' ', '.');
 
         codeField.text = charsUpToCaret;
