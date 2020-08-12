@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 157170206}
   - component: {fileID: 157170207}
+  - component: {fileID: 157170208}
   m_Layer: 0
   m_Name: Editor Controller
   m_TagString: Untagged
@@ -176,6 +177,20 @@ MonoBehaviour:
   caret: {fileID: 1316727588}
   codeField: {fileID: 981697003}
   gutterField: {fileID: 684206455}
+--- !u!114 &157170208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 157170205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 860186d2646ad9348b8ccbf417d54ccb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialDelay: 0.5
+  repeatDelay: 0.05
 --- !u!1 &333520588
 GameObject:
   m_ObjectHideFlags: 0

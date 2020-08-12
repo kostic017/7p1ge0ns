@@ -22,9 +22,11 @@ public class EditorController : MonoBehaviour
     float lastInputTime;
     
     List<string> code;
+    InputManager inputManager;
 
     void Start()
     {
+        inputManager = GetComponent<InputManager>();
         code = codeField.text.Split('\n').ToList();        
         UpdateLineNumbers();
     }
@@ -101,7 +103,7 @@ public class EditorController : MonoBehaviour
 
     void HandleSpecialInput()
     {
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if (inputManager.CheckKey(KeyCode.LeftArrow))
         {
             if (column > 0)
             {
@@ -117,7 +119,7 @@ public class EditorController : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        if (inputManager.CheckKey(KeyCode.RightArrow))
         {
             if (column < code[line].Length)
             {
@@ -133,7 +135,7 @@ public class EditorController : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (inputManager.CheckKey(KeyCode.UpArrow))
         {
             if (line > 0)
             {
@@ -150,7 +152,7 @@ public class EditorController : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.DownArrow))
+        if (inputManager.CheckKey(KeyCode.DownArrow))
         {
             if (line < code.Count - 1)
             {
@@ -167,7 +169,7 @@ public class EditorController : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Delete))
+        if (inputManager.CheckKey(KeyCode.Delete))
         {
             if (column < code[line].Length)
             {
