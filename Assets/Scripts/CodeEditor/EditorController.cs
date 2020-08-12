@@ -12,15 +12,11 @@ public class EditorController : MonoBehaviour
 
     int line;
     int column;
-    Vector2 textDim;
     List<string> code;
 
     void Start()
     {
-        textDim = codeField.GetPreferredValues(".");
-        code = codeField.text.Split('\n').ToList();
-        caret.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, textDim.x);
-        caret.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, textDim.y);
+        code = codeField.text.Split('\n').ToList();        
         UpdateLineNumbers();
     }
 
@@ -112,10 +108,13 @@ public class EditorController : MonoBehaviour
 
     void PositionCaret()
     {
-        caret.rectTransform.localPosition = new Vector2(
-            column * textDim.x + caret.rectTransform.rect.width * 0.5f,
-            codeField.rectTransform.rect.height - line * textDim.y - caret.rectTransform.rect.height * 0.5f
-        );
+        codeField.text = code[line].Substring(0, column).Replace(' ', '.');
+        float caretX = codeField.preferredWidth;
+
+        codeField.text = string.Join("\n", code.Take(line + 1)).TrimEnd('\n');
+        float caretY = codeField.preferredHeight;
+
+        caret.rectTransform.localPosition = new Vector2(caretX, codeField.rectTransform.rect.height - caretY);
     }
 
     void UpdateLineNumbers()
