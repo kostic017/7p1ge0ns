@@ -3,10 +3,8 @@ using UnityEngine;
 
 class InputManager : MonoBehaviour
 {
-    public static InputManager instance;
-
-    public float initialDelay;
-    public float repeatDelay;
+    public float initialDelay = 0.5f;
+    public float repeatDelay = 0.05f;
 
     readonly Dictionary<KeyCode, KeyState> keys = new Dictionary<KeyCode, KeyState>()
     {

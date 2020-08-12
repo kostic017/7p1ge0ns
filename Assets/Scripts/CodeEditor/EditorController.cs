@@ -11,8 +11,9 @@ public class EditorController : MonoBehaviour
     
     public Image caret;
     
-    public TMP_Text codeField;
-    public TMP_Text gutterField;
+    public TMP_Text codeTextField;
+    public TMP_Text gutterTextField;
+    public RectTransform codeEditor;
 
     int line;
     int column;
@@ -27,7 +28,7 @@ public class EditorController : MonoBehaviour
     void Start()
     {
         inputManager = GetComponent<InputManager>();
-        code = codeField.text.Split('\n').ToList();        
+        code = codeTextField.text.Split('\n').ToList();        
         UpdateLineNumbers();
     }
 
@@ -36,9 +37,10 @@ public class EditorController : MonoBehaviour
         HandleTextInput();
         HandleSpecialInput();
         PositionCaret();
+        Scroll();
         BlinkCaret();
         UpdateLineNumbers();
-        codeField.text = string.Join("\n", code);
+        codeTextField.text = string.Join("\n", code);
     }
 
     void HandleTextInput()
@@ -191,13 +193,27 @@ public class EditorController : MonoBehaviour
         string linesUpToCaret = string.Join("\n.", code.Take(line + 1)) + ".";
         string charsUpToCaret = code[line].Substring(0, column).Replace(' ', '.');
 
-        codeField.text = charsUpToCaret;
-        float caretX = codeField.preferredWidth;
+        codeTextField.text = charsUpToCaret;
+        float caretX = codeTextField.preferredWidth;
 
-        codeField.text = linesUpToCaret;
-        float caretY = codeField.preferredHeight;
+        codeTextField.text = linesUpToCaret;
+        float caretY = codeTextField.preferredHeight;
 
-        caret.rectTransform.localPosition = new Vector2(caretX, codeField.rectTransform.rect.height - caretY);
+        caret.rectTransform.position = codeTextField.rectTransform.position;
+        caret.rectTransform.localPosition += Vector3.right * caretX;
+        caret.rectTransform.localPosition += Vector3.up * (codeTextField.rectTransform.rect.height - caretY);
+    }
+
+    void Scroll()
+    {
+        if (caret.rectTransform.position.y < 0)
+        {
+            codeEditor.position += Vector3.up * caret.rectTransform.rect.height;
+        }
+        if (caret.rectTransform.position.y > Screen.height)
+        {
+            codeEditor.position += Vector3.down * caret.rectTransform.rect.height;
+        }
     }
 
     void BlinkCaret()
@@ -222,6 +238,6 @@ public class EditorController : MonoBehaviour
         {
             text += i + "\n";
         }
-        gutterField.text = text;
+        gutterTextField.text = text;
     }
 }
