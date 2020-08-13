@@ -4,7 +4,7 @@ using UnityEngine;
 class InputManager : MonoBehaviour
 {
     public float initialDelay = 0.5f;
-    public float repeatDelay = 0.05f;
+    public float repeatKeyDelay = 0.05f;
 
     readonly Dictionary<KeyCode, KeyState> keys = new Dictionary<KeyCode, KeyState>()
     {
@@ -13,6 +13,7 @@ class InputManager : MonoBehaviour
         { KeyCode.LeftArrow, new KeyState() },
         { KeyCode.RightArrow, new KeyState() },
         { KeyCode.Delete, new KeyState() },
+        { KeyCode.Tab, new KeyState() },
     };
 
     public bool CheckKey(KeyCode key)
@@ -35,7 +36,7 @@ class InputManager : MonoBehaviour
 
         if (Time.time - keys[key].lastPhysicalPressTime > initialDelay)
         {
-            if (Time.time - keys[key].lastVirtualPressTime > repeatDelay)
+            if (Time.time - keys[key].lastVirtualPressTime > repeatKeyDelay)
             {
                 keys[key].lastVirtualPressTime = Time.time;
                 return true;

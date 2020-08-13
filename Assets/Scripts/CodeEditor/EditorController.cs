@@ -6,13 +6,16 @@ using UnityEngine.UI;
 
 public class EditorController : MonoBehaviour
 {
-    public float blinkRate;
-    public float lastInputRate;
+    public int tabSize = 4;
+    
+    public float blinkRate = 0.7f;
+    public float lastInputRate = 0.05f;
     
     public Image caret;
     
     public TMP_Text codeTextField;
     public TMP_Text gutterTextField;
+
     public RectTransform codeEditor;
 
     int line;
@@ -66,38 +69,35 @@ public class EditorController : MonoBehaviour
                     --line;
                 }
             }
-            else
+            else if (c == '\n' || c == '\r')
             {
-                if (c == '\n' || c == '\r')
+                if (column < code[line].Length)
                 {
-                    if (column < code[line].Length)
-                    {
-                        code.Insert(line + 1, code[line].Substring(column));
-                        code[line] = code[line].Remove(column);
-                    }
-                    else
-                    {
-                        code.Insert(line + 1, "");
-                    }
-                    ++line;
-                    column = 0;
-                    lastInputTime = Time.time;
+                    code.Insert(line + 1, code[line].Substring(column));
+                    code[line] = code[line].Remove(column);
                 }
                 else
                 {
-                    lastInputTime = Time.time;
-
-                    if (column < code[line].Length)
-                    {
-                        code[line] = code[line].Insert(column, c.ToString());
-                    }
-                    else
-                    {
-                        code[line] += c;
-                    }
-
-                    ++column;
+                    code.Insert(line + 1, "");
                 }
+                ++line;
+                column = 0;
+                lastInputTime = Time.time;
+            }
+            else
+            {
+                lastInputTime = Time.time;
+
+                if (column < code[line].Length)
+                {
+                    code[line] = code[line].Insert(column, c.ToString());
+                }
+                else
+                {
+                    code[line] += c;
+                }
+
+                ++column;
             }
             lastColumn = column;
         }
@@ -120,8 +120,7 @@ public class EditorController : MonoBehaviour
                 lastInputTime = Time.time;
             }
         }
-
-        if (inputManager.CheckKey(KeyCode.RightArrow))
+        else if (inputManager.CheckKey(KeyCode.RightArrow))
         {
             if (column < code[line].Length)
             {
@@ -136,8 +135,7 @@ public class EditorController : MonoBehaviour
                 lastInputTime = Time.time;
             }
         }
-
-        if (inputManager.CheckKey(KeyCode.UpArrow))
+        else if (inputManager.CheckKey(KeyCode.UpArrow))
         {
             if (line > 0)
             {
@@ -153,8 +151,7 @@ public class EditorController : MonoBehaviour
                 }
             }
         }
-
-        if (inputManager.CheckKey(KeyCode.DownArrow))
+        else if (inputManager.CheckKey(KeyCode.DownArrow))
         {
             if (line < code.Count - 1)
             {
@@ -170,8 +167,7 @@ public class EditorController : MonoBehaviour
                 }
             }
         }
-
-        if (inputManager.CheckKey(KeyCode.Delete))
+        else if (inputManager.CheckKey(KeyCode.Delete))
         {
             if (column < code[line].Length)
             {
@@ -184,6 +180,23 @@ public class EditorController : MonoBehaviour
                 code.RemoveAt(line + 1);
                 lastInputTime = Time.time;
             }
+        }
+        else if (inputManager.CheckKey(KeyCode.Tab))
+        {
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+            {
+                if (code[line].StartsWith(new string(' ', tabSize)))
+                {
+                    code[line] = code[line].Remove(0, tabSize);
+                    column -= tabSize;
+                }
+            }
+            else
+            {
+                code[line] = code[line].Insert(column, new string(' ', tabSize));
+                column += tabSize;
+            }
+            lastInputTime = Time.time;
         }
     }
 

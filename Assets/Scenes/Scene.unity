@@ -186,6 +186,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 619dc738ca86b624c87182e30f381363, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tabSize: 4
   blinkRate: 0.7
   lastInputRate: 0.05
   caret: {fileID: 1445197637}
