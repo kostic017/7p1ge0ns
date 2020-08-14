@@ -7,10 +7,21 @@
     Break,
     Continue,
     Return,
+
+    Comment,
     Identifier,
-    Number,
-    Boolean,
-    String,
+    BlockComment,
+
+    IntType,
+    FloatType,
+    BoolType,
+    StringType,
+    
+    IntConst,
+    FloatConst,
+    BoolConst,
+    StringConst,
+
     LPar,
     RPar,
     LBrace,
@@ -39,6 +50,4 @@
     Quest,
     Colon,
     Semicolon,
-    Comment,
-    BlockComment
 }

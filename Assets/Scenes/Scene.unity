@@ -206,7 +206,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6b2ad21aa927c44e9c23352fb051dfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testColor: {r: 0.02251625, g: 1, b: 0, a: 0}
+  normalColor: {r: 0.83137256, g: 0.83137256, b: 0.83137256, a: 0}
+  boolColor: {r: 0.3372549, g: 0.6117647, b: 0.8392157, a: 0}
+  numberColor: {r: 0.70980394, g: 0.80784315, b: 0.65882355, a: 0}
+  stringColor: {r: 0.80784315, g: 0.5686275, b: 0.47058824, a: 0}
+  keywordColor: {r: 0.77254903, g: 0.5254902, b: 0.7529412, a: 0}
+  typeNameColor: {r: 0.3372549, g: 0.6117647, b: 0.8392157, a: 0}
+  identifierColor: {r: 0.8627451, g: 0.8627451, b: 0.6666667, a: 0}
+  commentColor: {r: 0.41568628, g: 0.6, b: 0.33333334, a: 0}
+  blockCommentColor: {r: 0.41568628, g: 0.6, b: 0.33333334, a: 0}
 --- !u!1 &730750872
 GameObject:
   m_ObjectHideFlags: 0
@@ -645,8 +653,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4286940549
+  m_fontColor: {r: 0.52156866, g: 0.52156866, b: 0.52156866, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

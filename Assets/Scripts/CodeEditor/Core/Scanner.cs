@@ -12,7 +12,7 @@ class Scanner
     private int tokenStartColumn;
     private int tokenStartIndex;
 
-    private static readonly Dictionary<string, TokenType> keywords =
+    public static readonly Dictionary<string, TokenType> keywords =
         new Dictionary<string, TokenType> {
             { "if", TokenType.If },
             { "for", TokenType.For },
@@ -21,6 +21,14 @@ class Scanner
             { "break", TokenType.Break },
             { "continue", TokenType.Continue },
             { "return", TokenType.Return },
+        };
+
+    public static readonly Dictionary<string, TokenType> types =
+        new Dictionary<string, TokenType> {
+            { "int", TokenType.IntType },
+            { "float", TokenType.FloatType },
+            { "bool", TokenType.BoolType },
+            { "string", TokenType.StringType },
         };
 
     public Token[] Scan(string code)
@@ -219,7 +227,7 @@ class Scanner
             }
         }
 
-        return NewToken(TokenType.String, value);
+        return NewToken(TokenType.StringConst, value);
     }
 
     private char LexEscape()
@@ -280,7 +288,7 @@ class Scanner
             }
             value += NextChar();
         }
-        return NewToken(TokenType.Number, value);
+        return NewToken(isReal ? TokenType.FloatConst : TokenType.IntConst, value);
     }
 
     private Token LexWord()
@@ -296,12 +304,17 @@ class Scanner
 
         if (value == "true" || value == "false")
         {
-            return NewToken(TokenType.Boolean, value);
+            return NewToken(TokenType.BoolConst, value);
         }
 
         if (keywords.ContainsKey(value))
         {
             return NewToken(keywords[value]);
+        }
+
+        if (types.ContainsKey(value))
+        {
+            return NewToken(types[value]);
         }
 
         return NewToken(TokenType.Identifier, value);
