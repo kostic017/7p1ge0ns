@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-class Scanner
+public class Scanner
 {
     private int line;
     private int column;
@@ -68,7 +68,7 @@ class Scanner
                 return LexString();
             }
 
-            if (ch == '/' && (Lookahead() != '/' && Lookahead() != '*'))
+            if (ch == '/' && (PeekNextChar() == '/' || PeekNextChar() == '*'))
             {
                 return LexComment();
             }
@@ -176,7 +176,7 @@ class Scanner
                     {
                         return NewToken(TokenType.Eq);
                     }
-                    goto default;
+                    return NewToken(TokenType.Assign);
 
                 case '&':
                     if (TryNextChar('&'))
@@ -255,7 +255,7 @@ class Scanner
             do
             {
                 ch = NextChar();
-            } while (ch != '\n' || ch != '\0');
+            } while (ch != '\n' && ch != '\0');
             return NewToken(TokenType.Comment);
         }
 
@@ -277,17 +277,19 @@ class Scanner
     private Token LexNumber()
     {
         bool isReal = false;
-        char nextCh = Lookahead();
         string value = Lookahead(-1).ToString();
 
-        while (char.IsDigit(nextCh) || (!isReal && nextCh == '.'))
+        char c = PeekNextChar();
+        while (char.IsDigit(c) || (!isReal && c == '.' && char.IsDigit(Lookahead(1))))
         {
-            if (nextCh == '.')
+            if (c == '.')
             {
                 isReal = true;
             }
             value += NextChar();
+            c = PeekNextChar();
         }
+
         return NewToken(isReal ? TokenType.FloatConst : TokenType.IntConst, value);
     }
 
@@ -295,11 +297,11 @@ class Scanner
     {
         string value = Lookahead(-1).ToString();
 
-        char c = Lookahead(0);
+        char c = PeekNextChar();
         while (c == '_' || char.IsLetterOrDigit(c))
         {
             value += NextChar();
-            c = Lookahead(0);
+            c = PeekNextChar();
         }
 
         if (value == "true" || value == "false")
@@ -353,6 +355,11 @@ class Scanner
         return false;
     }
 
+    private char PeekNextChar()
+    {
+        return Lookahead(0);
+    }
+
     private char Lookahead(int i = 1)
     {
         if (index + i >= code.Length)
@@ -364,7 +371,7 @@ class Scanner
 
     private ScannerException NewException(string message)
     {
-        return new ScannerException(message, tokenStartColumn, tokenStartLine);
+        return new ScannerException(message, tokenStartLine, tokenStartColumn);
     }
 
     private Token NewToken(TokenType tokenType, string value = "")

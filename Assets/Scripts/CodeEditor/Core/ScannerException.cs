@@ -1,6 +1,6 @@
 ﻿using System;
 
-class ScannerException : Exception
+public class ScannerException : Exception
 {
     public int Line { get; }
     public int Column { get; }

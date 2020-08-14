@@ -1,4 +1,4 @@
-﻿enum TokenType
+﻿public enum TokenType
 { 
     If,
     For,
@@ -47,6 +47,7 @@
     Geq,
     Eq,
     Neq,
+    Assign,
     Quest,
     Colon,
     Semicolon,

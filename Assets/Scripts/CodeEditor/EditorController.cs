@@ -12,11 +12,12 @@ public class EditorController : MonoBehaviour
     public float lastInputRate = 0.05f;
     
     public Image caret;
-    
-    public TMP_Text codeTextField;
-    public TMP_Text gutterTextField;
 
     public RectTransform codeEditor;
+
+    public TMP_Text codeTextField;
+    public TMP_Text gutterTextField;
+    public TMP_Text consoleOutput;
 
     int line;
     int column;
@@ -27,11 +28,13 @@ public class EditorController : MonoBehaviour
     
     List<string> code;
 
+    Scanner scanner;
     InputManager inputManager;
     SyntaxHighlighter highlighter;
 
     void Start()
     {
+        scanner = new Scanner();
         inputManager = GetComponent<InputManager>();
         highlighter = GetComponent<SyntaxHighlighter>();
         code = codeTextField.text.Split('\n').ToList();        
@@ -47,9 +50,19 @@ public class EditorController : MonoBehaviour
         BlinkCaret();
         UpdateLineNumbers();
 
+        consoleOutput.text = "";
         string codeText = string.Join("\n", code);
-        codeText = highlighter.Highlight(codeText);
-        
+
+        try
+        {
+            Token[] tokens = scanner.Scan(codeText);
+            codeText = highlighter.Highlight(codeText, tokens);
+        } catch (ScannerException e)
+        {
+            consoleOutput.text = e.Message;
+        }
+
+
         codeTextField.text = codeText;
     }
 
@@ -226,7 +239,7 @@ public class EditorController : MonoBehaviour
 
     void Scroll()
     {
-        if (caret.rectTransform.position.y < 0)
+        if (caret.rectTransform.position.y < consoleOutput.rectTransform.rect.height)
         {
             codeEditor.position += Vector3.up * caret.rectTransform.rect.height;
         }

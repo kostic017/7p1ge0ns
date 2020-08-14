@@ -14,17 +14,9 @@ public class SyntaxHighlighter : MonoBehaviour
 
     public Color commentColor;
     public Color blockCommentColor;
-    
-    private Scanner scanner;
 
-    void Start()
+    public string Highlight(string code, Token[] tokens)
     {
-        scanner = new Scanner();
-    }
-
-    public string Highlight(string code)
-    {
-        Token[] tokens = scanner.Scan(code);
         // note that iterations are from last to first
         for (int i = tokens.Length - 1; i >= 0; --i)
         {
@@ -43,6 +35,8 @@ public class SyntaxHighlighter : MonoBehaviour
             case TokenType.IntConst:
             case TokenType.FloatConst:
                 return numberColor;
+            case TokenType.BoolConst:
+                return boolColor;
             case TokenType.StringConst:
                 return stringColor;
             case TokenType.Comment:
