@@ -25,7 +25,9 @@ public class EditorController : MonoBehaviour
     
     float blinkTimer;
     float lastInputTime;
-    
+
+    string prevCodeText;
+
     List<string> code;
 
     Scanner scanner;
@@ -34,36 +36,42 @@ public class EditorController : MonoBehaviour
 
     void Start()
     {
+        prevCodeText = "";
         scanner = new Scanner();
+     
         inputManager = GetComponent<InputManager>();
         highlighter = GetComponent<SyntaxHighlighter>();
-        code = codeTextField.text.Split('\n').ToList();        
-        UpdateLineNumbers();
+
+        code = codeTextField.text.Split('\n').ToList();
     }
 
     void Update()
     {
         HandleTextInput();
         HandleSpecialInput();
-        PositionCaret();
-        Scroll();
-        BlinkCaret();
         UpdateLineNumbers();
 
-        consoleOutput.text = "";
+        PositionCaret();
+        HandleScroll();
+        BlinkCaret();
+        
         string codeText = string.Join("\n", code);
 
-        try
+        if (codeText != prevCodeText)
         {
-            Token[] tokens = scanner.Scan(codeText);
-            codeText = highlighter.Highlight(codeText, tokens);
-        } catch (ScannerException e)
-        {
-            consoleOutput.text = e.Message;
+            consoleOutput.text = "";
+            prevCodeText = codeText;
+            try
+            {
+                Token[] tokens = scanner.Scan(codeText);
+                codeText = highlighter.Highlight(codeText, tokens);
+            }
+            catch (ScannerException e)
+            {
+                consoleOutput.text = e.Message;
+            }
+            codeTextField.text = codeText;
         }
-
-
-        codeTextField.text = codeText;
     }
 
     void HandleTextInput()
@@ -222,6 +230,8 @@ public class EditorController : MonoBehaviour
 
     void PositionCaret()
     {
+        string codeText = codeTextField.text;
+
         // '.' is there because empty lines and spaces are ignored from calculations
         string linesUpToCaret = string.Join("\n.", code.Take(line + 1)) + ".";
         string charsUpToCaret = code[line].Substring(0, column).Replace(' ', '.');
@@ -235,9 +245,11 @@ public class EditorController : MonoBehaviour
         caret.rectTransform.position = codeTextField.rectTransform.position;
         caret.rectTransform.localPosition += Vector3.right * caretX;
         caret.rectTransform.localPosition += Vector3.up * (codeTextField.rectTransform.rect.height - caretY);
+
+        codeTextField.text = codeText;
     }
 
-    void Scroll()
+    void HandleScroll()
     {
         if (caret.rectTransform.position.y < consoleOutput.rectTransform.rect.height)
         {
