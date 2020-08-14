@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-class InputManager : MonoBehaviour
+public class InputManager : MonoBehaviour
 {
     public float initialDelay = 0.5f;
     public float repeatKeyDelay = 0.05f;

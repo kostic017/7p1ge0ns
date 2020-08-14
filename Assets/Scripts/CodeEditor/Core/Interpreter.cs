@@ -1,12 +1,14 @@
-﻿namespace CodeEditor.Core
+﻿class Interpreter
 {
-    public class Interpreter
-    {
-        private Scanner scanner;
+    private readonly Scanner scanner;
 
-        public void Exec(string code)
-        {
-            scanner.Scan(code);
-        }
+    public Interpreter()
+    {
+        this.scanner = new Scanner();
+    }
+
+    public void Exec(string code)
+    {
+        scanner.Scan(code);
     }
 }

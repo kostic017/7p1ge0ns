@@ -1,378 +1,368 @@
 ﻿using System.Collections.Generic;
 
-namespace CodeEditor.Core
+class Scanner
 {
-    class Scanner
+    private int line;
+    private int column;
+    private int index;
+
+    private string code;
+
+    private int tokenStartLine;
+    private int tokenStartColumn;
+    private int tokenStartIndex;
+
+    private static readonly Dictionary<string, TokenType> keywords =
+        new Dictionary<string, TokenType> {
+            { "if", TokenType.If },
+            { "for", TokenType.For },
+            { "do", TokenType.Do },
+            { "while", TokenType.While },
+            { "break", TokenType.Break },
+            { "continue", TokenType.Continue },
+            { "return", TokenType.Return },
+        };
+
+    public Token[] Scan(string code)
     {
-        private int line;
-        private int column;
-        private int index;
+        line = 1;
+        column = 0;
+        index = 0;
+        this.code = code;
 
-        private string code;
+        List<Token> tokens = new List<Token>();
 
-        private int tokenStartLine;
-        private int tokenStartColumn;
-        private int tokenStartIndex;
-
-        private static readonly Dictionary<string, TokenType> keywords =
-            new Dictionary<string, TokenType> {
-                { "if", TokenType.If },
-                { "for", TokenType.For },
-                { "do", TokenType.Do },
-                { "while", TokenType.While },
-                { "break", TokenType.Break },
-                { "continue", TokenType.Continue },
-                { "return", TokenType.Return },
-            };
-
-        private readonly Configuration configuration;
-
-        public Scanner(Configuration configuration)
+        Token tok;
+        while ((tok = NextToken()) != null)
         {
-            this.configuration = configuration; // TODO
+            tokens.Add(tok);
         }
 
-        public Token[] Scan(string code)
+        return tokens.ToArray();
+    }
+
+    private Token NextToken()
+    {
+        char ch;
+        while ((ch = NextChar()) != '\0')
         {
-            line = 1;
-            column = 0;
-            index = 0;
-            this.code = code;
-
-            List<Token> tokens = new List<Token>();
-
-            Token tok;
-            while ((tok = NextToken()) != null)
+            if (char.IsWhiteSpace(ch))
             {
-                tokens.Add(tok);
+                continue;
             }
 
-            return tokens.ToArray();
-        }
+            tokenStartLine = line;
+            tokenStartColumn = column;
+            tokenStartIndex = index;
 
-        private Token NextToken()
-        {
-            char ch;
-            while ((ch = NextChar()) != '\0')
+            if (ch == '"')
             {
-                if (char.IsWhiteSpace(ch))
-                {
-                    continue;
-                }
-
-                tokenStartLine = line;
-                tokenStartColumn = column;
-                tokenStartIndex = index;
-
-                if (ch == '"')
-                {
-                    return LexString();
-                }
-
-                if (ch == '/' && LexComment())
-                {
-                    continue;
-                }
-
-                if (char.IsDigit(ch))
-                {
-                    return LexNumber();
-                }
-
-                if (ch == '_' || char.IsLetter(ch))
-                {
-                    return LexWord();
-                }
-
-                switch (ch)
-                {
-                    case '(':
-                        return NewToken(TokenType.LPar);
-
-                    case ')':
-                        return NewToken(TokenType.RPar);
-
-                    case '?':
-                        return NewToken(TokenType.Quest);
-
-                    case ':':
-                        return NewToken(TokenType.Colon);
-
-                    case '+':
-                        if (TryNextChar('='))
-                        {
-                            return NewToken(TokenType.AddEq);
-                        }
-                        if (TryNextChar('+'))
-                        {
-                            return NewToken(TokenType.Inc);
-                        }
-                        return NewToken(TokenType.Add);
-                    
-                    case '-':
-                        if (TryNextChar('='))
-                        {
-                            return NewToken(TokenType.SubEq);
-                        }
-                        if (TryNextChar('-'))
-                        {
-                            return NewToken(TokenType.Dec);
-                        }
-                        return NewToken(TokenType.Sub);
-                    
-                    case '*':
-                        if (TryNextChar('='))
-                        {
-                            return NewToken(TokenType.MulEq);
-                        }
-                        return NewToken(TokenType.Mul);
-                    
-                    case '/':
-                        if (TryNextChar('='))
-                        {
-                            return NewToken(TokenType.DivEq);
-                        }
-                        return NewToken(TokenType.Div);
-                    
-                    case '%':
-                        if (TryNextChar('='))
-                        {
-                            NextChar();
-                            return NewToken(TokenType.ModEq);
-                        }
-                        return NewToken(TokenType.Mod);
-
-                    case '<':
-                        if (TryNextChar('='))
-                        {
-                            return NewToken(TokenType.Leq);
-                        }
-                        return NewToken(TokenType.Lt);
-
-                    case '>':
-                        if (TryNextChar('='))
-                        {
-                            return NewToken(TokenType.Geq);
-                        }
-                        return NewToken(TokenType.Gt);
-
-                    case '!':
-                        if (TryNextChar('='))
-                        {
-                            return NewToken(TokenType.Neq);
-                        }
-                        return NewToken(TokenType.Not);
-
-                    case '=':
-                        if (TryNextChar('='))
-                        {
-                            return NewToken(TokenType.Eq);
-                        }
-                        goto default;
-
-                    case '&':
-                        if (TryNextChar('&'))
-                        {
-                            return NewToken(TokenType.And);
-                        }
-                        goto default;
-
-                    case '|':
-                        if (TryNextChar('|'))
-                        {
-                            return NewToken(TokenType.Or);
-                        }
-                        goto default;
-
-                    default:
-                        throw NewException($"Unexpected character {ch}");
-                }
+                return LexString();
             }
 
-            return null;
-        }
-
-        private Token LexString()
-        {
-            char ch;
-            string value = "";
-            
-            while ((ch = NextChar()) != '"')
+            if (ch == '/' && (Lookahead() != '/' && Lookahead() != '*'))
             {
-                if (ch == '\0')
-                {
-                    throw NewException("Unterminated string");
-                }
-
-                if (ch == '\n')
-                {
-                    throw NewException("Newline in string");
-                }
-
-                if (ch == '\\')
-                {
-                    value += LexEscape();
-                }
-                else
-                {
-                    value += ch;
-                }
+                return LexComment();
             }
 
-            return NewToken(TokenType.String, value);
-        }
-
-        private char LexEscape()
-        {
-            char ch;
-            switch (ch = NextChar())
+            if (char.IsDigit(ch))
             {
-                case '\\':
-                    return '\\';
-                case 't':
-                    return '\t';
-                case 'n':
-                    return '\n';
-                default:
-                    throw NewException($"Invalid escape sequence \\{ch}");
-            }
-        }
-
-        private bool LexComment()
-        {
-            if (Lookahead() != '/' && Lookahead() != '*')
-            {
-                return false;
+                return LexNumber();
             }
 
-            char ch = NextChar();
-
-            if (ch == '/')
+            if (ch == '_' || char.IsLetter(ch))
             {
-                do
-                {
-                    ch = NextChar();
-                } while (ch != '\n' || ch != '\0');
+                return LexWord();
             }
-            
-            if (ch == '*')
+
+            switch (ch)
             {
-                do
-                {
-                    ch = NextChar();
-                    if (ch == '\0')
+                case '(':
+                    return NewToken(TokenType.LPar);
+
+                case ')':
+                    return NewToken(TokenType.RPar);
+
+                case '{':
+                    return NewToken(TokenType.LBrace);
+
+                case '}':
+                    return NewToken(TokenType.RBrace);
+
+                case '?':
+                    return NewToken(TokenType.Quest);
+
+                case ':':
+                    return NewToken(TokenType.Colon);
+
+                case ';':
+                    return NewToken(TokenType.Semicolon);
+
+                case '+':
+                    if (TryNextChar('='))
                     {
-                        throw NewException("Unterminated comment block");
+                        return NewToken(TokenType.AddEq);
                     }
-                } while (ch != '*' && Lookahead() != '/');
-                NextChar(); // eat /
-            }
+                    if (TryNextChar('+'))
+                    {
+                        return NewToken(TokenType.Inc);
+                    }
+                    return NewToken(TokenType.Add);
 
-            return true;
+                case '-':
+                    if (TryNextChar('='))
+                    {
+                        return NewToken(TokenType.SubEq);
+                    }
+                    if (TryNextChar('-'))
+                    {
+                        return NewToken(TokenType.Dec);
+                    }
+                    return NewToken(TokenType.Sub);
+
+                case '*':
+                    if (TryNextChar('='))
+                    {
+                        return NewToken(TokenType.MulEq);
+                    }
+                    return NewToken(TokenType.Mul);
+
+                case '/':
+                    if (TryNextChar('='))
+                    {
+                        return NewToken(TokenType.DivEq);
+                    }
+                    return NewToken(TokenType.Div);
+
+                case '%':
+                    if (TryNextChar('='))
+                    {
+                        NextChar();
+                        return NewToken(TokenType.ModEq);
+                    }
+                    return NewToken(TokenType.Mod);
+
+                case '<':
+                    if (TryNextChar('='))
+                    {
+                        return NewToken(TokenType.Leq);
+                    }
+                    return NewToken(TokenType.Lt);
+
+                case '>':
+                    if (TryNextChar('='))
+                    {
+                        return NewToken(TokenType.Geq);
+                    }
+                    return NewToken(TokenType.Gt);
+
+                case '!':
+                    if (TryNextChar('='))
+                    {
+                        return NewToken(TokenType.Neq);
+                    }
+                    return NewToken(TokenType.Not);
+
+                case '=':
+                    if (TryNextChar('='))
+                    {
+                        return NewToken(TokenType.Eq);
+                    }
+                    goto default;
+
+                case '&':
+                    if (TryNextChar('&'))
+                    {
+                        return NewToken(TokenType.And);
+                    }
+                    goto default;
+
+                case '|':
+                    if (TryNextChar('|'))
+                    {
+                        return NewToken(TokenType.Or);
+                    }
+                    goto default;
+
+                default:
+                    throw NewException($"Unexpected character {ch}");
+            }
         }
 
-        private Token LexNumber()
+        return null;
+    }
+
+    private Token LexString()
+    {
+        char ch;
+        string value = "";
+
+        while ((ch = NextChar()) != '"')
         {
-            bool isReal = false;
-            char nextCh = Lookahead();
-            string value = Lookahead(-1).ToString();
-            
-            while (char.IsDigit(nextCh) || (!isReal && nextCh == '.'))
+            if (ch == '\0')
             {
-                if (nextCh == '.')
-                {
-                    isReal = true;
-                }
-                value += NextChar();
+                throw NewException("Unterminated string");
             }
-            return NewToken(TokenType.Number, value);
-        }
-
-        private Token LexWord()
-        {
-            string value = Lookahead(-1).ToString();
-            
-            while (Lookahead() == '_' || char.IsLetterOrDigit(Lookahead()))
-            {
-                value += NextChar();
-            }
-
-            if (value == "true" || value == "false")
-            {
-                return NewToken(TokenType.Boolean, value);
-            }
-
-            if (keywords.ContainsKey(value))
-            {
-                return NewToken(keywords[value]);
-            }
-
-            return NewToken(TokenType.Identifier, value);
-        }
-
-        private char NextChar()
-        {
-            if (index >= code.Length - 1)
-            {
-                return '\0';
-            }
-
-            char ch = code[index];
-            ++index;
 
             if (ch == '\n')
             {
-                column = 0;
-                ++line;
+                throw NewException("Newline in string");
             }
-            else if (ch == '\t')
+
+            if (ch == '\\')
             {
-                column += configuration.TabSize;
+                value += LexEscape();
             }
             else
             {
-                ++column;
+                value += ch;
             }
-
-            return ch;
         }
 
-        private bool TryNextChar(char ch)
+        return NewToken(TokenType.String, value);
+    }
+
+    private char LexEscape()
+    {
+        char ch;
+        switch (ch = NextChar())
         {
-            if (Lookahead() == ch)
+            case '\\':
+                return '\\';
+            case 't':
+                return '\t';
+            case 'n':
+                return '\n';
+            default:
+                throw NewException($"Invalid escape sequence \\{ch}");
+        }
+    }
+
+    private Token LexComment()
+    {
+        char ch = NextChar();
+
+        if (ch == '/')
+        {
+            do
             {
-                NextChar();
-                return true;
+                ch = NextChar();
+            } while (ch != '\n' || ch != '\0');
+            return NewToken(TokenType.Comment);
+        }
+
+        // ch == '*'
+
+        do
+        {
+            ch = NextChar();
+            if (ch == '\0')
+            {
+                throw NewException("Unterminated comment block");
             }
-            return false;
-        }
+        } while (ch != '*' && Lookahead() != '/');
+        NextChar(); // eat /
 
-        private char Lookahead(int i = 1)
+        return NewToken(TokenType.BlockComment);
+    }
+
+    private Token LexNumber()
+    {
+        bool isReal = false;
+        char nextCh = Lookahead();
+        string value = Lookahead(-1).ToString();
+
+        while (char.IsDigit(nextCh) || (!isReal && nextCh == '.'))
         {
-            if (index + i >= code.Length - 1)
+            if (nextCh == '.')
             {
-                return '\0';
+                isReal = true;
             }
-            return code[index + i];
+            value += NextChar();
+        }
+        return NewToken(TokenType.Number, value);
+    }
+
+    private Token LexWord()
+    {
+        string value = Lookahead(-1).ToString();
+
+        char c = Lookahead(0);
+        while (c == '_' || char.IsLetterOrDigit(c))
+        {
+            value += NextChar();
+            c = Lookahead(0);
         }
 
-        private ScannerException NewException(string message)
+        if (value == "true" || value == "false")
         {
-            return new ScannerException(message, tokenStartColumn, tokenStartLine);
+            return NewToken(TokenType.Boolean, value);
         }
 
-        private Token NewToken(TokenType tokenType, string value = "")
+        if (keywords.ContainsKey(value))
         {
-            return new Token
-            {
-                Value = value,
-                Type = tokenType,
-                StartLine = tokenStartLine,
-                StartColumn = tokenStartColumn,
-                StartIndex = tokenStartIndex,
-                EndIndex = index
-            };
+            return NewToken(keywords[value]);
         }
+
+        return NewToken(TokenType.Identifier, value);
+    }
+
+    private char NextChar()
+    {
+        if (index >= code.Length)
+        {
+            return '\0';
+        }
+
+        char ch = code[index];
+        ++index;
+
+        if (ch == '\n')
+        {
+            column = 0;
+            ++line;
+        }
+        else
+        {
+            ++column;
+        }
+
+        return ch;
+    }
+
+    private bool TryNextChar(char ch)
+    {
+        if (Lookahead() == ch)
+        {
+            NextChar();
+            return true;
+        }
+        return false;
+    }
+
+    private char Lookahead(int i = 1)
+    {
+        if (index + i >= code.Length)
+        {
+            return '\0';
+        }
+        return code[index + i];
+    }
+
+    private ScannerException NewException(string message)
+    {
+        return new ScannerException(message, tokenStartColumn, tokenStartLine);
+    }
+
+    private Token NewToken(TokenType tokenType, string value = "")
+    {
+        return new Token
+        {
+            Value = value,
+            Type = tokenType,
+            StartIndex = tokenStartIndex,
+            EndIndex = index
+        };
     }
 }
 

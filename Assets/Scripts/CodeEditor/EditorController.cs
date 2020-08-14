@@ -26,11 +26,14 @@ public class EditorController : MonoBehaviour
     float lastInputTime;
     
     List<string> code;
+
     InputManager inputManager;
+    SyntaxHighlighter highlighter;
 
     void Start()
     {
         inputManager = GetComponent<InputManager>();
+        highlighter = GetComponent<SyntaxHighlighter>();
         code = codeTextField.text.Split('\n').ToList();        
         UpdateLineNumbers();
     }
@@ -43,7 +46,11 @@ public class EditorController : MonoBehaviour
         Scroll();
         BlinkCaret();
         UpdateLineNumbers();
-        codeTextField.text = string.Join("\n", code);
+
+        string codeText = string.Join("\n", code);
+        codeText = highlighter.Highlight(codeText);
+        
+        codeTextField.text = codeText;
     }
 
     void HandleTextInput()
