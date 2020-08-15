@@ -15,6 +15,7 @@ public class Scanner
     public static readonly Dictionary<string, TokenType> keywords =
         new Dictionary<string, TokenType> {
             { "if", TokenType.If },
+            { "else", TokenType.Else },
             { "for", TokenType.For },
             { "do", TokenType.Do },
             { "while", TokenType.While },
@@ -29,6 +30,7 @@ public class Scanner
             { "float", TokenType.FloatType },
             { "bool", TokenType.BoolType },
             { "string", TokenType.StringType },
+            { "void", TokenType.VoidType }
         };
 
     public Token[] Scan(string code)
@@ -385,4 +387,3 @@ public class Scanner
         };
     }
 }
-

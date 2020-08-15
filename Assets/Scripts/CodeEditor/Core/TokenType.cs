@@ -7,6 +7,7 @@
     Break,
     Continue,
     Return,
+    Else,
 
     Comment,
     Identifier,
@@ -16,7 +17,8 @@
     FloatType,
     BoolType,
     StringType,
-    
+    VoidType,
+
     IntConst,
     FloatConst,
     BoolConst,
