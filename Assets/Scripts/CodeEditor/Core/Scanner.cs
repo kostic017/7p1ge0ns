@@ -270,7 +270,7 @@ public class Scanner
             {
                 throw NewException("Unterminated comment block");
             }
-        } while (ch != '*' && Lookahead() != '/');
+        } while (ch != '*' && PeekNextChar() != '/');
         NextChar(); // eat /
 
         return NewToken(TokenType.BlockComment);
@@ -279,7 +279,7 @@ public class Scanner
     private Token LexNumber()
     {
         bool isReal = false;
-        string value = Lookahead(-1).ToString();
+        string value = PrevChar().ToString();
 
         char c = PeekNextChar();
         while (char.IsDigit(c) || (!isReal && c == '.' && char.IsDigit(Lookahead(1))))
@@ -297,7 +297,7 @@ public class Scanner
 
     private Token LexWord()
     {
-        string value = Lookahead(-1).ToString();
+        string value = PrevChar().ToString();
 
         char c = PeekNextChar();
         while (c == '_' || char.IsLetterOrDigit(c))
@@ -349,7 +349,7 @@ public class Scanner
 
     private bool TryNextChar(char ch)
     {
-        if (Lookahead() == ch)
+        if (PeekNextChar() == ch)
         {
             NextChar();
             return true;
@@ -362,7 +362,12 @@ public class Scanner
         return Lookahead(0);
     }
 
-    private char Lookahead(int i = 1)
+    private char PrevChar()
+    {
+        return Lookahead(-1);
+    }
+
+    private char Lookahead(int i)
     {
         if (index + i >= code.Length)
         {
