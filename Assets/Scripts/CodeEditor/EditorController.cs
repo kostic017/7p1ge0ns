@@ -61,16 +61,21 @@ public class EditorController : MonoBehaviour
         {
             consoleOutput.text = "";
             prevCodeText = codeText;
-            try
-            {
-                Token[] tokens = scanner.Scan(codeText);
-                codeText = highlighter.Highlight(codeText, tokens);
-            }
-            catch (ScannerException e)
-            {
-                consoleOutput.text = e.Message;
-            }
+
+            Token[] tokens = scanner.Scan(codeText);
+
+            codeText = highlighter.Highlight(codeText, tokens);
             codeTextField.text = codeText;
+
+            if (scanner.Errors.Count > 0)
+            {
+                consoleOutput.text = scanner.Errors[0].Message();
+                if (scanner.Errors.Count > 1)
+                {
+                    consoleOutput.text += $" (and {scanner.Errors.Count - 1} more)";
+                }
+            }
+
         }
     }
 

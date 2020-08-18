@@ -1,5 +1,7 @@
 ﻿public enum TokenType
-{ 
+{
+    Error,
+
     If,
     For,
     Do,

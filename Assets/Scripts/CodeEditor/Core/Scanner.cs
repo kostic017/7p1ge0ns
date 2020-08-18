@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 
 public class Scanner
 {
@@ -11,6 +12,8 @@ public class Scanner
     private int tokenStartLine;
     private int tokenStartColumn;
     private int tokenStartIndex;
+
+    public List<ScanError> Errors { get; private set; }
 
     public static readonly Dictionary<string, TokenType> keywords =
         new Dictionary<string, TokenType> {
@@ -33,12 +36,13 @@ public class Scanner
             { "void", TokenType.VoidType }
         };
 
-    public Token[] Scan(string code)
+    public Token[] Scan(string str)
     {
         line = 1;
         column = 0;
         index = 0;
-        this.code = code;
+        code = str;
+        Errors = new List<ScanError>();
 
         List<Token> tokens = new List<Token>();
 
@@ -88,114 +92,115 @@ public class Scanner
             switch (ch)
             {
                 case '(':
-                    return NewToken(TokenType.LPar);
+                    return Token(TokenType.LPar);
 
                 case ')':
-                    return NewToken(TokenType.RPar);
+                    return Token(TokenType.RPar);
 
                 case '{':
-                    return NewToken(TokenType.LBrace);
+                    return Token(TokenType.LBrace);
 
                 case '}':
-                    return NewToken(TokenType.RBrace);
+                    return Token(TokenType.RBrace);
 
                 case '?':
-                    return NewToken(TokenType.Quest);
+                    return Token(TokenType.Quest);
 
                 case ':':
-                    return NewToken(TokenType.Colon);
+                    return Token(TokenType.Colon);
 
                 case ';':
-                    return NewToken(TokenType.Semicolon);
+                    return Token(TokenType.Semicolon);
 
                 case '+':
                     if (TryNextChar('='))
                     {
-                        return NewToken(TokenType.AddEq);
+                        return Token(TokenType.AddEq);
                     }
                     if (TryNextChar('+'))
                     {
-                        return NewToken(TokenType.Inc);
+                        return Token(TokenType.Inc);
                     }
-                    return NewToken(TokenType.Add);
+                    return Token(TokenType.Add);
 
                 case '-':
                     if (TryNextChar('='))
                     {
-                        return NewToken(TokenType.SubEq);
+                        return Token(TokenType.SubEq);
                     }
                     if (TryNextChar('-'))
                     {
-                        return NewToken(TokenType.Dec);
+                        return Token(TokenType.Dec);
                     }
-                    return NewToken(TokenType.Sub);
+                    return Token(TokenType.Sub);
 
                 case '*':
                     if (TryNextChar('='))
                     {
-                        return NewToken(TokenType.MulEq);
+                        return Token(TokenType.MulEq);
                     }
-                    return NewToken(TokenType.Mul);
+                    return Token(TokenType.Mul);
 
                 case '/':
                     if (TryNextChar('='))
                     {
-                        return NewToken(TokenType.DivEq);
+                        return Token(TokenType.DivEq);
                     }
-                    return NewToken(TokenType.Div);
+                    return Token(TokenType.Div);
 
                 case '%':
                     if (TryNextChar('='))
                     {
                         NextChar();
-                        return NewToken(TokenType.ModEq);
+                        return Token(TokenType.ModEq);
                     }
-                    return NewToken(TokenType.Mod);
+                    return Token(TokenType.Mod);
 
                 case '<':
                     if (TryNextChar('='))
                     {
-                        return NewToken(TokenType.Leq);
+                        return Token(TokenType.Leq);
                     }
-                    return NewToken(TokenType.Lt);
+                    return Token(TokenType.Lt);
 
                 case '>':
                     if (TryNextChar('='))
                     {
-                        return NewToken(TokenType.Geq);
+                        return Token(TokenType.Geq);
                     }
-                    return NewToken(TokenType.Gt);
+                    return Token(TokenType.Gt);
 
                 case '!':
                     if (TryNextChar('='))
                     {
-                        return NewToken(TokenType.Neq);
+                        return Token(TokenType.Neq);
                     }
-                    return NewToken(TokenType.Not);
+                    return Token(TokenType.Not);
 
                 case '=':
                     if (TryNextChar('='))
                     {
-                        return NewToken(TokenType.Eq);
+                        return Token(TokenType.Eq);
                     }
-                    return NewToken(TokenType.Assign);
+                    return Token(TokenType.Assign);
 
                 case '&':
                     if (TryNextChar('&'))
                     {
-                        return NewToken(TokenType.And);
+                        return Token(TokenType.And);
                     }
                     goto default;
 
                 case '|':
                     if (TryNextChar('|'))
                     {
-                        return NewToken(TokenType.Or);
+                        return Token(TokenType.Or);
                     }
                     goto default;
 
                 default:
-                    throw NewException($"Unexpected character {ch}");
+                    Errors.Add(Error(ScanErrorType.UNEXPECTED_CHARACTER, $"{ch}"));
+                    return Token(TokenType.Error);
             }
         }
 
@@ -211,12 +216,14 @@ public class Scanner
         {
             if (ch == '\0')
             {
-                throw NewException("Unterminated string");
+                Errors.Add(Error(ScanErrorType.UNTERMINATED_STRING));
+                break;
             }
 
             if (ch == '\n')
             {
-                throw NewException("Newline in string");
+                Errors.Add(Error(ScanErrorType.NEWLINE_IN_STRING));
+                break;
             }
 
             if (ch == '\\')
@@ -229,7 +236,7 @@ public class Scanner
             }
         }
 
-        return NewToken(TokenType.StringConst, value);
+        return Token(TokenType.StringConst, value);
     }
 
     private char LexEscape()
@@ -243,8 +250,11 @@ public class Scanner
                 return '\t';
             case 'n':
                 return '\n';
+            case '"':
+                return '\"';
             default:
-                throw NewException($"Invalid escape sequence \\{ch}");
+                Errors.Add(Error(ScanErrorType.INVALID_ESCAPE_CHAR, $"\\{ch}"));
+                return '\0';
         }
     }
 
@@ -258,22 +268,30 @@ public class Scanner
             {
                 ch = NextChar();
             } while (ch != '\n' && ch != '\0');
-            return NewToken(TokenType.Comment);
+            return Token(TokenType.Comment);
         }
 
         // ch == '*'
 
-        do
+        while (true)
         {
             ch = NextChar();
+
             if (ch == '\0')
             {
-                throw NewException("Unterminated comment block");
+                Errors.Add(Error(ScanErrorType.UNTERMINATED_COMMENT_BLOCK));
+                break;
             }
-        } while (ch != '*' && PeekNextChar() != '/');
-        NextChar(); // eat /
 
-        return NewToken(TokenType.BlockComment);
+            if (ch == '*' && PeekNextChar() == '/')
+            {
+                NextChar();
+                break;
+            }
+        }
+
+        return Token(TokenType.BlockComment);
+
     }
 
     private Token LexNumber()
@@ -292,7 +310,7 @@ public class Scanner
             c = PeekNextChar();
         }
 
-        return NewToken(isReal ? TokenType.FloatConst : TokenType.IntConst, value);
+        return Token(isReal ? TokenType.FloatConst : TokenType.IntConst, value);
     }
 
     private Token LexWord()
@@ -308,20 +326,20 @@ public class Scanner
 
         if (value == "true" || value == "false")
         {
-            return NewToken(TokenType.BoolConst, value);
+            return Token(TokenType.BoolConst, value);
         }
 
         if (keywords.ContainsKey(value))
         {
-            return NewToken(keywords[value]);
+            return Token(keywords[value]);
         }
 
         if (types.ContainsKey(value))
         {
-            return NewToken(types[value]);
+            return Token(types[value]);
         }
 
-        return NewToken(TokenType.Identifier, value);
+        return Token(TokenType.Identifier, value);
     }
 
     private char NextChar()
@@ -376,17 +394,25 @@ public class Scanner
         return code[index + i];
     }
 
-    private ScannerException NewException(string message)
-    {
-        return new ScannerException(message, tokenStartLine, tokenStartColumn);
-    }
-
-    private Token NewToken(TokenType tokenType, string value = "")
+    private Token Token(TokenType tokenType, string value = "")
     {
         return new Token
         {
             Value = value,
             Type = tokenType,
+            StartIndex = tokenStartIndex,
+            EndIndex = index
+        };
+    }
+
+    private ScanError Error(ScanErrorType type, string details = "")
+    {
+        return new ScanError
+        {
+            Type = type,
+            Details = details,
+            Line = tokenStartLine,
+            Column = tokenStartColumn,
             StartIndex = tokenStartIndex,
             EndIndex = index
         };
