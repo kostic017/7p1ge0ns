@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 
 public class Scanner
 {
-    private int line;
-    private int column;
-    private int index;
+    int line;
+    int column;
+    int index;
 
-    private string code;
+    int tokenStartLine;
+    int tokenStartColumn;
+    int tokenStartIndex;
 
-    private int tokenStartLine;
-    private int tokenStartColumn;
-    private int tokenStartIndex;
+    string code;
+
+    readonly int tabSize;
 
     public List<ScanError> Errors { get; private set; }
 
@@ -35,6 +36,11 @@ public class Scanner
             { "string", TokenType.StringType },
             { "void", TokenType.VoidType }
         };
+
+    public Scanner(int tabSize)
+    {
+        this.tabSize = tabSize;
+    }
 
     public Token[] Scan(string str)
     {
@@ -62,6 +68,10 @@ public class Scanner
         {
             if (char.IsWhiteSpace(ch))
             {
+                if (ch == '\t')
+                {
+                    column += tabSize - 1;
+                }
                 continue;
             }
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Text.RegularExpressions;
+using UnityEngine;
 
 public class SyntaxHighlighter : MonoBehaviour
 {
@@ -28,7 +29,14 @@ public class SyntaxHighlighter : MonoBehaviour
         return code;
     }
 
-    private Color DetermineColor(TokenType tokenType)
+    public string StripTags(string code)
+    {
+        string s = Regex.Replace(code, "<color=#.+?>", string.Empty);
+        s = Regex.Replace(s, "</color>", string.Empty);
+        return s;
+    }
+
+    Color DetermineColor(TokenType tokenType)
     {
         switch (tokenType)
         {
