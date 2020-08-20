@@ -16,8 +16,10 @@ public class EditorController : MonoBehaviour
     {
         codeField.textComponent.enableWordWrapping = false;
         scanner = new Scanner(codeField.fontAsset.tabSize);
-        codeField.ActivateInputField();
         highlighter = GetComponent<SyntaxHighlighter>();
+
+        codeField.verticalScrollbar.onValueChanged.AddListener(OnScrollChange);
+        codeField.ActivateInputField();
     }
 
     void Update()
@@ -48,10 +50,11 @@ public class EditorController : MonoBehaviour
 
         // inserting rich text while the player is typing used to
         // result in caret being positioned inside rich text tags
-        int pos = codeField.caretPosition;
+        int caret = codeField.caretPosition;
+
         codeField.text = code;
-        //codeField.textComponent.ForceMeshUpdate();
-        codeField.caretPosition = pos;
+
+        codeField.caretPosition = caret;
     }
 
     void UpdateLineNumbers(string code)
@@ -65,5 +68,13 @@ public class EditorController : MonoBehaviour
         }
 
         gutter.text = text;
+    }
+
+    void OnScrollChange(float value)
+    {
+        gutter.rectTransform.anchoredPosition = new Vector2(
+            gutter.rectTransform.anchoredPosition.x,
+            codeField.textComponent.rectTransform.anchoredPosition.y
+        );
     }
 }
