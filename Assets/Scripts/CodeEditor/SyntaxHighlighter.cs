@@ -21,18 +21,31 @@ public class SyntaxHighlighter : MonoBehaviour
         // note that iterations are from last to first
         for (int i = tokens.Length - 1; i >= 0; --i)
         {
-            Color color = DetermineColor(tokens[i].Type);
+            Token token = tokens[i];
+            Color color = DetermineColor(token.Type);
             string colorValue = ColorUtility.ToHtmlStringRGB(color);
-            code = code.Insert(tokens[i].EndIndex, "</color>")
-                       .Insert(tokens[i].StartIndex - 1, $"<color=#{colorValue}>");
+
+            string sufix = "</color>";
+            string prefix = $"<color=#{colorValue}>";
+
+            if (token.Error > -1)
+            {
+                sufix += "</u></link>";
+                prefix = $"<link={token.Error}><u>" + prefix;
+            }
+
+            code = code.Insert(tokens[i].EndIndex, sufix)
+                       .Insert(tokens[i].StartIndex - 1, prefix);
         }
         return code;
     }
 
     public string StripTags(string code)
     {
-        string s = Regex.Replace(code, "<color=#.+?>", string.Empty);
-        s = Regex.Replace(s, "</color>", string.Empty);
+        string s = code.Replace("</color>", "")
+                       .Replace("</u></link>", "");
+        s = Regex.Replace(s, "<color=#.+?>", string.Empty);
+        s = Regex.Replace(s, @"<link=\d+?><u>", string.Empty);
         return s;
     }
 

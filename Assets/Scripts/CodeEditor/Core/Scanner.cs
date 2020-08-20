@@ -17,7 +17,8 @@ public class Scanner
     public List<ScanError> Errors { get; private set; }
 
     public static readonly Dictionary<string, TokenType> keywords =
-        new Dictionary<string, TokenType> {
+        new Dictionary<string, TokenType>
+        {
             { "if", TokenType.If },
             { "else", TokenType.Else },
             { "for", TokenType.For },
@@ -29,7 +30,8 @@ public class Scanner
         };
 
     public static readonly Dictionary<string, TokenType> types =
-        new Dictionary<string, TokenType> {
+        new Dictionary<string, TokenType>
+        {
             { "int", TokenType.IntType },
             { "float", TokenType.FloatType },
             { "bool", TokenType.BoolType },
@@ -37,9 +39,19 @@ public class Scanner
             { "void", TokenType.VoidType }
         };
 
+    static readonly HashSet<char> escapes =
+        new HashSet<char>
+        {
+            '\\',
+            't',
+            'n',
+            '"',
+        };
+
     public Scanner(int tabSize)
     {
         this.tabSize = tabSize;
+        Errors = new List<ScanError>();
     }
 
     public Token[] Scan(string str)
@@ -61,7 +73,7 @@ public class Scanner
         return tokens.ToArray();
     }
 
-    private Token NextToken()
+    Token NextToken()
     {
         char ch;
         while ((ch = NextChar()) != '\0')
@@ -209,36 +221,46 @@ public class Scanner
                     goto default;
 
                 default:
-                    Errors.Add(Error(ScanErrorType.UNEXPECTED_CHARACTER, $"{ch}"));
-                    return Token(TokenType.Error);
+                    Token token = Token(TokenType.Error);
+                    token.Error = Error(ScanErrorType.UNEXPECTED_CHARACTER, $"{ch}");
+                    return token;
             }
         }
 
         return null;
     }
 
-    private Token LexString()
+    Token LexString()
     {
         char ch;
+        int err = -1;
         string value = "";
 
         while ((ch = NextChar()) != '"')
         {
             if (ch == '\0')
             {
-                Errors.Add(Error(ScanErrorType.UNTERMINATED_STRING));
+                err = Error(ScanErrorType.UNTERMINATED_STRING);
                 break;
             }
 
             if (ch == '\n')
             {
-                Errors.Add(Error(ScanErrorType.NEWLINE_IN_STRING));
+                err = Error(ScanErrorType.NEWLINE_IN_STRING);
                 break;
             }
 
             if (ch == '\\')
             {
-                value += LexEscape();
+                ch = NextChar();
+                if (escapes.Contains(ch))
+                {
+                    value += ch;
+                }
+                else if (err == -1)
+                {
+                    err = Error(ScanErrorType.INVALID_ESCAPE_CHAR, $"\\{ch}");
+                }
             }
             else
             {
@@ -246,29 +268,13 @@ public class Scanner
             }
         }
 
-        return Token(TokenType.StringConst, value);
+        Token token = Token(TokenType.StringConst);
+        token.Value = value;
+        token.Error = err;
+        return token;
     }
 
-    private char LexEscape()
-    {
-        char ch;
-        switch (ch = NextChar())
-        {
-            case '\\':
-                return '\\';
-            case 't':
-                return '\t';
-            case 'n':
-                return '\n';
-            case '"':
-                return '\"';
-            default:
-                Errors.Add(Error(ScanErrorType.INVALID_ESCAPE_CHAR, $"\\{ch}"));
-                return '\0';
-        }
-    }
-
-    private Token LexComment()
+    Token LexComment()
     {
         char ch = NextChar();
 
@@ -283,13 +289,15 @@ public class Scanner
 
         // ch == '*'
 
+        int err = -1;
+
         while (true)
         {
             ch = NextChar();
 
             if (ch == '\0')
             {
-                Errors.Add(Error(ScanErrorType.UNTERMINATED_COMMENT_BLOCK));
+                err = Error(ScanErrorType.UNTERMINATED_COMMENT_BLOCK);
                 break;
             }
 
@@ -300,11 +308,12 @@ public class Scanner
             }
         }
 
-        return Token(TokenType.BlockComment);
-
+        Token token = Token(TokenType.BlockComment);
+        token.Error = err;
+        return token;
     }
 
-    private Token LexNumber()
+    Token LexNumber()
     {
         bool isReal = false;
         string value = PrevChar().ToString();
@@ -320,11 +329,14 @@ public class Scanner
             c = PeekNextChar();
         }
 
-        return Token(isReal ? TokenType.FloatConst : TokenType.IntConst, value);
+        Token token = Token(isReal ? TokenType.FloatConst : TokenType.IntConst);
+        token.Value = value;
+        return token;
     }
 
-    private Token LexWord()
+    Token LexWord()
     {
+        Token token;
         string value = PrevChar().ToString();
 
         char c = PeekNextChar();
@@ -336,7 +348,9 @@ public class Scanner
 
         if (value == "true" || value == "false")
         {
-            return Token(TokenType.BoolConst, value);
+            token = Token(TokenType.BoolConst);
+            token.Value = value;
+            return token;
         }
 
         if (keywords.ContainsKey(value))
@@ -349,10 +363,12 @@ public class Scanner
             return Token(types[value]);
         }
 
-        return Token(TokenType.Identifier, value);
+        token = Token(TokenType.Identifier);
+        token.Value = value;
+        return token;
     }
 
-    private char NextChar()
+    char NextChar()
     {
         if (index >= code.Length)
         {
@@ -375,7 +391,7 @@ public class Scanner
         return ch;
     }
 
-    private bool TryNextChar(char ch)
+    bool TryNextChar(char ch)
     {
         if (PeekNextChar() == ch)
         {
@@ -385,17 +401,17 @@ public class Scanner
         return false;
     }
 
-    private char PeekNextChar()
+    char PeekNextChar()
     {
         return Lookahead(0);
     }
 
-    private char PrevChar()
+    char PrevChar()
     {
         return Lookahead(-1);
     }
 
-    private char Lookahead(int i)
+    char Lookahead(int i)
     {
         if (index + i >= code.Length)
         {
@@ -404,27 +420,29 @@ public class Scanner
         return code[index + i];
     }
 
-    private Token Token(TokenType tokenType, string value = "")
+    Token Token(TokenType tokenType)
     {
         return new Token
         {
-            Value = value,
             Type = tokenType,
             StartIndex = tokenStartIndex,
-            EndIndex = index
+            EndIndex = index,
+            Error = -1,
         };
     }
 
-    private ScanError Error(ScanErrorType type, string details = "")
+    int Error(ScanErrorType type, string data = "")
     {
-        return new ScanError
-        {
-            Type = type,
-            Details = details,
-            Line = tokenStartLine,
-            Column = tokenStartColumn,
-            StartIndex = tokenStartIndex,
-            EndIndex = index
-        };
+        Errors.Add
+        (
+            new ScanError
+            {
+                Type = type,
+                Data = data,
+                Line = tokenStartLine,
+                Column = tokenStartColumn
+            }
+        );
+        return Errors.Count - 1;
     }
 }

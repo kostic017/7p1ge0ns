@@ -5,28 +5,49 @@ using UnityEngine;
 public class EditorController : MonoBehaviour
 {
     public TMP_Text gutter;
+    public RectTransform popup;
     public TMP_Text consoleOutput;
-    public TMP_InputField codeField;
+    public TMP_InputField textBox;
 
     string prevCode;
+    int hoverLinkIndex = -1;
+
+    Canvas canvas;
     Scanner scanner;
+    TMP_Text popupText;
     SyntaxHighlighter highlighter;
 
     void Start()
     {
-        codeField.textComponent.enableWordWrapping = false;
-        scanner = new Scanner(codeField.fontAsset.tabSize);
+        scanner = new Scanner(textBox.fontAsset.tabSize);
+        
+        canvas = GetComponentInParent<Canvas>();
         highlighter = GetComponent<SyntaxHighlighter>();
+        popupText = popup.GetComponentInChildren<TMP_Text>();
 
-        codeField.verticalScrollbar.onValueChanged.AddListener(OnScrollChange);
-        codeField.ActivateInputField();
+        popup.gameObject.SetActive(false);
+        textBox.textComponent.enableWordWrapping = false;
+        textBox.ActivateInputField();
+    }
+
+    void OnEnable()
+    {
+        textBox.verticalScrollbar.onValueChanged.AddListener(OnScrollValueChanged);
+    }
+
+    void OnDisable()
+    {
+        textBox.verticalScrollbar.onValueChanged.RemoveListener(OnScrollValueChanged);
     }
 
     void Update()
     {
-        string code = codeField.text;
+        UpdatePopup();
 
-        if (code == prevCode) return;
+        string code = textBox.text;
+
+        if (code == prevCode)
+            return;
         prevCode = code;
 
         code = highlighter.StripTags(code);
@@ -38,23 +59,45 @@ public class EditorController : MonoBehaviour
         Token[] tokens = scanner.Scan(code);
 
         code = highlighter.Highlight(code, tokens);
-        
+
         if (scanner.Errors.Count > 0)
         {
-            consoleOutput.text = scanner.Errors[0].Message();
+            consoleOutput.text = scanner.Errors[0].DetailedMessage();
+
             if (scanner.Errors.Count > 1)
             {
                 consoleOutput.text += $" (and {scanner.Errors.Count - 1} more)";
             }
         }
 
-        // inserting rich text while the player is typing used to
-        // result in caret being positioned inside rich text tags
-        int caret = codeField.caretPosition;
+        // inserting rich text while the player is typing used to result in caret being positioned inside rich text tags
+        int caret = textBox.caretPosition;
+        textBox.text = code;
+        textBox.caretPosition = caret;
+    }
 
-        codeField.text = code;
+    void UpdatePopup()
+    {
+        int linkIndex = TMP_TextUtilities.FindIntersectingLink(textBox.textComponent, Input.mousePosition, canvas.worldCamera);
 
-        codeField.caretPosition = caret;
+        // clear previous link selection if one existed
+        if ((linkIndex == -1 && hoverLinkIndex != -1) || linkIndex != hoverLinkIndex)
+        {
+            hoverLinkIndex = -1;
+            popup.gameObject.SetActive(false);
+        }
+
+        if (linkIndex != -1 && linkIndex != hoverLinkIndex)
+        {
+            hoverLinkIndex = linkIndex;
+            TMP_LinkInfo errorInfo = textBox.textComponent.textInfo.linkInfo[linkIndex];
+            RectTransformUtility.ScreenPointToWorldPointInRectangle(textBox.textComponent.rectTransform,
+                Input.mousePosition, canvas.worldCamera, out Vector3 worldPointInRectangle);
+            
+            popup.position = worldPointInRectangle;
+            popup.gameObject.SetActive(true);
+            popupText.text = scanner.Errors[int.Parse(errorInfo.GetLinkID())].Message();
+        }
     }
 
     void UpdateLineNumbers(string code)
@@ -70,11 +113,11 @@ public class EditorController : MonoBehaviour
         gutter.text = text;
     }
 
-    void OnScrollChange(float value)
+    void OnScrollValueChanged(float value)
     {
         gutter.rectTransform.anchoredPosition = new Vector2(
             gutter.rectTransform.anchoredPosition.x,
-            codeField.textComponent.rectTransform.anchoredPosition.y
+            textBox.textComponent.rectTransform.anchoredPosition.y
         );
     }
 }
