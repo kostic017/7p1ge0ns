@@ -44,14 +44,11 @@ public class EditorController : MonoBehaviour
     {
         UpdatePopup();
 
-        string code = textBox.text;
+        string code = highlighter.StripTags(textBox.text);
 
-        if (code == prevCode)
-            return;
+        if (code == prevCode) return;
         prevCode = code;
 
-        code = highlighter.StripTags(code);
-       
         UpdateLineNumbers(code);
 
         consoleOutput.text = "";
