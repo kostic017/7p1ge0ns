@@ -5,7 +5,7 @@ namespace TestProject
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             Lexer lexer = new Lexer();
 
@@ -16,6 +16,12 @@ namespace TestProject
 
                 if (string.IsNullOrWhiteSpace(line))
                 {
+                    break;
+                }
+
+                if (line == "#cls")
+                {
+                    Console.Clear();
                     break;
                 }
 
@@ -30,6 +36,8 @@ namespace TestProject
                 {
                     Console.WriteLine(error.DetailedMessage());
                 }
+
+                Console.WriteLine();
 
             }
 
