@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using JetBrains.Annotations;
+using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
 
 public class Lexer
 {
@@ -52,12 +54,12 @@ public class Lexer
     char CurrentChar => index < code.Length ? code[index] : '\0';
     char NextChar => index + 1 < code.Length ? code[index + 1] : '\0';
 
-    public List<LexError> Errors { get; private set; }
+    public List<CodeError> Errors { get; private set; }
 
     public Lexer(int tabSize)
     {
         this.tabSize = tabSize;
-        Errors = new List<LexError>();
+        Errors = new List<CodeError>();
     }
 
     public SyntaxToken[] Scan(string str)
@@ -66,7 +68,7 @@ public class Lexer
         index = 0;
         code = str;
         column = 0;
-        Errors = new List<LexError>();
+        Errors = new List<CodeError>();
 
         SyntaxToken tok;
         List<SyntaxToken> tokens = new List<SyntaxToken>();
@@ -231,7 +233,7 @@ public class Lexer
 
                 default:
                     SyntaxToken token = Token(SyntaxTokenType.Error);
-                    token.ErrorIndex = Error(LexErrorType.UNEXPECTED_CHARACTER, $"{ch}");
+                    token.ErrorIndex = Error(CodeErrorType.UNEXPECTED_CHARACTER, $"{ch}");
                     return token;
             }
         }
@@ -249,13 +251,13 @@ public class Lexer
         {
             if (ch == '\0')
             {
-                err = Error(LexErrorType.UNTERMINATED_STRING);
+                err = Error(CodeErrorType.UNTERMINATED_STRING);
                 break;
             }
 
             if (ch == '\n')
             {
-                err = Error(LexErrorType.NEWLINE_IN_STRING);
+                err = Error(CodeErrorType.NEWLINE_IN_STRING);
                 break;
             }
 
@@ -268,7 +270,7 @@ public class Lexer
                 }
                 else if (err == -1)
                 {
-                    err = Error(LexErrorType.INVALID_ESCAPE_CHAR, $"\\{ch}");
+                    err = Error(CodeErrorType.INVALID_ESCAPE_CHAR, $"\\{ch}");
                 }
             }
             else
@@ -305,7 +307,7 @@ public class Lexer
 
             if (ch == '\0')
             {
-                err = Error(LexErrorType.UNTERMINATED_COMMENT_BLOCK);
+                err = Error(CodeErrorType.UNTERMINATED_COMMENT_BLOCK);
                 break;
             }
 
@@ -337,14 +339,34 @@ public class Lexer
             c = CurrentChar;
         }
 
+        SyntaxToken tok;
+
         if (isReal)
         {
-            float.TryParse(value, out float f);
-            return Token(SyntaxTokenType.FloatConst, f);
+            tok = Token(SyntaxTokenType.FloatConst);
+            if (float.TryParse(value, out float f))
+            {
+                tok.Value = f;
+            }
+            else
+            {
+                tok.ErrorIndex = Error(CodeErrorType.ILLEGAL_NUMBER, value);
+            }
         }
-
-        int.TryParse(value, out int i);
-        return Token(SyntaxTokenType.IntConst, i);
+        else
+        {
+            tok = Token(SyntaxTokenType.IntConst);
+            if (int.TryParse(value, out int i))
+            {
+                tok.Value = i;
+            }
+            else
+            {
+                tok.ErrorIndex = Error(CodeErrorType.ILLEGAL_NUMBER, value);
+            }
+        }
+        
+        return tok;
     }
 
     SyntaxToken LexWord()
@@ -422,11 +444,11 @@ public class Lexer
         };
     }
 
-    int Error(LexErrorType type, string data = "")
+    int Error(CodeErrorType type, string data = "")
     {
         Errors.Add
         (
-            new LexError
+            new CodeError
             {
                 Type = type,
                 Data = data,
