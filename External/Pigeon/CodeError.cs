@@ -16,7 +16,7 @@ namespace Kostic017.Pigeon
 
         public string DetailedMessage()
         {
-            return messages[Type].Replace("{d}", Data) + $" at {Line}:{Column}";
+            return $"{Line}:{Column} " + Message();
         }
 
         private static readonly Dictionary<CodeErrorType, string> messages =

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 
 namespace Kostic017.Pigeon
 {
@@ -48,7 +49,7 @@ namespace Kostic017.Pigeon
 
         string code;
 
-        char PrevChar => index - 1 > 0 ? code[index - 1] : '\0';
+        char PrevChar => index - 1 >= 0 ? code[index - 1] : '\0';
         char CurrentChar => index < code.Length ? code[index] : '\0';
         char NextChar => index + 1 < code.Length ? code[index + 1] : '\0';
 
@@ -76,9 +77,10 @@ namespace Kostic017.Pigeon
 
         SyntaxToken NextToken()
         {
-            char ch;
-            while ((ch = EatChar()) != '\0')
+            while (CurrentChar != '\0')
             {
+                char ch = EatCurrentChar();
+                
                 if (char.IsWhiteSpace(ch))
                 {
                     if (ch == '\t')
@@ -139,86 +141,86 @@ namespace Kostic017.Pigeon
                         return Token(SyntaxTokenType.Comma);
 
                     case '+':
-                        if (TryEatChar('='))
+                        if (TryEatCurrentChar('='))
                         {
                             return Token(SyntaxTokenType.AddEq);
                         }
-                        if (TryEatChar('+'))
+                        if (TryEatCurrentChar('+'))
                         {
                             return Token(SyntaxTokenType.Inc);
                         }
                         return Token(SyntaxTokenType.Add);
 
                     case '-':
-                        if (TryEatChar('='))
+                        if (TryEatCurrentChar('='))
                         {
                             return Token(SyntaxTokenType.SubEq);
                         }
-                        if (TryEatChar('-'))
+                        if (TryEatCurrentChar('-'))
                         {
                             return Token(SyntaxTokenType.Dec);
                         }
                         return Token(SyntaxTokenType.Sub);
 
                     case '*':
-                        if (TryEatChar('='))
+                        if (TryEatCurrentChar('='))
                         {
                             return Token(SyntaxTokenType.MulEq);
                         }
                         return Token(SyntaxTokenType.Mul);
 
                     case '/':
-                        if (TryEatChar('='))
+                        if (TryEatCurrentChar('='))
                         {
                             return Token(SyntaxTokenType.DivEq);
                         }
                         return Token(SyntaxTokenType.Div);
 
                     case '%':
-                        if (TryEatChar('='))
+                        if (TryEatCurrentChar('='))
                         {
-                            EatChar();
+                            EatCurrentChar();
                             return Token(SyntaxTokenType.ModEq);
                         }
                         return Token(SyntaxTokenType.Mod);
 
                     case '<':
-                        if (TryEatChar('='))
+                        if (TryEatCurrentChar('='))
                         {
                             return Token(SyntaxTokenType.Leq);
                         }
                         return Token(SyntaxTokenType.Lt);
 
                     case '>':
-                        if (TryEatChar('='))
+                        if (TryEatCurrentChar('='))
                         {
                             return Token(SyntaxTokenType.Geq);
                         }
                         return Token(SyntaxTokenType.Gt);
 
                     case '!':
-                        if (TryEatChar('='))
+                        if (TryEatCurrentChar('='))
                         {
                             return Token(SyntaxTokenType.Neq);
                         }
                         return Token(SyntaxTokenType.Not);
 
                     case '=':
-                        if (TryEatChar('='))
+                        if (TryEatCurrentChar('='))
                         {
                             return Token(SyntaxTokenType.Eq);
                         }
                         return Token(SyntaxTokenType.Assign);
 
                     case '&':
-                        if (TryEatChar('&'))
+                        if (TryEatCurrentChar('&'))
                         {
                             return Token(SyntaxTokenType.And);
                         }
                         goto default;
 
                     case '|':
-                        if (TryEatChar('|'))
+                        if (TryEatCurrentChar('|'))
                         {
                             return Token(SyntaxTokenType.Or);
                         }
@@ -236,41 +238,44 @@ namespace Kostic017.Pigeon
 
         SyntaxToken LexString()
         {
-            char ch;
             int err = -1;
             string value = "";
 
-            while ((ch = EatChar()) != '"')
+            while (CurrentChar != '"')
             {
-                if (ch == '\0')
+                if (CurrentChar == '\0')
                 {
                     err = Error(CodeErrorType.UNTERMINATED_STRING);
                     break;
                 }
 
-                if (ch == '\n')
+                if (CurrentChar == '\n')
                 {
                     err = Error(CodeErrorType.NEWLINE_IN_STRING);
                     break;
                 }
 
-                if (ch == '\\')
+                if (CurrentChar == '\\')
                 {
-                    ch = EatChar();
-                    if (escapes.Contains(ch))
+                    if (escapes.Contains(NextChar))
                     {
-                        value += ch;
+                        value += NextChar;
                     }
                     else if (err == -1)
                     {
-                        err = Error(CodeErrorType.INVALID_ESCAPE_CHAR, $"\\{ch}");
+                        err = Error(CodeErrorType.INVALID_ESCAPE_CHAR, $"\\{NextChar}");
                     }
+                    EatCurrentChar();
                 }
                 else
                 {
-                    value += ch;
+                    value += CurrentChar;
                 }
+
+                EatCurrentChar();
             }
+
+            TryEatCurrentChar('"');
 
             SyntaxToken token = Token(SyntaxTokenType.StringConst, value);
             token.ErrorIndex = err;
@@ -279,36 +284,36 @@ namespace Kostic017.Pigeon
 
         SyntaxToken LexComment()
         {
-            char ch = EatChar();
-
-            if (ch == '/')
+            if (CurrentChar == '/')
             {
-                do
+                while (CurrentChar != '\n' && CurrentChar != '\0')
                 {
-                    ch = EatChar();
-                } while (ch != '\n' && ch != '\0');
+                    EatCurrentChar();
+                }
                 return Token(SyntaxTokenType.Comment);
             }
-
-            // ch == '*'
+             
+            /* lorem ipsum */
 
             int err = -1;
+            TryEatCurrentChar('*');
 
             while (true)
             {
-                ch = EatChar();
+                if (CurrentChar == '*' && NextChar == '/')
+                {
+                    EatCurrentChar();
+                    EatCurrentChar();
+                    break;
+                }
 
-                if (ch == '\0')
+                if (CurrentChar == '\0')
                 {
                     err = Error(CodeErrorType.UNTERMINATED_COMMENT_BLOCK);
                     break;
                 }
 
-                if (ch == '*' && CurrentChar == '/')
-                {
-                    EatChar();
-                    break;
-                }
+                EatCurrentChar();
             }
 
             SyntaxToken token = Token(SyntaxTokenType.BlockComment);
@@ -321,15 +326,14 @@ namespace Kostic017.Pigeon
             bool isReal = false;
             string value = PrevChar.ToString();
 
-            char c = CurrentChar;
-            while (char.IsDigit(c) || (!isReal && c == '.' && char.IsDigit(NextChar)))
+            while (char.IsDigit(CurrentChar) || (!isReal && CurrentChar == '.' && char.IsDigit(NextChar)))
             {
-                if (c == '.')
+                if (CurrentChar == '.')
                 {
                     isReal = true;
                 }
-                value += EatChar();
-                c = CurrentChar;
+                value += CurrentChar;
+                EatCurrentChar();
             }
 
             SyntaxToken tok;
@@ -337,7 +341,7 @@ namespace Kostic017.Pigeon
             if (isReal)
             {
                 tok = Token(SyntaxTokenType.FloatConst);
-                if (float.TryParse(value, out float f))
+                if (float.TryParse(value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float f))
                 {
                     tok.Value = f;
                 }
@@ -366,11 +370,10 @@ namespace Kostic017.Pigeon
         {
             string value = PrevChar.ToString();
 
-            char c = CurrentChar;
-            while (c == '_' || char.IsLetterOrDigit(c))
+            while (CurrentChar == '_' || char.IsLetterOrDigit(CurrentChar))
             {
-                value += EatChar();
-                c = CurrentChar;
+                value += CurrentChar;
+                EatCurrentChar();
             }
 
             if (value == "true" || value == "false")
@@ -392,14 +395,14 @@ namespace Kostic017.Pigeon
             return Token(SyntaxTokenType.ID, value);
         }
 
-        char EatChar()
+        char EatCurrentChar()
         {
             if (index >= code.Length)
             {
                 return '\0';
             }
 
-            char ch = code[index];
+            char ch = CurrentChar;
             ++index;
 
             if (ch == '\n')
@@ -415,11 +418,11 @@ namespace Kostic017.Pigeon
             return ch;
         }
 
-        bool TryEatChar(char ch)
+        bool TryEatCurrentChar(char ch)
         {
             if (CurrentChar == ch)
             {
-                EatChar();
+                EatCurrentChar();
                 return true;
             }
             return false;
