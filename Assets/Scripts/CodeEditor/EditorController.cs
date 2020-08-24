@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Kostic017.Pigeon;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -19,8 +20,9 @@ public class EditorController : MonoBehaviour
 
     void Start()
     {
-        lexer = new Lexer(textBox.fontAsset.tabSize);
-        
+        lexer = new Lexer();
+        lexer.TabSize = textBox.fontAsset.tabSize;
+
         canvas = GetComponentInParent<Canvas>();
         highlighter = GetComponent<SyntaxHighlighter>();
         popupText = popup.GetComponentInChildren<TMP_Text>();
@@ -53,7 +55,7 @@ public class EditorController : MonoBehaviour
 
         consoleOutput.text = "";
 
-        SyntaxToken[] tokens = lexer.Scan(code);
+        SyntaxToken[] tokens = lexer.Lex(code);
 
         code = highlighter.Highlight(code, tokens);
 
