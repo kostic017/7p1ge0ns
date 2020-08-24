@@ -16,22 +16,22 @@ public class SyntaxHighlighter : MonoBehaviour
     public Color commentColor;
     public Color blockCommentColor;
 
-    public string Highlight(string code, Token[] tokens)
+    public string Highlight(string code, SyntaxToken[] tokens)
     {
         // note that iterations are from last to first
         for (int i = tokens.Length - 1; i >= 0; --i)
         {
-            Token token = tokens[i];
+            SyntaxToken token = tokens[i];
             Color color = DetermineColor(token.Type);
             string colorValue = ColorUtility.ToHtmlStringRGB(color);
 
             string sufix = "</color>";
             string prefix = $"<color=#{colorValue}>";
 
-            if (token.Error > -1)
+            if (token.ErrorIndex > -1)
             {
                 sufix += "</u></link>";
-                prefix = $"<link={token.Error}><u>" + prefix;
+                prefix = $"<link={token.ErrorIndex}><u>" + prefix;
             }
 
             code = code.Insert(tokens[i].EndIndex, sufix)
@@ -49,30 +49,30 @@ public class SyntaxHighlighter : MonoBehaviour
         return s;
     }
 
-    Color DetermineColor(TokenType tokenType)
+    Color DetermineColor(SyntaxTokenType tokenType)
     {
         switch (tokenType)
         {
-            case TokenType.IntConst:
-            case TokenType.FloatConst:
+            case SyntaxTokenType.IntConst:
+            case SyntaxTokenType.FloatConst:
                 return numberColor;
-            case TokenType.BoolConst:
+            case SyntaxTokenType.BoolConst:
                 return boolColor;
-            case TokenType.StringConst:
+            case SyntaxTokenType.StringConst:
                 return stringColor;
-            case TokenType.Comment:
+            case SyntaxTokenType.Comment:
                 return commentColor;
-            case TokenType.BlockComment:
+            case SyntaxTokenType.BlockComment:
                 return blockCommentColor;
-            case TokenType.Identifier:
+            case SyntaxTokenType.ID:
                 return identifierColor;
             default:
-                if (Scanner.types.ContainsValue(tokenType))
+                if (Lexer.types.ContainsValue(tokenType))
                 {
                     return typeNameColor;
                 }
 
-                if (Scanner.keywords.ContainsValue(tokenType))
+                if (Lexer.keywords.ContainsValue(tokenType))
                 {
                     return keywordColor;
                 }

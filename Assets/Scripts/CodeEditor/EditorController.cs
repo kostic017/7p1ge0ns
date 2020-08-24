@@ -12,14 +12,14 @@ public class EditorController : MonoBehaviour
     string prevCode;
     int hoverLinkIndex = -1;
 
+    Lexer lexer;
     Canvas canvas;
-    Scanner scanner;
     TMP_Text popupText;
     SyntaxHighlighter highlighter;
 
     void Start()
     {
-        scanner = new Scanner(textBox.fontAsset.tabSize);
+        lexer = new Lexer(textBox.fontAsset.tabSize);
         
         canvas = GetComponentInParent<Canvas>();
         highlighter = GetComponent<SyntaxHighlighter>();
@@ -53,17 +53,17 @@ public class EditorController : MonoBehaviour
 
         consoleOutput.text = "";
 
-        Token[] tokens = scanner.Scan(code);
+        SyntaxToken[] tokens = lexer.Scan(code);
 
         code = highlighter.Highlight(code, tokens);
 
-        if (scanner.Errors.Count > 0)
+        if (lexer.Errors.Count > 0)
         {
-            consoleOutput.text = scanner.Errors[0].DetailedMessage();
+            consoleOutput.text = lexer.Errors[0].DetailedMessage();
 
-            if (scanner.Errors.Count > 1)
+            if (lexer.Errors.Count > 1)
             {
-                consoleOutput.text += $" (and {scanner.Errors.Count - 1} more)";
+                consoleOutput.text += $" (and {lexer.Errors.Count - 1} more)";
             }
         }
 
@@ -93,7 +93,7 @@ public class EditorController : MonoBehaviour
             
             popup.position = worldPointInRectangle;
             popup.gameObject.SetActive(true);
-            popupText.text = scanner.Errors[int.Parse(errorInfo.GetLinkID())].Message();
+            popupText.text = lexer.Errors[int.Parse(errorInfo.GetLinkID())].Message();
         }
     }
 

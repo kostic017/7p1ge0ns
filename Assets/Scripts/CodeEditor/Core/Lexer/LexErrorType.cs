@@ -1,4 +1,4 @@
-﻿public enum ScanErrorType
+﻿public enum LexErrorType
 {
     UNTERMINATED_COMMENT_BLOCK,
     INVALID_ESCAPE_CHAR,

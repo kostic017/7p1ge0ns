@@ -1,18 +1,21 @@
-﻿public enum TokenType
+﻿public enum SyntaxTokenType
 {
+    EOF,
     Error,
 
     If,
+    Else,
     For,
+    To,
+    Step,
     Do,
     While,
     Break,
     Continue,
     Return,
-    Else,
 
+    ID,
     Comment,
-    Identifier,
     BlockComment,
 
     IntType,
@@ -52,7 +55,8 @@
     Eq,
     Neq,
     Assign,
-    Quest,
+    QMark,
     Colon,
-    Semicolon,
+    Comma,
+    Semi,
 }
