@@ -54,12 +54,12 @@ public class SyntaxHighlighter : MonoBehaviour
     {
         switch (tokenType)
         {
-            case SyntaxTokenType.IntConst:
-            case SyntaxTokenType.FloatConst:
+            case SyntaxTokenType.IntLiteral:
+            case SyntaxTokenType.FloatLiteral:
                 return numberColor;
-            case SyntaxTokenType.BoolConst:
+            case SyntaxTokenType.BoolLiteral:
                 return boolColor;
-            case SyntaxTokenType.StringConst:
+            case SyntaxTokenType.StringLiteral:
                 return stringColor;
             case SyntaxTokenType.Comment:
                 return commentColor;
@@ -68,12 +68,12 @@ public class SyntaxHighlighter : MonoBehaviour
             case SyntaxTokenType.ID:
                 return identifierColor;
             default:
-                if (Lexer.types.ContainsValue(tokenType))
+                if (Lexer.Types.ContainsValue(tokenType))
                 {
                     return typeNameColor;
                 }
 
-                if (Lexer.keywords.ContainsValue(tokenType))
+                if (Lexer.Keywords.ContainsValue(tokenType))
                 {
                     return keywordColor;
                 }

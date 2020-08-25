@@ -61,7 +61,7 @@ public class EditorController : MonoBehaviour
 
         if (lexer.Errors.Count > 0)
         {
-            consoleOutput.text = lexer.Errors[0].DetailedMessage();
+            consoleOutput.text = lexer.Errors[0].DetailedMessage;
 
             if (lexer.Errors.Count > 1)
             {
@@ -95,7 +95,7 @@ public class EditorController : MonoBehaviour
             
             popup.position = worldPointInRectangle;
             popup.gameObject.SetActive(true);
-            popupText.text = lexer.Errors[int.Parse(errorInfo.GetLinkID())].Message();
+            popupText.text = lexer.Errors[int.Parse(errorInfo.GetLinkID())].Message;
         }
     }
 

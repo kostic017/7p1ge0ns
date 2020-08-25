@@ -34,7 +34,7 @@ namespace TestProject
 
                 foreach (CodeError error in lexer.Errors)
                 {
-                    Console.WriteLine(error.DetailedMessage());
+                    Console.WriteLine(error.DetailedMessage);
                 }
 
                 Console.WriteLine();

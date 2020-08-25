@@ -5,7 +5,7 @@ namespace Kostic017.Pigeon
 {
     public class Lexer
     {
-        public static readonly Dictionary<string, SyntaxTokenType> keywords =
+        public static readonly Dictionary<string, SyntaxTokenType> Keywords =
             new Dictionary<string, SyntaxTokenType>
             {
                 { "if", SyntaxTokenType.If },
@@ -20,14 +20,14 @@ namespace Kostic017.Pigeon
                 { "return", SyntaxTokenType.Return },
             };
 
-        public static readonly Dictionary<string, SyntaxTokenType> types =
+        public static readonly Dictionary<string, SyntaxTokenType> Types =
             new Dictionary<string, SyntaxTokenType>
             {
-                { "int", SyntaxTokenType.IntType },
-                { "float", SyntaxTokenType.FloatType },
-                { "bool", SyntaxTokenType.BoolType },
-                { "string", SyntaxTokenType.StringType },
-                { "void", SyntaxTokenType.VoidType }
+                { "int", SyntaxTokenType.Int },
+                { "float", SyntaxTokenType.Float },
+                { "bool", SyntaxTokenType.Bool },
+                { "string", SyntaxTokenType.String },
+                { "void", SyntaxTokenType.Void }
             };
 
         static readonly HashSet<char> escapes =
@@ -277,7 +277,7 @@ namespace Kostic017.Pigeon
 
             TryEatCurrentChar('"');
 
-            SyntaxToken token = Token(SyntaxTokenType.StringConst, value);
+            SyntaxToken token = Token(SyntaxTokenType.StringLiteral, value);
             token.ErrorIndex = err;
             return token;
         }
@@ -340,7 +340,7 @@ namespace Kostic017.Pigeon
 
             if (isReal)
             {
-                tok = Token(SyntaxTokenType.FloatConst);
+                tok = Token(SyntaxTokenType.FloatLiteral);
                 if (float.TryParse(value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float f))
                 {
                     tok.Value = f;
@@ -352,7 +352,7 @@ namespace Kostic017.Pigeon
             }
             else
             {
-                tok = Token(SyntaxTokenType.IntConst);
+                tok = Token(SyntaxTokenType.IntLiteral);
                 if (int.TryParse(value, out int i))
                 {
                     tok.Value = i;
@@ -379,17 +379,17 @@ namespace Kostic017.Pigeon
             if (value == "true" || value == "false")
             {
                 bool.TryParse(value, out bool b);
-                return Token(SyntaxTokenType.BoolConst, b);
+                return Token(SyntaxTokenType.BoolLiteral, b);
             }
 
-            if (keywords.ContainsKey(value))
+            if (Keywords.ContainsKey(value))
             {
-                return Token(keywords[value]);
+                return Token(Keywords[value]);
             }
 
-            if (types.ContainsKey(value))
+            if (Types.ContainsKey(value))
             {
-                return Token(types[value]);
+                return Token(Types[value]);
             }
 
             return Token(SyntaxTokenType.ID, value);
@@ -428,12 +428,10 @@ namespace Kostic017.Pigeon
             return false;
         }
 
-        SyntaxToken Token(SyntaxTokenType tokenType, object value = null)
+        SyntaxToken Token(SyntaxTokenType type, object value = null)
         {
-            return new SyntaxToken
+            return new SyntaxToken(type, value)
             {
-                Type = tokenType,
-                Value = value,
                 StartIndex = tokenStartIndex,
                 EndIndex = index,
                 ErrorIndex = -1,
@@ -442,16 +440,7 @@ namespace Kostic017.Pigeon
 
         int Error(CodeErrorType type, string data = "")
         {
-            Errors.Add
-            (
-                new CodeError
-                {
-                    Type = type,
-                    Data = data,
-                    Line = tokenStartLine,
-                    Column = tokenStartColumn
-                }
-            );
+            Errors.Add(new CodeError(type, tokenStartLine, tokenStartColumn, data));
             return Errors.Count - 1;
         }
     }

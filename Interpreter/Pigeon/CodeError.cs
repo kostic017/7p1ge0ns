@@ -4,19 +4,34 @@ namespace Kostic017.Pigeon
 {
     public class CodeError
     {
-        public CodeErrorType Type { get; set; }
-        public string Data { get; set; }
-        public int Line { get; set; }
-        public int Column { get; set; }
+        public CodeErrorType Type { get; }
+        public string Data { get; }
 
-        public string Message()
+        public int Line { get; }
+        public int Column { get; }
+        
+        public string Message { get; }
+        public string DetailedMessage { get; }
+
+        public CodeError(CodeErrorType type, int line, int column) : this(type, line, column, null)
         {
-            return messages[Type].Replace("{d}", Data);
         }
 
-        public string DetailedMessage()
+        public CodeError(CodeErrorType type, int line, int column, string data)
         {
-            return $"{Line}:{Column} " + Message();
+            Type = type;
+            Data = data;
+            Line = line;
+            Column = column;
+
+            Message = messages[Type];
+            
+            if (!string.IsNullOrWhiteSpace(data))
+            {
+                Message = Message.Replace("{d}", Data);
+            }
+
+            DetailedMessage = $"{Line}:{Column} " + Message;
         }
 
         private static readonly Dictionary<CodeErrorType, string> messages =

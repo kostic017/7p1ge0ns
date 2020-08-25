@@ -15,22 +15,11 @@
         Break,
         Continue,
         Return,
-
-        ID,
-        Comment,
-        BlockComment,
-
-        IntType,
-        FloatType,
-        BoolType,
-        StringType,
-        VoidType,
-
-        IntConst,
-        FloatConst,
-        BoolConst,
-        StringConst,
-
+        Int,
+        Float,
+        Bool,
+        String,
+        Void,
         LPar,
         RPar,
         LBrace,
@@ -61,5 +50,14 @@
         Colon,
         Comma,
         Semi,
+
+        ID,
+        Comment,
+        BlockComment,
+
+        IntLiteral,
+        FloatLiteral,
+        BoolLiteral,
+        StringLiteral,
     }
 }
