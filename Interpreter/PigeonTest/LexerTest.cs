@@ -18,72 +18,78 @@ namespace Kostic017.Pigeon.Tests
 
         public static IEnumerable<object[]> GetTokenData()
         {
-            foreach (var (type, text, value) in TokenData)
+            foreach (var (type, text) in TokensWithoutValue)
+            {
+                yield return new object[] { type, text, null };
+            }
+            foreach (var (type, text, value) in TokensWithValue)
             {
                 yield return new object[] { type, text, value };
             }
         }
 
-        static IEnumerable<(SyntaxTokenType type, string text, object value)> TokenData =>
+        static IEnumerable<(SyntaxTokenType type, string text)> TokensWithoutValue => new []
+        {
+            (SyntaxTokenType.If, "if"),
+            (SyntaxTokenType.Else, "else"),
+            (SyntaxTokenType.For, "for"),
+            (SyntaxTokenType.To, "to"),
+            (SyntaxTokenType.Step, "step"),
+            (SyntaxTokenType.Do, "do"),
+            (SyntaxTokenType.While, "while"),
+            (SyntaxTokenType.Break, "break"),
+            (SyntaxTokenType.Continue, "continue"),
+            (SyntaxTokenType.Return, "return"),
+            (SyntaxTokenType.Int, "int"),
+            (SyntaxTokenType.Float, "float"),
+            (SyntaxTokenType.Bool, "bool"),
+            (SyntaxTokenType.String, "string"),
+            (SyntaxTokenType.Void, "void"),
+            (SyntaxTokenType.LPar, "("),
+            (SyntaxTokenType.RPar, ")"),
+            (SyntaxTokenType.LBrace, "{"),
+            (SyntaxTokenType.RBrace, "}"),
+            (SyntaxTokenType.Add, "+"),
+            (SyntaxTokenType.AddEq, "+="),
+            (SyntaxTokenType.Inc, "++"),
+            (SyntaxTokenType.Sub, "-"),
+            (SyntaxTokenType.SubEq, "-="),
+            (SyntaxTokenType.Dec, "--"),
+            (SyntaxTokenType.Mul, "*"),
+            (SyntaxTokenType.MulEq, "*="),
+            (SyntaxTokenType.Div, "/"),
+            (SyntaxTokenType.DivEq, "/="),
+            (SyntaxTokenType.Mod, "%"),
+            (SyntaxTokenType.ModEq, "%="),
+            (SyntaxTokenType.Not, "!"),
+            (SyntaxTokenType.And, "&&"),
+            (SyntaxTokenType.Or, "||"),
+            (SyntaxTokenType.Lt, "<"),
+            (SyntaxTokenType.Gt, ">"),
+            (SyntaxTokenType.Leq, "<="),
+            (SyntaxTokenType.Geq, ">="),
+            (SyntaxTokenType.Eq, "=="),
+            (SyntaxTokenType.Neq, "!="),
+            (SyntaxTokenType.Assign, "="),
+            (SyntaxTokenType.QMark, "?"),
+            (SyntaxTokenType.Colon, ":"),
+            (SyntaxTokenType.Comma, ","),
+            (SyntaxTokenType.Semi, ";"),
+            (SyntaxTokenType.Illegal, "$"),
+            (SyntaxTokenType.Comment, "// this is a comment"),
+            (SyntaxTokenType.BlockComment, "/* this is a comment */"),
+        };
+
+        static IEnumerable<(SyntaxTokenType type, string text, object value)> TokensWithValue =>
             new (SyntaxTokenType type, string text, object value)[]
-            {
-                (SyntaxTokenType.If, "if", null),
-                (SyntaxTokenType.Else, "else", null),
-                (SyntaxTokenType.For, "for", null),
-                (SyntaxTokenType.To, "to", null),
-                (SyntaxTokenType.Step, "step", null),
-                (SyntaxTokenType.Do, "do", null),
-                (SyntaxTokenType.While, "while", null),
-                (SyntaxTokenType.Break, "break", null),
-                (SyntaxTokenType.Continue, "continue", null),
-                (SyntaxTokenType.Return, "return", null),
-                (SyntaxTokenType.Int, "int", null),
-                (SyntaxTokenType.Float, "float", null),
-                (SyntaxTokenType.Bool, "bool", null),
-                (SyntaxTokenType.String, "string", null),
-                (SyntaxTokenType.Void, "void", null),
-                (SyntaxTokenType.LPar, "(", null),
-                (SyntaxTokenType.RPar, ")", null),
-                (SyntaxTokenType.LBrace, "{", null),
-                (SyntaxTokenType.RBrace, "}", null),
-                (SyntaxTokenType.Add, "+", null),
-                (SyntaxTokenType.AddEq, "+=", null),
-                (SyntaxTokenType.Inc, "++", null),
-                (SyntaxTokenType.Sub, "-", null),
-                (SyntaxTokenType.SubEq, "-=", null),
-                (SyntaxTokenType.Dec, "--", null),
-                (SyntaxTokenType.Mul, "*", null),
-                (SyntaxTokenType.MulEq, "*=", null),
-                (SyntaxTokenType.Div, "/", null),
-                (SyntaxTokenType.DivEq, "/=", null),
-                (SyntaxTokenType.Mod, "%", null),
-                (SyntaxTokenType.ModEq, "%=", null),
-                (SyntaxTokenType.Not, "!", null),
-                (SyntaxTokenType.And, "&&", null),
-                (SyntaxTokenType.Or, "||", null),
-                (SyntaxTokenType.Lt, "<", null),
-                (SyntaxTokenType.Gt, ">", null),
-                (SyntaxTokenType.Leq, "<=", null),
-                (SyntaxTokenType.Geq, ">=", null),
-                (SyntaxTokenType.Eq, "==", null),
-                (SyntaxTokenType.Neq, "!=", null),
-                (SyntaxTokenType.Assign, "=", null),
-                (SyntaxTokenType.QMark, "?", null),
-                (SyntaxTokenType.Colon, ":", null),
-                (SyntaxTokenType.Comma, ",", null),
-                (SyntaxTokenType.Semi, ";", null),
+        {
+            (SyntaxTokenType.ID, "x", "x"),
+            (SyntaxTokenType.IntLiteral, "17", 17),
+            (SyntaxTokenType.FloatLiteral, "17.0", 17.0f),
+            (SyntaxTokenType.StringLiteral, "\"Hello World\"", "Hello World"),
+            (SyntaxTokenType.BoolLiteral, "true", true),
+            (SyntaxTokenType.BoolLiteral, "false", false),
+        };
 
-                (SyntaxTokenType.BoolLiteral, "true", true),
-                (SyntaxTokenType.BoolLiteral, "false", false),
-
-                (SyntaxTokenType.ID, "x", "x"),
-                (SyntaxTokenType.IntLiteral, "17", 17),
-                (SyntaxTokenType.FloatLiteral, "17.0", 17.0f),
-                (SyntaxTokenType.StringLiteral, "\"Hello World\"", "Hello World"),
-
-                (SyntaxTokenType.Illegal, "$", null),
-                (SyntaxTokenType.Comment, "// this is a comment", null),
-                (SyntaxTokenType.BlockComment, "/* this is a comment */", null),
-            };
     }
 }
