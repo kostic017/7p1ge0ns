@@ -3,7 +3,7 @@
     public enum SyntaxTokenType
     {
         EOF,
-        Error,
+        Illegal,
 
         If,
         Else,

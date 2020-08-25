@@ -227,8 +227,8 @@ namespace Kostic017.Pigeon
                         goto default;
 
                     default:
-                        SyntaxToken token = Token(SyntaxTokenType.Error);
-                        token.ErrorIndex = Error(CodeErrorType.UNEXPECTED_CHARACTER, $"{ch}");
+                        SyntaxToken token = Token(SyntaxTokenType.Illegal);
+                        token.ErrorIndex = Error(CodeErrorType.ILLEGAL_CHARACTER, $"{ch}");
                         return token;
                 }
             }

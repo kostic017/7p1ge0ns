@@ -81,7 +81,7 @@ namespace Kostic017.Pigeon.Tests
                 (SyntaxTokenType.FloatLiteral, "17.0", 17.0f),
                 (SyntaxTokenType.StringLiteral, "\"Hello World\"", "Hello World"),
 
-                (SyntaxTokenType.Error, "$", null),
+                (SyntaxTokenType.Illegal, "$", null),
                 (SyntaxTokenType.Comment, "// this is a comment", null),
                 (SyntaxTokenType.BlockComment, "/* this is a comment */", null),
             };

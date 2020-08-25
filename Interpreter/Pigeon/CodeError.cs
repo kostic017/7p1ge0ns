@@ -41,7 +41,7 @@ namespace Kostic017.Pigeon
                 { CodeErrorType.INVALID_ESCAPE_CHAR, "Invalid escape char {d}" },
                 { CodeErrorType.NEWLINE_IN_STRING, "Newline in string" },
                 { CodeErrorType.UNTERMINATED_STRING, "Unterminated string" },
-                { CodeErrorType.UNEXPECTED_CHARACTER, "Unexpected character {d}" },
+                { CodeErrorType.ILLEGAL_CHARACTER, "Illegal character {d}" },
                 { CodeErrorType.ILLEGAL_NUMBER, "Illegal number {d}" },
             };
     }
