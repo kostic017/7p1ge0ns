@@ -135,7 +135,7 @@ namespace Kostic017.Pigeon
                         return Token(SyntaxTokenType.Colon);
 
                     case ';':
-                        return Token(SyntaxTokenType.Semi);
+                        return Token(SyntaxTokenType.Semicolon);
 
                     case ',':
                         return Token(SyntaxTokenType.Comma);

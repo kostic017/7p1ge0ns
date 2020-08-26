@@ -5,9 +5,13 @@
         public SyntaxTokenType Type { get; set; }
         public object Value { get; set; }
 
-        public int StartIndex { get; set; }
-        public int EndIndex { get; set; }
-        public int ErrorIndex { get; set; }
+        public int StartIndex { get; set; } = -1;
+        public int EndIndex { get; set; } = -1;
+        public int ErrorIndex { get; set; } = -1;
+
+        public SyntaxToken()
+        {
+        }
 
         public SyntaxToken(SyntaxTokenType type)
         {

@@ -49,7 +49,7 @@
         QMark,
         Colon,
         Comma,
-        Semi,
+        Semicolon,
 
         ID,
         Comment,
