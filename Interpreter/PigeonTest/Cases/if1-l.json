@@ -49,5 +49,6 @@
 {"Type":"RPar"},
 {"Type":"Semicolon"},
 {"Type":"RBrace"},
-{"Type":"RBrace"}
+{"Type":"RBrace"},
+{"Type":"EOF"}
 ]

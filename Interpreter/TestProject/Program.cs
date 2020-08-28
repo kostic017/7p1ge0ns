@@ -1,5 +1,7 @@
 ﻿using Kostic017.Pigeon;
+using Kostic017.Pigeon.AST;
 using System;
+using System.Collections.Generic;
 
 namespace TestProject
 {
@@ -7,7 +9,7 @@ namespace TestProject
     {
         static void Main()
         {
-            Lexer lexer = new Lexer();
+            Interpreter interpreter = new Interpreter();
 
             while (true)
             {
@@ -15,9 +17,7 @@ namespace TestProject
                 string line = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(line))
-                {
                     break;
-                }
 
                 if (line == "#cls")
                 {
@@ -25,14 +25,12 @@ namespace TestProject
                     break;
                 }
 
-                SyntaxToken[] tokens = lexer.Lex(line);
+                List<CodeError> errors = new List<CodeError>();
+                SyntaxToken[] tokens = interpreter.Lex(line, errors);
+                AstNode ast = interpreter.Parse(tokens, errors);
+                Console.WriteLine(ast.Print());
 
-                foreach (SyntaxToken token in tokens)
-                {
-                    Console.WriteLine($"{token.Type} {token.Value}");
-                }
-
-                foreach (CodeError error in lexer.Errors)
+                foreach (CodeError error in errors)
                 {
                     Console.WriteLine(error.DetailedMessage);
                 }

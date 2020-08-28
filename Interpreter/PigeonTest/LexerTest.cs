@@ -12,8 +12,9 @@ namespace Kostic017.Pigeon.Tests
         [MemberData(nameof(GetData))]
         public void Lex(string code, SyntaxToken[] expected)
         {
-            Lexer lexer = new Lexer();
-            var actual = lexer.Lex(code);
+            List<CodeError> errors = new List<CodeError>();
+            Interpreter interpreter = new Interpreter();
+            var actual = interpreter.Lex(code, errors);
             
             Assert.Equal(expected.Length, actual.Length);
             

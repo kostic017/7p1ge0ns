@@ -19,8 +19,8 @@ public class SyntaxHighlighter : MonoBehaviour
 
     public string Highlight(string code, SyntaxToken[] tokens)
     {
-        // note that iterations are from last to first
-        for (int i = tokens.Length - 1; i >= 0; --i)
+        // Iterations are from last to first. EOF token is skipped.
+        for (int i = tokens.Length - 2; i >= 0; --i)
         {
             SyntaxToken token = tokens[i];
             Color color = DetermineColor(token.Type);
@@ -68,12 +68,12 @@ public class SyntaxHighlighter : MonoBehaviour
             case SyntaxTokenType.ID:
                 return identifierColor;
             default:
-                if (Lexer.Types.ContainsValue(tokenType))
+                if (ReservedWords.Types.ContainsValue(tokenType))
                 {
                     return typeNameColor;
                 }
 
-                if (Lexer.Keywords.ContainsValue(tokenType))
+                if (ReservedWords.Keywords.ContainsValue(tokenType))
                 {
                     return keywordColor;
                 }

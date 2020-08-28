@@ -1,4 +1,5 @@
 ﻿using Kostic017.Pigeon;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -13,15 +14,18 @@ public class EditorController : MonoBehaviour
     string prevCode;
     int hoverLinkIndex = -1;
 
-    Lexer lexer;
     Canvas canvas;
     TMP_Text popupText;
+    Interpreter interpreter;
     SyntaxHighlighter highlighter;
+
+    List<CodeError> errors;
 
     void Start()
     {
-        lexer = new Lexer();
-        lexer.TabSize = textBox.fontAsset.tabSize;
+        errors = new List<CodeError>();
+        interpreter = new Interpreter();
+        interpreter.SetTabSize(textBox.fontAsset.tabSize);
 
         canvas = GetComponentInParent<Canvas>();
         highlighter = GetComponent<SyntaxHighlighter>();
@@ -55,17 +59,18 @@ public class EditorController : MonoBehaviour
 
         consoleOutput.text = "";
 
-        SyntaxToken[] tokens = lexer.Lex(code);
+        errors.Clear();
+        SyntaxToken[] tokens = interpreter.Lex(code, errors);
 
         code = highlighter.Highlight(code, tokens);
 
-        if (lexer.Errors.Count > 0)
+        if (errors.Count > 0)
         {
-            consoleOutput.text = lexer.Errors[0].DetailedMessage;
+            consoleOutput.text = errors[0].DetailedMessage;
 
-            if (lexer.Errors.Count > 1)
+            if (errors.Count > 1)
             {
-                consoleOutput.text += $" (and {lexer.Errors.Count - 1} more)";
+                consoleOutput.text += $" (and {errors.Count - 1} more)";
             }
         }
 
@@ -95,7 +100,7 @@ public class EditorController : MonoBehaviour
             
             popup.position = worldPointInRectangle;
             popup.gameObject.SetActive(true);
-            popupText.text = lexer.Errors[int.Parse(errorInfo.GetLinkID())].Message;
+            popupText.text = errors[int.Parse(errorInfo.GetLinkID())].Message;
         }
     }
 

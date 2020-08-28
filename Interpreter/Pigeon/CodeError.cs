@@ -5,7 +5,7 @@ namespace Kostic017.Pigeon
     public class CodeError
     {
         public CodeErrorType Type { get; }
-        public string Data { get; }
+        public string[] Data { get; }
 
         public int Line { get; }
         public int Column { get; }
@@ -17,7 +17,7 @@ namespace Kostic017.Pigeon
         {
         }
 
-        public CodeError(CodeErrorType type, int line, int column, string data)
+        public CodeError(CodeErrorType type, int line, int column, params string[] data)
         {
             Type = type;
             Data = data;
@@ -26,9 +26,9 @@ namespace Kostic017.Pigeon
 
             Message = messages[Type];
             
-            if (!string.IsNullOrWhiteSpace(data))
+            for (int i = 0; i < data.Length; ++i)
             {
-                Message = Message.Replace("{d}", Data);
+                Message = Message.Replace("{" + i + "}", Data[i]);
             }
 
             DetailedMessage = $"{Line}:{Column} " + Message;
@@ -38,11 +38,13 @@ namespace Kostic017.Pigeon
             new Dictionary<CodeErrorType, string>
             {
                 { CodeErrorType.UNTERMINATED_COMMENT_BLOCK, "Unterminated comment block" },
-                { CodeErrorType.INVALID_ESCAPE_CHAR, "Invalid escape char {d}" },
+                { CodeErrorType.INVALID_ESCAPE_CHAR, "Invalid escape char {0}" },
                 { CodeErrorType.NEWLINE_IN_STRING, "Newline in string" },
                 { CodeErrorType.UNTERMINATED_STRING, "Unterminated string" },
-                { CodeErrorType.ILLEGAL_CHARACTER, "Illegal character {d}" },
-                { CodeErrorType.ILLEGAL_NUMBER, "Illegal number {d}" },
+                { CodeErrorType.ILLEGAL_CHARACTER, "Illegal character {0}" },
+                { CodeErrorType.ILLEGAL_NUMBER, "Illegal number {0}" },
+                { CodeErrorType.EXPECTED_OTHER_TOKEN, "Expected {0} and got {1}" },
+                { CodeErrorType.UNEXPECTED_TOKEN, "Unexpected token {0}" },
             };
     }
 }

@@ -18,11 +18,11 @@
 {"Type":"RPar"},
 {"Type":"LBrace"},
 {"Type":"RBrace"},
-{"Type":"Add"},
-{"Type":"AddEq"},
+{"Type":"Plus"},
+{"Type":"PlusEq"},
 {"Type":"Inc"},
-{"Type":"Sub"},
-{"Type":"SubEq"},
+{"Type":"Minus"},
+{"Type":"MinusEq"},
 {"Type":"Dec"},
 {"Type":"Mul"},
 {"Type":"MulEq"},
@@ -52,5 +52,6 @@
 {"Type":"FloatLiteral","Value":1.7},
 {"Type":"StringLiteral","Value":"Hello World"},
 {"Type":"BoolLiteral","Value":true},
-{"Type":"BoolLiteral","Value":false}
+{"Type":"BoolLiteral","Value":false},
+{"Type":"EOF"}
 ]

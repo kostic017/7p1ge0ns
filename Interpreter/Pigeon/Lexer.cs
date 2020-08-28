@@ -3,33 +3,8 @@ using System.Globalization;
 
 namespace Kostic017.Pigeon
 {
-    public class Lexer
+    class Lexer
     {
-        public static readonly Dictionary<string, SyntaxTokenType> Keywords =
-            new Dictionary<string, SyntaxTokenType>
-            {
-                { "if", SyntaxTokenType.If },
-                { "else", SyntaxTokenType.Else },
-                { "for", SyntaxTokenType.For },
-                { "to", SyntaxTokenType.To },
-                { "step", SyntaxTokenType.Step },
-                { "do", SyntaxTokenType.Do },
-                { "while", SyntaxTokenType.While },
-                { "break", SyntaxTokenType.Break },
-                { "continue", SyntaxTokenType.Continue },
-                { "return", SyntaxTokenType.Return },
-            };
-
-        public static readonly Dictionary<string, SyntaxTokenType> Types =
-            new Dictionary<string, SyntaxTokenType>
-            {
-                { "int", SyntaxTokenType.Int },
-                { "float", SyntaxTokenType.Float },
-                { "bool", SyntaxTokenType.Bool },
-                { "string", SyntaxTokenType.String },
-                { "void", SyntaxTokenType.Void }
-            };
-
         static readonly HashSet<char> escapes =
             new HashSet<char>
             {
@@ -49,28 +24,30 @@ namespace Kostic017.Pigeon
 
         string code;
 
+        List<CodeError> errors;
+
         char PrevChar => index - 1 >= 0 ? code[index - 1] : '\0';
         char CurrentChar => index < code.Length ? code[index] : '\0';
         char NextChar => index + 1 < code.Length ? code[index + 1] : '\0';
 
         public int TabSize { get; set; } = 4;
-        public List<CodeError> Errors { get; private set; } = new List<CodeError>();
-
-        public SyntaxToken[] Lex(string str)
+        
+        internal SyntaxToken[] Lex(string str, List<CodeError> errors)
         {
             line = 1;
             index = 0;
             code = str;
             column = 0;
-            Errors = new List<CodeError>();
+            this.errors = errors;
 
             SyntaxToken tok;
             List<SyntaxToken> tokens = new List<SyntaxToken>();
 
-            while ((tok = NextToken()).Type != SyntaxTokenType.EOF)
+            do
             {
+                tok = NextToken();
                 tokens.Add(tok);
-            }
+            } while (tok.Type != SyntaxTokenType.EOF);
 
             return tokens.ToArray();
         }
@@ -143,24 +120,24 @@ namespace Kostic017.Pigeon
                     case '+':
                         if (TryEatCurrentChar('='))
                         {
-                            return Token(SyntaxTokenType.AddEq);
+                            return Token(SyntaxTokenType.PlusEq);
                         }
                         if (TryEatCurrentChar('+'))
                         {
                             return Token(SyntaxTokenType.Inc);
                         }
-                        return Token(SyntaxTokenType.Add);
+                        return Token(SyntaxTokenType.Plus);
 
                     case '-':
                         if (TryEatCurrentChar('='))
                         {
-                            return Token(SyntaxTokenType.SubEq);
+                            return Token(SyntaxTokenType.MinusEq);
                         }
                         if (TryEatCurrentChar('-'))
                         {
                             return Token(SyntaxTokenType.Dec);
                         }
-                        return Token(SyntaxTokenType.Sub);
+                        return Token(SyntaxTokenType.Minus);
 
                     case '*':
                         if (TryEatCurrentChar('='))
@@ -183,6 +160,14 @@ namespace Kostic017.Pigeon
                             return Token(SyntaxTokenType.ModEq);
                         }
                         return Token(SyntaxTokenType.Mod);
+
+                    case '^':
+                        if (TryEatCurrentChar('='))
+                        {
+                            EatCurrentChar();
+                            return Token(SyntaxTokenType.PowerEq);
+                        }
+                        return Token(SyntaxTokenType.Power);
 
                     case '<':
                         if (TryEatCurrentChar('='))
@@ -382,14 +367,14 @@ namespace Kostic017.Pigeon
                 return Token(SyntaxTokenType.BoolLiteral, b);
             }
 
-            if (Keywords.ContainsKey(value))
+            if (ReservedWords.Keywords.ContainsKey(value))
             {
-                return Token(Keywords[value]);
+                return Token(ReservedWords.Keywords[value]);
             }
 
-            if (Types.ContainsKey(value))
+            if (ReservedWords.Types.ContainsKey(value))
             {
-                return Token(Types[value]);
+                return Token(ReservedWords.Types[value]);
             }
 
             return Token(SyntaxTokenType.ID, value);
@@ -434,14 +419,16 @@ namespace Kostic017.Pigeon
             {
                 StartIndex = tokenStartIndex,
                 EndIndex = index,
+                StartLine = tokenStartLine,
+                StartColumn = tokenStartColumn,
                 ErrorIndex = -1,
             };
         }
 
-        int Error(CodeErrorType type, string data = "")
+        int Error(CodeErrorType type, params string[] data)
         {
-            Errors.Add(new CodeError(type, tokenStartLine, tokenStartColumn, data));
-            return Errors.Count - 1;
+            errors.Add(new CodeError(type, tokenStartLine, tokenStartColumn, data));
+            return errors.Count - 1;
         }
     }
 }

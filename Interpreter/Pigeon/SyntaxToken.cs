@@ -7,6 +7,10 @@
 
         public int StartIndex { get; set; } = -1;
         public int EndIndex { get; set; } = -1;
+
+        public int StartLine{ get; set; } = -1;
+        public int StartColumn { get; set; } = -1;
+
         public int ErrorIndex { get; set; } = -1;
 
         public SyntaxToken()
