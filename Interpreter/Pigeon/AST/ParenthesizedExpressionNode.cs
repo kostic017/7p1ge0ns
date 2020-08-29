@@ -9,9 +9,9 @@
             this.expression = expression;
         }
 
-        public override string Print(string ident = "")
+        public override string AsString(int ident = 0)
         {
-            return "[" + expression.Print() + "]";
+            return expression.AsString();
         }
     }
 }

@@ -11,9 +11,9 @@
             Value = value;
         }
 
-        public override string Print(string ident = "")
+        public override string AsString(int ident = 0)
         {
-            return "(" + Op.ToString() + " " + Value.Print() + ")";
+            return "(" + Op.PrettyPrint() + " " + Value.AsString() + ")";
         }
     }
 }

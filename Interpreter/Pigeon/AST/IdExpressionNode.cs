@@ -9,7 +9,7 @@
             Value = value;
         }
 
-        public override string Print(string ident = "")
+        public override string AsString(int ident = 0)
         {
             return Value;
         }

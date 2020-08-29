@@ -67,7 +67,10 @@ namespace Kostic017.Pigeon
                 case SyntaxTokenType.FloatLiteral:
                 case SyntaxTokenType.StringLiteral:
                 case SyntaxTokenType.BoolLiteral:
-                    return new LiteralExpressionNode(EatCurrentToken().Value);
+                    {
+                        SyntaxToken token = EatCurrentToken();
+                        return new LiteralExpressionNode(token.Type, token.Value);
+                    }
 
                 case SyntaxTokenType.LPar:
                     {
@@ -87,8 +90,8 @@ namespace Kostic017.Pigeon
                     }
 
                 default:
-                    Error(CodeErrorType.UNEXPECTED_TOKEN, Current.Type.ToString());
-                    return new LiteralExpressionNode("");
+                    Error(CodeErrorType.UNEXPECTED_TOKEN, Current.Type.PrettyPrint());
+                    return new LiteralExpressionNode(SyntaxTokenType.Illegal, "");
             }
         }
 
@@ -98,7 +101,7 @@ namespace Kostic017.Pigeon
 
             if (token.Type != type)
             {
-                Error(CodeErrorType.EXPECTED_OTHER_TOKEN, type.ToString(), token.Type.ToString());
+                Error(CodeErrorType.EXPECTED_OTHER_TOKEN, type.PrettyPrint(), token.Type.PrettyPrint());
                 return new SyntaxToken(type);
             }
 

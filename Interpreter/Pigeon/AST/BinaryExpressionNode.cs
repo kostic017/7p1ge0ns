@@ -13,9 +13,9 @@
             Right = right;
         }
 
-        public override string Print(string ident = "")
+        public override string AsString(int ident = 0)
         {
-            return "(" + Left.Print() + " " + Op.ToString() + " " + Right.Print() + ")";
+            return "(" + Left.AsString() + " " + Op.PrettyPrint() + " " + Right.AsString() + ")";
         }
     }
 }

@@ -1,65 +1,168 @@
-﻿namespace Kostic017.Pigeon
+﻿using System.ComponentModel;
+
+namespace Kostic017.Pigeon
 {
     public enum SyntaxTokenType
     {
         EOF,
         Illegal,
-
-        If,
-        Else,
-        For,
-        To,
-        Step,
-        Do,
-        While,
-        Break,
-        Continue,
-        Return,
-        Int,
-        Float,
-        Bool,
-        String,
-        Void,
-        LPar,
-        RPar,
-        LBrace,
-        RBrace,
-        Plus,
-        PlusEq,
-        Inc,
-        Minus,
-        MinusEq,
-        Dec,
-        Mul,
-        MulEq,
-        Div,
-        DivEq,
-        Mod,
-        ModEq,
-        Power,
-        PowerEq,
-        Not,
-        And,
-        Or,
-        Lt,
-        Gt,
-        Leq,
-        Geq,
-        Eq,
-        Neq,
-        Assign,
-        QMark,
-        Colon,
-        Comma,
-        Semicolon,
-
-        ID,
         Comment,
         BlockComment,
 
+        [Description("if")]
+        If,
+
+        [Description("else")]
+        Else,
+
+        [Description("for")]
+        For,
+
+        [Description("to")]
+        To,
+
+        [Description("step")]
+        Step,
+
+        [Description("do")]
+        Do,
+
+        [Description("while")]
+        While,
+
+        [Description("break")]
+        Break,
+
+        [Description("continue")]
+        Continue,
+
+        [Description("return")]
+        Return,
+
+        [Description("int")]
+        Int,
+
+        [Description("float")]
+        Float,
+
+        [Description("bool")]
+        Bool,
+
+        [Description("string")]
+        String,
+        
+        [Description("void")]
+        Void,
+
+        [Description("(")]
+        LPar,
+
+        [Description(")")]
+        RPar,
+
+        [Description("{")]
+        LBrace,
+        
+        [Description("}")]
+        RBrace,
+        
+        [Description("+")]
+        Plus,
+
+        [Description("+=")]
+        PlusEq,
+
+        [Description("++")]
+        Inc,
+
+        [Description("-")]
+        Minus,
+
+        [Description("-=")]
+        MinusEq,
+
+        [Description("--")]
+        Dec,
+
+        [Description("*")]
+        Mul,
+
+        [Description("*=")]
+        MulEq,
+
+        [Description("/")]
+        Div,
+
+        [Description("/=")]
+        DivEq,
+
+        [Description("%")]
+        Mod,
+
+        [Description("%=")]
+        ModEq,
+
+        [Description("^")]
+        Power,
+
+        [Description("^=")]
+        PowerEq,
+
+        [Description("!")]
+        Not,
+
+        [Description("&&")]
+        And,
+
+        [Description("||")]
+        Or,
+
+        [Description("<")]
+        Lt,
+
+        [Description(">")]
+        Gt,
+
+        [Description("<=")]
+        Leq,
+
+        [Description(">=")]
+        Geq,
+
+        [Description("==")]
+        Eq,
+
+        [Description("!=")]
+        Neq,
+
+        [Description("=")]
+        Assign,
+
+        [Description("?")]
+        QMark,
+
+        [Description(":")]
+        Colon,
+
+        [Description(",")]
+        Comma,
+
+        [Description(";")]
+        Semicolon,
+
+        [Description("identifier")]
+        ID,
+
+        [Description("integer literal")]
         IntLiteral,
+
+        [Description("float literal")]
         FloatLiteral,
+
+        [Description("bool literal")]
         BoolLiteral,
+
+        [Description("string literal")]
         StringLiteral,
     }
 }

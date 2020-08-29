@@ -28,7 +28,7 @@ namespace TestProject
                 List<CodeError> errors = new List<CodeError>();
                 SyntaxToken[] tokens = interpreter.Lex(line, errors);
                 AstNode ast = interpreter.Parse(tokens, errors);
-                Console.WriteLine(ast.Print());
+                Console.WriteLine(ast.AsString());
 
                 foreach (CodeError error in errors)
                 {

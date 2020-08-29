@@ -2,7 +2,7 @@
 
 namespace Kostic017.Pigeon
 {
-    public class ReservedWords
+    public static class ReservedWords
     {
         public static readonly Dictionary<string, SyntaxTokenType> Keywords =
             new Dictionary<string, SyntaxTokenType>
