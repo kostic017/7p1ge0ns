@@ -45,7 +45,7 @@ namespace Kostic017.Pigeon.Tests
         public static IEnumerable<object[]> GetData()
         {
             var options = new JsonSerializerOptions();
-            options.Converters.Add(new SyntaxTokenTypeConverter());
+            options.Converters.Add(new SyntaxTokenTypeParser());
             foreach (var (caseName, code, exp) in TestHelper.GetCases("l"))
             {
                 var expected = JsonSerializer.Deserialize<SyntaxToken[]>(exp, options);

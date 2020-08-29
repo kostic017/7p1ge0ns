@@ -43,8 +43,8 @@ namespace Kostic017.Pigeon
                 { CodeErrorType.UNTERMINATED_STRING, "Unterminated string" },
                 { CodeErrorType.ILLEGAL_CHARACTER, "Illegal character {0}" },
                 { CodeErrorType.ILLEGAL_NUMBER, "Illegal number {0}" },
-                { CodeErrorType.EXPECTED_OTHER_TOKEN, "Expected {0} and got {1}" },
-                { CodeErrorType.UNEXPECTED_TOKEN, "Unexpected token {0}" },
+                { CodeErrorType.MISSING_EXPECTED_TOKEN, "Expected {0}" },
+                { CodeErrorType.INVALID_EXPRESSION_TERM, "Invalid expression term {0}" },
             };
     }
 }

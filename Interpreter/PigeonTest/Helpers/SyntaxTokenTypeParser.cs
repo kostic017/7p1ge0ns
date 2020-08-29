@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Kostic017.Pigeon.Tests
 {
-    public class SyntaxTokenTypeConverter : JsonConverter<SyntaxTokenType>
+    public class SyntaxTokenTypeParser : JsonConverter<SyntaxTokenType>
     {
         public override SyntaxTokenType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             => Enum.Parse<SyntaxTokenType>(reader.GetString());

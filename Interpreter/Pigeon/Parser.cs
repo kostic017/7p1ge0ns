@@ -48,7 +48,7 @@ namespace Kostic017.Pigeon
             while (binOps.ContainsKey(Current.Type) && binOps[Current.Type].precedence >= precedence)
             {
                 SyntaxTokenType op = Current.Type;
-                EatCurrentToken();
+                NextToken();
                 ExpressionNode right = ParseExpression(binOps[op].precedence + (binOps[op].leftAssoc ? 1 : 0));
                 left = new BinaryExpressionNode(left, op, right);
             }
@@ -61,20 +61,20 @@ namespace Kostic017.Pigeon
             switch (Current.Type)
             {
                 case SyntaxTokenType.ID:
-                    return new IdExpressionNode(EatCurrentToken().Value.ToString());
+                    return new IdExpressionNode(NextToken().Value.ToString());
 
                 case SyntaxTokenType.IntLiteral:
                 case SyntaxTokenType.FloatLiteral:
                 case SyntaxTokenType.StringLiteral:
                 case SyntaxTokenType.BoolLiteral:
                     {
-                        SyntaxToken token = EatCurrentToken();
+                        SyntaxToken token = NextToken();
                         return new LiteralExpressionNode(token.Type, token.Value);
                     }
 
                 case SyntaxTokenType.LPar:
                     {
-                        EatCurrentToken();
+                        NextToken();
                         ExpressionNode expression = ParseExpression();
                         Match(SyntaxTokenType.RPar);
                         return new ParenthesizedExpressionNode(expression);
@@ -84,31 +84,29 @@ namespace Kostic017.Pigeon
                 case SyntaxTokenType.Plus:
                 case SyntaxTokenType.Not:
                     {
-                        SyntaxToken op = EatCurrentToken();
+                        SyntaxToken op = NextToken();
                         ExpressionNode primary = ParsePrimaryExpression();
                         return new UnaryExpressionNode(op.Type, primary);
                     }
 
                 default:
-                    Error(CodeErrorType.UNEXPECTED_TOKEN, Current.Type.PrettyPrint());
+                    Error(CodeErrorType.INVALID_EXPRESSION_TERM, Current.Type.PrettyPrint());
                     return new LiteralExpressionNode(SyntaxTokenType.Illegal, "");
             }
         }
 
         SyntaxToken Match(SyntaxTokenType type)
         {
-            SyntaxToken token = tokens[index];
-
-            if (token.Type != type)
+            if (Current.Type != type)
             {
-                Error(CodeErrorType.EXPECTED_OTHER_TOKEN, type.PrettyPrint(), token.Type.PrettyPrint());
+                Error(CodeErrorType.MISSING_EXPECTED_TOKEN, type.PrettyPrint());
                 return new SyntaxToken(type);
             }
 
-            return EatCurrentToken();
+            return NextToken();
         }
-
-        SyntaxToken EatCurrentToken()
+        
+        SyntaxToken NextToken()
         {
             SyntaxToken current = Current;
             ++index;

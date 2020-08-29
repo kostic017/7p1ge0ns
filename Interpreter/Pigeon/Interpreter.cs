@@ -1,5 +1,6 @@
 ﻿using Kostic017.Pigeon.AST;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Kostic017.Pigeon
 {
@@ -21,12 +22,17 @@ namespace Kostic017.Pigeon
 
         public AstNode Parse(SyntaxToken[] tokens, List<CodeError> errors)
         {
-            return parser.Parse(tokens, errors);
+            return parser.Parse(RemoveComments(tokens), errors);
         }
 
         public void SetTabSize(int tabSize)
         {
             lexer.TabSize = tabSize;
+        }
+
+        SyntaxToken[] RemoveComments(SyntaxToken[] tokens)
+        {
+            return tokens.Where(token => token.Type != SyntaxTokenType.Comment && token.Type != SyntaxTokenType.BlockComment).ToArray();
         }
     }
 }
