@@ -2,6 +2,7 @@
 using Kostic017.Pigeon.AST;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TestProject
 {
@@ -25,12 +26,11 @@ namespace TestProject
                     break;
                 }
 
-                List<CodeError> errors = new List<CodeError>();
-                SyntaxToken[] tokens = interpreter.Lex(line, errors);
-                AstNode ast = interpreter.Parse(tokens, errors);
+                var (tokens, lexErrors) = interpreter.Lex(line);
+                var (ast, parseErrors) = interpreter.Parse(tokens);
                 Console.WriteLine(ast.PrettyPrint());
 
-                foreach (CodeError error in errors)
+                foreach (var error in lexErrors.Concat(parseErrors))
                 {
                     Console.WriteLine(error.DetailedMessage);
                 }

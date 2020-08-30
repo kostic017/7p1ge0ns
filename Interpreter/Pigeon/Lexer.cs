@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
 
 namespace Kostic017.Pigeon
 {
@@ -32,13 +31,13 @@ namespace Kostic017.Pigeon
 
         public int TabSize { get; set; } = 4;
         
-        internal SyntaxToken[] Lex(string str, List<CodeError> errors)
+        internal (SyntaxToken[], CodeError[]) Lex(string str)
         {
             line = 1;
             index = 0;
             code = str;
             column = 0;
-            this.errors = errors;
+            errors = new List<CodeError>();
 
             SyntaxToken tok;
             List<SyntaxToken> tokens = new List<SyntaxToken>();
@@ -49,7 +48,7 @@ namespace Kostic017.Pigeon
                 tokens.Add(tok);
             } while (tok.Type != SyntaxTokenType.EOF);
 
-            return tokens.ToArray();
+            return (tokens.ToArray(), errors.ToArray());
         }
 
         SyntaxToken NextToken()

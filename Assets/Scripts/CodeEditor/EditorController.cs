@@ -15,11 +15,8 @@ public class EditorController : MonoBehaviour
     Interpreter interpreter;
     SyntaxHighlighter highlighter;
 
-    List<CodeError> errors;
-
     void Start()
     {
-        errors = new List<CodeError>();
         interpreter = new Interpreter();
         interpreter.SetTabSize(textBox.fontAsset.tabSize);
         highlighter = GetComponent<SyntaxHighlighter>();
@@ -46,12 +43,11 @@ public class EditorController : MonoBehaviour
 
         UpdateLineNumbers(code);
 
-        errors.Clear();
-        SyntaxToken[] tokens = interpreter.Lex(code, errors);
+        var (tokens, errors) = interpreter.Lex(code);
 
         code = highlighter.Highlight(code, tokens);
 
-        UpdateErrorConsole();
+        UpdateErrorConsole(errors);
 
         // inserting rich text while the player is typing used to result in caret being positioned inside rich text tags
         int caret = textBox.caretPosition;
@@ -59,17 +55,17 @@ public class EditorController : MonoBehaviour
         textBox.caretPosition = caret;
     }
 
-    void UpdateErrorConsole()
+    void UpdateErrorConsole(CodeError[] errors)
     {
         consoleOutput.text = "";
 
-        if (errors.Count > 0)
+        if (errors.Length > 0)
         {
             consoleOutput.text = errors[0].DetailedMessage;
 
-            if (errors.Count > 1)
+            if (errors.Length > 1)
             {
-                consoleOutput.text += $" (and {errors.Count - 1} more)";
+                consoleOutput.text += $" (and {errors.Length - 1} more)";
             }
         }
     }

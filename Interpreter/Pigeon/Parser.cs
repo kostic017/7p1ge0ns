@@ -30,12 +30,12 @@ namespace Kostic017.Pigeon
 
         SyntaxToken Current => index < tokens.Length ? tokens[index] : tokens[tokens.Length - 1];
 
-        internal AstNode Parse(SyntaxToken[] tokens, List<CodeError> errors)
+        internal (AstNode, CodeError[]) Parse(SyntaxToken[] tokens)
         {
             index = 0;
-            this.errors = errors;
             this.tokens = tokens;
-            return ParseExpression();
+            errors = new List<CodeError>();
+            return (ParseExpression(), errors.ToArray());
         }
 
         /// <summary>
