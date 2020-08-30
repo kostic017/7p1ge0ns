@@ -8,10 +8,5 @@
         {
             Value = value;
         }
-
-        public override string AsString(int ident = 0)
-        {
-            return Value;
-        }
     }
 }

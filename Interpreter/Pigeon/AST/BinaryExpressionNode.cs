@@ -12,10 +12,5 @@
             Op = op;
             Right = right;
         }
-
-        public override string AsString(int ident = 0)
-        {
-            return "(" + Left.AsString() + " " + Op.PrettyPrint() + " " + Right.AsString() + ")";
-        }
     }
 }

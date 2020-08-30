@@ -2,16 +2,11 @@
 {
     class ParenthesizedExpressionNode : ExpressionNode
     {
-        internal ExpressionNode expression;
+        internal ExpressionNode Expression { get; }
 
         public ParenthesizedExpressionNode(ExpressionNode expression)
         {
-            this.expression = expression;
-        }
-
-        public override string AsString(int ident = 0)
-        {
-            return expression.AsString();
+            Expression = expression;
         }
     }
 }
