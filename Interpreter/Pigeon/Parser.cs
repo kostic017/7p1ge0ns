@@ -90,7 +90,7 @@ namespace Kostic017.Pigeon
                     }
 
                 default:
-                    Error(CodeErrorType.INVALID_EXPRESSION_TERM, Current.Type.PrettyPrint());
+                    ReportError(CodeErrorType.INVALID_EXPRESSION_TERM, Current.Type.PrettyPrint());
                     return new LiteralExpressionNode(SyntaxTokenType.Illegal, "");
             }
         }
@@ -99,8 +99,8 @@ namespace Kostic017.Pigeon
         {
             if (Current.Type != type)
             {
-                Error(CodeErrorType.MISSING_EXPECTED_TOKEN, type.PrettyPrint());
-                return new SyntaxToken(type);
+                ReportError(CodeErrorType.MISSING_EXPECTED_TOKEN, type.PrettyPrint());
+                return new SyntaxToken(type, -1, -1, -1, -1); // return dummy token to avoid null checks later on
             }
 
             return NextToken();
@@ -113,13 +113,9 @@ namespace Kostic017.Pigeon
             return current;
         }
 
-        void Error(CodeErrorType type, params string[] data)
+        void ReportError(CodeErrorType type, params string[] data)
         {
             errors.Add(new CodeError(type, Current.StartLine, Current.StartColumn, data));
-            if (Current.ErrorIndex == -1)
-            {
-                Current.ErrorIndex = errors.Count - 1;
-            }
         }
     }
 }

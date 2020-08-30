@@ -2,29 +2,23 @@
 {
     public class SyntaxToken
     {
-        public SyntaxTokenType Type { get; set; }
-        public object Value { get; set; }
+        public SyntaxTokenType Type { get; }
 
-        public int StartIndex { get; set; } = -1;
-        public int EndIndex { get; set; } = -1;
+        public string Value { get; }
 
-        public int StartLine{ get; set; } = -1;
-        public int StartColumn { get; set; } = -1;
+        public int StartIndex { get; }
+        public int EndIndex { get; }
 
-        public int ErrorIndex { get; set; } = -1;
+        public int StartLine { get; }
+        public int StartColumn { get; }
 
-        public SyntaxToken()
-        {
-        }
-
-        public SyntaxToken(SyntaxTokenType type)
+        public SyntaxToken(SyntaxTokenType type, int startIndex, int endIndex, int startLine, int startColumn, string value = null)
         {
             Type = type;
-        }
-
-        public SyntaxToken(SyntaxTokenType type, object value)
-        {
-            Type = type;
+            StartIndex = startIndex;
+            EndIndex = endIndex;
+            StartLine = startLine;
+            StartColumn = startColumn;
             Value = value;
         }
     }

@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Kostic017.Pigeon
 {
-    public static class SyntaxTokenTypePrettyPrint
+    public static class Extensions
     {
         public static string PrettyPrint(this SyntaxTokenType tokenType)
         {

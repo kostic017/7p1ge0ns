@@ -212,9 +212,8 @@ namespace Kostic017.Pigeon
                         goto default;
 
                     default:
-                        SyntaxToken token = Token(SyntaxTokenType.Illegal);
-                        token.ErrorIndex = Error(CodeErrorType.ILLEGAL_CHARACTER, $"{ch}");
-                        return token;
+                        ReportError(CodeErrorType.UNEXPECTED_CHARACTER, $"{ch}");
+                        return Token(SyntaxTokenType.Illegal);
                 }
             }
 
@@ -223,20 +222,19 @@ namespace Kostic017.Pigeon
 
         SyntaxToken LexString()
         {
-            int err = -1;
             string value = "";
 
             while (CurrentChar != '"')
             {
                 if (CurrentChar == '\0')
                 {
-                    err = Error(CodeErrorType.UNTERMINATED_STRING);
+                    ReportError(CodeErrorType.UNTERMINATED_STRING);
                     break;
                 }
 
                 if (CurrentChar == '\n')
                 {
-                    err = Error(CodeErrorType.NEWLINE_IN_STRING);
+                    ReportError(CodeErrorType.NEWLINE_IN_STRING);
                     break;
                 }
 
@@ -246,9 +244,9 @@ namespace Kostic017.Pigeon
                     {
                         value += NextChar;
                     }
-                    else if (err == -1)
+                    else
                     {
-                        err = Error(CodeErrorType.INVALID_ESCAPE_CHAR, $"\\{NextChar}");
+                        ReportError(CodeErrorType.INVALID_ESCAPE_CHAR, $"\\{NextChar}");
                     }
                     EatCurrentChar();
                 }
@@ -262,9 +260,7 @@ namespace Kostic017.Pigeon
 
             TryEatCurrentChar('"');
 
-            SyntaxToken token = Token(SyntaxTokenType.StringLiteral, value);
-            token.ErrorIndex = err;
-            return token;
+            return Token(SyntaxTokenType.StringLiteral, value);
         }
 
         SyntaxToken LexComment()
@@ -280,7 +276,6 @@ namespace Kostic017.Pigeon
              
             /* lorem ipsum */
 
-            int err = -1;
             TryEatCurrentChar('*');
 
             while (true)
@@ -294,16 +289,14 @@ namespace Kostic017.Pigeon
 
                 if (CurrentChar == '\0')
                 {
-                    err = Error(CodeErrorType.UNTERMINATED_COMMENT_BLOCK);
+                    ReportError(CodeErrorType.UNTERMINATED_COMMENT_BLOCK);
                     break;
                 }
 
                 EatCurrentChar();
             }
 
-            SyntaxToken token = Token(SyntaxTokenType.BlockComment);
-            token.ErrorIndex = err;
-            return token;
+            return Token(SyntaxTokenType.BlockComment);
         }
 
         SyntaxToken LexNumber()
@@ -321,34 +314,7 @@ namespace Kostic017.Pigeon
                 EatCurrentChar();
             }
 
-            SyntaxToken tok;
-
-            if (isReal)
-            {
-                tok = Token(SyntaxTokenType.FloatLiteral);
-                if (float.TryParse(value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float f))
-                {
-                    tok.Value = f;
-                }
-                else
-                {
-                    tok.ErrorIndex = Error(CodeErrorType.ILLEGAL_NUMBER, value);
-                }
-            }
-            else
-            {
-                tok = Token(SyntaxTokenType.IntLiteral);
-                if (int.TryParse(value, out int i))
-                {
-                    tok.Value = i;
-                }
-                else
-                {
-                    tok.ErrorIndex = Error(CodeErrorType.ILLEGAL_NUMBER, value);
-                }
-            }
-
-            return tok;
+            return Token(isReal ? SyntaxTokenType.FloatLiteral : SyntaxTokenType.IntLiteral, value);
         }
 
         SyntaxToken LexWord()
@@ -363,8 +329,7 @@ namespace Kostic017.Pigeon
 
             if (value == "true" || value == "false")
             {
-                bool.TryParse(value, out bool b);
-                return Token(SyntaxTokenType.BoolLiteral, b);
+                return Token(SyntaxTokenType.BoolLiteral, value);
             }
 
             if (ReservedWords.Keywords.ContainsKey(value))
@@ -413,22 +378,14 @@ namespace Kostic017.Pigeon
             return false;
         }
 
-        SyntaxToken Token(SyntaxTokenType type, object value = null)
+        SyntaxToken Token(SyntaxTokenType type, string lexeme = null)
         {
-            return new SyntaxToken(type, value)
-            {
-                StartIndex = tokenStartIndex,
-                EndIndex = index,
-                StartLine = tokenStartLine,
-                StartColumn = tokenStartColumn,
-                ErrorIndex = -1,
-            };
+            return new SyntaxToken(type, tokenStartIndex, index, tokenStartLine, tokenStartColumn, lexeme);
         }
 
-        int Error(CodeErrorType type, params string[] data)
+        void ReportError(CodeErrorType type, params string[] data)
         {
             errors.Add(new CodeError(type, tokenStartLine, tokenStartColumn, data));
-            return errors.Count - 1;
         }
     }
 }

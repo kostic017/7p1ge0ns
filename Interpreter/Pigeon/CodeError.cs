@@ -13,10 +13,6 @@ namespace Kostic017.Pigeon
         public string Message { get; }
         public string DetailedMessage { get; }
 
-        public CodeError(CodeErrorType type, int line, int column) : this(type, line, column, null)
-        {
-        }
-
         public CodeError(CodeErrorType type, int line, int column, params string[] data)
         {
             Type = type;
@@ -41,7 +37,7 @@ namespace Kostic017.Pigeon
                 { CodeErrorType.INVALID_ESCAPE_CHAR, "Invalid escape char {0}" },
                 { CodeErrorType.NEWLINE_IN_STRING, "Newline in string" },
                 { CodeErrorType.UNTERMINATED_STRING, "Unterminated string" },
-                { CodeErrorType.ILLEGAL_CHARACTER, "Illegal character {0}" },
+                { CodeErrorType.UNEXPECTED_CHARACTER, "Unexpected character {0}" },
                 { CodeErrorType.ILLEGAL_NUMBER, "Illegal number {0}" },
                 { CodeErrorType.MISSING_EXPECTED_TOKEN, "Expected {0}" },
                 { CodeErrorType.INVALID_EXPRESSION_TERM, "Invalid expression term {0}" },

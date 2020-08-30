@@ -28,13 +28,6 @@ public class SyntaxHighlighter : MonoBehaviour
 
             string sufix = "</color>";
             string prefix = $"<color=#{colorValue}>";
-
-            if (token.ErrorIndex > -1)
-            {
-                sufix += "</u></link>";
-                prefix = $"<link={token.ErrorIndex}><u>" + prefix;
-            }
-
             code = code.Insert(tokens[i].EndIndex, sufix)
                        .Insert(tokens[i].StartIndex - 1, prefix);
         }
@@ -43,10 +36,8 @@ public class SyntaxHighlighter : MonoBehaviour
 
     public string StripTags(string code)
     {
-        string s = code.Replace("</color>", "")
-                       .Replace("</u></link>", "");
+        string s = code.Replace("</color>", "");
         s = Regex.Replace(s, "<color=#.+?>", string.Empty);
-        s = Regex.Replace(s, @"<link=\d+?><u>", string.Empty);
         return s;
     }
 

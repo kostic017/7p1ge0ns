@@ -9,49 +9,20 @@ namespace Kostic017.Pigeon
         Comment,
         BlockComment,
 
-        [Description("if")]
         If,
-
-        [Description("else")]
         Else,
-
-        [Description("for")]
         For,
-
-        [Description("to")]
         To,
-
-        [Description("step")]
         Step,
-
-        [Description("do")]
         Do,
-
-        [Description("while")]
         While,
-
-        [Description("break")]
         Break,
-
-        [Description("continue")]
         Continue,
-
-        [Description("return")]
         Return,
-
-        [Description("int")]
         Int,
-
-        [Description("float")]
         Float,
-
-        [Description("bool")]
         Bool,
-
-        [Description("string")]
         String,
-        
-        [Description("void")]
         Void,
 
         [Description("(")]
@@ -150,19 +121,10 @@ namespace Kostic017.Pigeon
         [Description(";")]
         Semicolon,
 
-        [Description("identifier")]
         ID,
-
-        [Description("integer literal")]
         IntLiteral,
-
-        [Description("float literal")]
         FloatLiteral,
-
-        [Description("bool literal")]
         BoolLiteral,
-
-        [Description("string literal")]
         StringLiteral,
     }
 }
