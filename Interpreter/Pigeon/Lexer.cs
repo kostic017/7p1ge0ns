@@ -56,13 +56,9 @@ namespace Kostic017.Pigeon
             while (CurrentChar != '\0')
             {
                 char ch = EatCurrentChar();
-                
+
                 if (char.IsWhiteSpace(ch))
                 {
-                    if (ch == '\t')
-                    {
-                        column += TabSize - 1;
-                    }
                     continue;
                 }
 
@@ -70,28 +66,15 @@ namespace Kostic017.Pigeon
                 tokenStartColumn = column;
                 tokenStartIndex = index;
 
-                if (ch == '"')
-                {
-                    return LexString();
-                }
-
-                if (ch == '/' && (CurrentChar == '/' || CurrentChar == '*'))
-                {
-                    return LexComment();
-                }
-
-                if (char.IsDigit(ch))
-                {
-                    return LexNumber();
-                }
-
-                if (ch == '_' || char.IsLetter(ch))
-                {
-                    return LexWord();
-                }
-
                 switch (ch)
                 {
+                    case '"':
+                        return LexString();
+
+                    case '0': case '1': case '2': case '3': case '4':
+                    case '5': case '6': case '7': case '8': case '9':
+                        return LexNumber();
+
                     case '(':
                         return Token(SyntaxTokenType.LPar);
 
@@ -146,6 +129,10 @@ namespace Kostic017.Pigeon
                         return Token(SyntaxTokenType.Mul);
 
                     case '/':
+                        if (CurrentChar == '/' || CurrentChar == '*')
+                        {
+                            return LexComment();
+                        }
                         if (TryEatCurrentChar('='))
                         {
                             return Token(SyntaxTokenType.DivEq);
@@ -211,6 +198,11 @@ namespace Kostic017.Pigeon
                         goto default;
 
                     default:
+                        if (ch == '_' || char.IsLetter(ch))
+                        {
+                            return LexWord();
+                        }
+
                         ReportError(CodeErrorType.UNEXPECTED_CHARACTER, $"{ch}");
                         return Token(SyntaxTokenType.Illegal);
                 }
@@ -221,9 +213,10 @@ namespace Kostic017.Pigeon
 
         SyntaxToken LexString()
         {
+            bool err = false;
             string value = "";
 
-            while (CurrentChar != '"')
+            while (!err && CurrentChar != '"')
             {
                 if (CurrentChar == '\0')
                 {
@@ -354,14 +347,18 @@ namespace Kostic017.Pigeon
             char ch = CurrentChar;
             ++index;
 
-            if (ch == '\n')
+            switch (ch)
             {
-                column = 0;
-                ++line;
-            }
-            else
-            {
-                ++column;
+                case '\n':
+                    column = 0;
+                    ++line;
+                    break;
+                case '\t':
+                    column += TabSize;
+                    break;
+                default:
+                    ++column;
+                    break;
             }
 
             return ch;

@@ -10,6 +10,8 @@ namespace Kostic017.Pigeon.Tests
         public void Lex(string text, Expected expected)
         {
             var interpreter = new Interpreter();
+            interpreter.SetTabSize(4);
+
             var (tokens, _) = interpreter.Lex(text);
 
             Assert.True(tokens.Length > 0 && tokens.Length <= 2);
@@ -21,6 +23,16 @@ namespace Kostic017.Pigeon.Tests
 
             Assert.Equal(tokens[0].Type, expected.TokenType);
             Assert.Equal(tokens[0].Value, expected.Value);
+
+            if (expected.Line > -1)
+            {
+                Assert.Equal(expected.Line, tokens[0].StartLine);
+            }
+
+            if (expected.Column > -1)
+            {
+                Assert.Equal(expected.Column, tokens[0].StartColumn);
+            }
         }
 
         public static IEnumerable<object[]> GetTestData()
@@ -88,22 +100,29 @@ namespace Kostic017.Pigeon.Tests
             (":", E(SyntaxTokenType.Colon)),
             (",", E(SyntaxTokenType.Comma)),
             (";", E(SyntaxTokenType.Semicolon)),
+            ("\tif", E(SyntaxTokenType.If, l:1, c:5)),
+            ("\nif", E(SyntaxTokenType.If, l:2, c:1)),
+            ("\n\t if", E(SyntaxTokenType.If, l:2, c:6)),
         };
 
-        static Expected E(SyntaxTokenType tokenType, string value = null)
+        static Expected E(SyntaxTokenType t, string v = null, int l = -1, int c = -1)
         {
-            return new Expected(tokenType, value);
+            return new Expected(t, v, l, c);
         }
 
         public struct Expected
         {
             internal SyntaxTokenType TokenType { get; }
             internal string Value { get; }
+            internal int Line { get; }
+            internal int Column { get;  }
 
-            public Expected(SyntaxTokenType tokenType, string value)
+            public Expected(SyntaxTokenType tokenType, string value, int line, int column)
             {
                 TokenType = tokenType;
                 Value = value;
+                Line = line;
+                Column = column;
             }
         }
 
