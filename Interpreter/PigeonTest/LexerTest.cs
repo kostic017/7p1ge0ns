@@ -9,10 +9,9 @@ namespace Kostic017.Pigeon.Tests
         [MemberData(nameof(GetTestData))]
         public void Lex(string text, Expected expected)
         {
-            var interpreter = new Interpreter();
-            interpreter.SetTabSize(4);
+            var interpreter = new Interpreter(text);
 
-            var (tokens, _) = interpreter.Lex(text);
+            var tokens = interpreter.Lex();
 
             Assert.True(tokens.Length > 0 && tokens.Length <= 2);
 
@@ -115,7 +114,7 @@ namespace Kostic017.Pigeon.Tests
             internal SyntaxTokenType TokenType { get; }
             internal string Value { get; }
             internal int Line { get; }
-            internal int Column { get;  }
+            internal int Column { get; }
 
             public Expected(SyntaxTokenType tokenType, string value, int line, int column)
             {

@@ -1,40 +1,37 @@
 ﻿using Kostic017.Pigeon.AST;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Kostic017.Pigeon
 {
     public class Interpreter
     {
-        readonly Lexer lexer;
-        readonly Parser parser;
+        readonly int tabSize;
+        readonly string code;
 
-        public Interpreter()
+        public List<CodeError> Errors { get; }
+
+        public Interpreter(string code, int tabSize = 4)
         {
-            lexer = new Lexer();
-            parser = new Parser();
+            this.code = code;
+            this.tabSize = tabSize;
+            Errors = new List<CodeError>();
         }
 
-        public (SyntaxToken[], CodeError[]) Lex(string code)
+        public SyntaxToken[] Lex()
         {
-            return lexer.Lex(code);
+            var lexer = new Lexer(code, tabSize);
+            Errors.Concat(lexer.Errors);
+            return lexer.Lex();
         }
 
-        public (AstNode, CodeError[]) Parse(SyntaxToken[] tokens)
+        public AstNode Parse()
         {
-            return parser.Parse(RemoveComments(tokens));
+            var parser = new Parser(RemoveComments(Lex()));
+            Errors.Concat(parser.Errors);
+            return parser.Parse();
         }
-
-        public (AstNode, CodeError[]) Parse(string code)
-        {
-            var (tokens, _) = Lex(code);
-            return Parse(tokens);
-        }
-
-        public void SetTabSize(int tabSize)
-        {
-            lexer.TabSize = tabSize;
-        }
-
+        
         SyntaxToken[] RemoveComments(SyntaxToken[] tokens)
         {
             return tokens.Where(token => token.Type != SyntaxTokenType.Comment && token.Type != SyntaxTokenType.BlockComment).ToArray();

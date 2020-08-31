@@ -25,17 +25,23 @@ namespace Kostic017.Pigeon
         };
 
         int index;
-        SyntaxToken[] tokens;
-        List<CodeError> errors;
+
+        readonly SyntaxToken[] tokens;
+
+        internal List<CodeError> Errors { get; }
 
         SyntaxToken Current => index < tokens.Length ? tokens[index] : tokens[tokens.Length - 1];
 
-        internal (AstNode, CodeError[]) Parse(SyntaxToken[] tokens)
+        internal Parser(SyntaxToken[] tokens)
         {
             index = 0;
             this.tokens = tokens;
-            errors = new List<CodeError>();
-            return (ParseExpression(), errors.ToArray());
+            Errors = new List<CodeError>();
+        }
+
+        internal AstNode Parse()
+        {
+            return ParseExpression();
         }
 
         /// <summary>
@@ -115,7 +121,7 @@ namespace Kostic017.Pigeon
 
         void ReportError(CodeErrorType type, params string[] data)
         {
-            errors.Add(new CodeError(type, Current.StartLine, Current.StartColumn, data));
+            Errors.Add(new CodeError(type, Current.StartLine, Current.StartColumn, data));
         }
     }
 }

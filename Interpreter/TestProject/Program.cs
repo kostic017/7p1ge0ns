@@ -1,8 +1,5 @@
 ﻿using Kostic017.Pigeon;
-using Kostic017.Pigeon.AST;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace TestProject
 {
@@ -10,7 +7,7 @@ namespace TestProject
     {
         static void Main()
         {
-            Interpreter interpreter = new Interpreter();
+            
 
             while (true)
             {
@@ -26,11 +23,20 @@ namespace TestProject
                     break;
                 }
 
-                var (tokens, lexErrors) = interpreter.Lex(line);
-                var (ast, parseErrors) = interpreter.Parse(tokens);
+                var interpreter = new Interpreter(line);
+                var tokens = interpreter.Lex();
+                var ast = interpreter.Parse();
+
+                foreach (var token in tokens)
+                {
+                    Console.WriteLine($"{token.Type} {token.Value}");
+                }
+
+                Console.WriteLine();
+
                 Console.WriteLine(ast.PrettyPrint());
 
-                foreach (var error in lexErrors.Concat(parseErrors))
+                foreach (var error in interpreter.Errors)
                 {
                     Console.WriteLine(error.DetailedMessage);
                 }

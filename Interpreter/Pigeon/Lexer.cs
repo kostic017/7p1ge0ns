@@ -21,24 +21,27 @@ namespace Kostic017.Pigeon
         int tokenStartColumn;
         int tokenStartIndex;
 
-        string code;
-
-        List<CodeError> errors;
+        readonly int tabSize;
+        readonly string code;
+        
+        internal List<CodeError> Errors { get; }
 
         char PrevChar => index - 1 >= 0 ? code[index - 1] : '\0';
         char CurrentChar => index < code.Length ? code[index] : '\0';
         char NextChar => index + 1 < code.Length ? code[index + 1] : '\0';
 
-        public int TabSize { get; set; } = 4;
-        
-        internal (SyntaxToken[], CodeError[]) Lex(string str)
+        internal Lexer(string code, int tabSize)
         {
             line = 1;
             index = 0;
-            code = str;
             column = 0;
-            errors = new List<CodeError>();
+            this.code = code;
+            this.tabSize = tabSize;
+            Errors = new List<CodeError>();
+        }
 
+        internal SyntaxToken[] Lex()
+        {
             SyntaxToken tok;
             List<SyntaxToken> tokens = new List<SyntaxToken>();
 
@@ -48,7 +51,7 @@ namespace Kostic017.Pigeon
                 tokens.Add(tok);
             } while (tok.Type != SyntaxTokenType.EOF);
 
-            return (tokens.ToArray(), errors.ToArray());
+            return tokens.ToArray();
         }
 
         SyntaxToken NextToken()
@@ -354,7 +357,7 @@ namespace Kostic017.Pigeon
                     ++line;
                     break;
                 case '\t':
-                    column += TabSize;
+                    column += tabSize;
                     break;
                 default:
                     ++column;
@@ -381,7 +384,7 @@ namespace Kostic017.Pigeon
 
         void ReportError(CodeErrorType type, params string[] data)
         {
-            errors.Add(new CodeError(type, tokenStartLine, tokenStartColumn, data));
+            Errors.Add(new CodeError(type, tokenStartLine, tokenStartColumn, data));
         }
     }
 }
