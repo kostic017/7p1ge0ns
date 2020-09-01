@@ -1,5 +1,6 @@
 ﻿using Kostic017.Pigeon.AST;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Kostic017.Pigeon
 {
@@ -32,11 +33,16 @@ namespace Kostic017.Pigeon
 
         SyntaxToken Current => index < tokens.Length ? tokens[index] : tokens[tokens.Length - 1];
 
-        internal Parser(SyntaxToken[] tokens)
+        internal Parser(SyntaxToken[] syntaxTokens)
         {
             index = 0;
-            this.tokens = tokens;
+            tokens = RemoveComments(syntaxTokens);
             Errors = new List<CodeError>();
+        }
+
+        static SyntaxToken[] RemoveComments(SyntaxToken[] tokens)
+        {
+            return tokens.Where(token => token.Type != SyntaxTokenType.Comment && token.Type != SyntaxTokenType.BlockComment).ToArray();
         }
 
         internal AstNode Parse()

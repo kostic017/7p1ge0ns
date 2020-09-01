@@ -10,8 +10,7 @@ namespace Kostic017.Pigeon.Tests
         public void Lex(string text, Expected expected)
         {
             var syntaxTree = new SyntaxTree(text);
-
-            var tokens = syntaxTree.Lex();
+            var tokens = syntaxTree.Tokens;
 
             Assert.True(tokens.Length > 0 && tokens.Length <= 2);
 

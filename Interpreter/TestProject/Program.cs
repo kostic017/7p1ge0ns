@@ -24,15 +24,13 @@ namespace TestProject
                 }
 
                 var syntaxTree = new SyntaxTree(line);
-                var tokens = syntaxTree.Lex();
-                var ast = syntaxTree.Parse();
 
-                foreach (var token in tokens)
+                foreach (var token in syntaxTree.Tokens)
                 {
                     Console.WriteLine($"{token.Type} {token.Value}");
                 }
 
-                Console.WriteLine(ast);
+                Console.WriteLine(syntaxTree.Ast);
 
                 Console.WriteLine();
 

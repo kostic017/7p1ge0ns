@@ -13,8 +13,7 @@ namespace Kostic017.Pigeon.Tests
         public void ParseExpression(string text, string expected)
         {
             var syntaxTree = new SyntaxTree(text);
-            var ast = syntaxTree.Parse();
-            Assert.Equal(expected, ast.ToString());
+            Assert.Equal(expected, syntaxTree.Ast.ToString());
         }
     }
 }

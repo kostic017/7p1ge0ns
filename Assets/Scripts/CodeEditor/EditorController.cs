@@ -41,9 +41,8 @@ public class EditorController : MonoBehaviour
         UpdateLineNumbers(code);
 
         var syntaxTree = new SyntaxTree(code, textBox.fontAsset.tabSize);
-        var tokens = syntaxTree.Lex();
 
-        code = highlighter.Highlight(code, tokens);
+        code = highlighter.Highlight(code, syntaxTree.Tokens);
 
         UpdateErrorConsole(syntaxTree.Errors);
 
@@ -53,17 +52,17 @@ public class EditorController : MonoBehaviour
         textBox.caretPosition = caret;
     }
 
-    void UpdateErrorConsole(List<CodeError> errors)
+    void UpdateErrorConsole(CodeError[] errors)
     {
         consoleOutput.text = "";
 
-        if (errors.Count > 0)
+        if (errors.Length > 0)
         {
             consoleOutput.text = errors[0].DetailedMessage;
 
-            if (errors.Count > 1)
+            if (errors.Length > 1)
             {
-                consoleOutput.text += $" (and {errors.Count - 1} more)";
+                consoleOutput.text += $" (and {errors.Length - 1} more)";
             }
         }
     }
