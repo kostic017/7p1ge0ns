@@ -8,5 +8,7 @@
         {
             Expression = expression;
         }
+
+        internal override AstNodeKind Kind() => AstNodeKind.ParenthesizedExpression;
     }
 }

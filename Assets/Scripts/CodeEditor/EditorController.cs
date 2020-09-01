@@ -40,12 +40,12 @@ public class EditorController : MonoBehaviour
 
         UpdateLineNumbers(code);
 
-        var interpreter = new Interpreter(code, textBox.fontAsset.tabSize);
-        var tokens = interpreter.Lex();
+        var syntaxTree = new SyntaxTree(code, textBox.fontAsset.tabSize);
+        var tokens = syntaxTree.Lex();
 
         code = highlighter.Highlight(code, tokens);
 
-        UpdateErrorConsole(interpreter.Errors);
+        UpdateErrorConsole(syntaxTree.Errors);
 
         // inserting rich text while the player is typing used to result in caret being positioned inside rich text tags
         int caret = textBox.caretPosition;

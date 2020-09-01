@@ -4,14 +4,14 @@ using System.Linq;
 
 namespace Kostic017.Pigeon
 {
-    public class Interpreter
+    public class SyntaxTree
     {
         readonly int tabSize;
         readonly string code;
 
         public List<CodeError> Errors { get; }
 
-        public Interpreter(string code, int tabSize = 4)
+        public SyntaxTree(string code, int tabSize = 4)
         {
             this.code = code;
             this.tabSize = tabSize;

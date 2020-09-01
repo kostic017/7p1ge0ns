@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Kostic017.Pigeon
 {
@@ -216,38 +217,34 @@ namespace Kostic017.Pigeon
 
         SyntaxToken LexString()
         {
-            bool err = false;
+            bool done = false;
             string value = "";
 
-            while (!err && CurrentChar != '"')
+            while (CurrentChar != '"' && !done)
             {
-                if (CurrentChar == '\0')
+                switch (CurrentChar)
                 {
-                    ReportError(CodeErrorType.UNTERMINATED_STRING);
-                    break;
-                }
-
-                if (CurrentChar == '\n')
-                {
-                    ReportError(CodeErrorType.NEWLINE_IN_STRING);
-                    break;
-                }
-
-                if (CurrentChar == '\\')
-                {
-                    if (escapes.Contains(NextChar))
-                    {
-                        value += NextChar;
-                    }
-                    else
-                    {
-                        ReportError(CodeErrorType.INVALID_ESCAPE_CHAR, $"\\{NextChar}");
-                    }
-                    EatCurrentChar();
-                }
-                else
-                {
-                    value += CurrentChar;
+                    case '\0':
+                    case '\n':
+                        done = true;
+                        ReportError(CodeErrorType.UNTERMINATED_STRING);
+                        break;
+                    
+                    case '\\':
+                        if (escapes.Contains(NextChar))
+                        {
+                            value += NextChar;
+                        }
+                        else
+                        {
+                            ReportError(CodeErrorType.INVALID_ESCAPE_CHAR, $"\\{NextChar}");
+                        }
+                        EatCurrentChar();
+                        break;
+                    
+                    default:
+                        value += CurrentChar;
+                        break;
                 }
 
                 EatCurrentChar();

@@ -35,11 +35,10 @@ namespace Kostic017.Pigeon
             {
                 { CodeErrorType.UNTERMINATED_COMMENT_BLOCK, "Unterminated comment block" },
                 { CodeErrorType.INVALID_ESCAPE_CHAR, "Invalid escape char {0}" },
-                { CodeErrorType.NEWLINE_IN_STRING, "Newline in string" },
                 { CodeErrorType.UNTERMINATED_STRING, "Unterminated string" },
                 { CodeErrorType.UNEXPECTED_CHARACTER, "Unexpected character {0}" },
                 { CodeErrorType.ILLEGAL_NUMBER, "Illegal number {0}" },
-                { CodeErrorType.MISSING_EXPECTED_TOKEN, "Expected {0}" },
+                { CodeErrorType.EXPECTED_TOKEN, "Expected {0}" },
                 { CodeErrorType.INVALID_EXPRESSION_TERM, "Invalid expression term {0}" },
             };
     }

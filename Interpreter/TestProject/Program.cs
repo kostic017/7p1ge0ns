@@ -23,20 +23,20 @@ namespace TestProject
                     break;
                 }
 
-                var interpreter = new Interpreter(line);
-                var tokens = interpreter.Lex();
-                var ast = interpreter.Parse();
+                var syntaxTree = new SyntaxTree(line);
+                var tokens = syntaxTree.Lex();
+                var ast = syntaxTree.Parse();
 
                 foreach (var token in tokens)
                 {
                     Console.WriteLine($"{token.Type} {token.Value}");
                 }
 
+                Console.WriteLine(ast);
+
                 Console.WriteLine();
 
-                Console.WriteLine(ast.PrettyPrint());
-
-                foreach (var error in interpreter.Errors)
+                foreach (var error in syntaxTree.Errors)
                 {
                     Console.WriteLine(error.DetailedMessage);
                 }

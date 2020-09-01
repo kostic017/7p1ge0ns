@@ -8,5 +8,7 @@
         {
             Value = value;
         }
+
+        internal override AstNodeKind Kind() => AstNodeKind.IdExpression;
     }
 }

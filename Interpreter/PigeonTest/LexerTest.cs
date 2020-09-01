@@ -9,9 +9,9 @@ namespace Kostic017.Pigeon.Tests
         [MemberData(nameof(GetTestData))]
         public void Lex(string text, Expected expected)
         {
-            var interpreter = new Interpreter(text);
+            var syntaxTree = new SyntaxTree(text);
 
-            var tokens = interpreter.Lex();
+            var tokens = syntaxTree.Lex();
 
             Assert.True(tokens.Length > 0 && tokens.Length <= 2);
 

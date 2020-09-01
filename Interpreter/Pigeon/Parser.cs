@@ -105,7 +105,7 @@ namespace Kostic017.Pigeon
         {
             if (Current.Type != type)
             {
-                ReportError(CodeErrorType.MISSING_EXPECTED_TOKEN, type.PrettyPrint());
+                ReportError(CodeErrorType.EXPECTED_TOKEN, type.PrettyPrint());
                 return new SyntaxToken(type, -1, -1, -1, -1); // return dummy token to avoid null checks later on
             }
 
