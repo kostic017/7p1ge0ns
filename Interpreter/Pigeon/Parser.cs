@@ -41,7 +41,7 @@ namespace Kostic017.Pigeon
             Errors = new List<CodeError>();
         }
 
-        static SyntaxToken[] RemoveComments(SyntaxToken[] tokens)
+        private static SyntaxToken[] RemoveComments(SyntaxToken[] tokens)
         {
             return tokens.Where(token => token.Type != SyntaxTokenType.Comment && token.Type != SyntaxTokenType.BlockComment).ToArray();
         }
@@ -54,7 +54,7 @@ namespace Kostic017.Pigeon
         /// <summary>
         /// Parses expressions by precedence climbing.
         /// </summary>
-        ExpressionNode ParseExpression(int precedence = 0)
+        private ExpressionNode ParseExpression(int precedence = 0)
         {
             var left = ParsePrimaryExpression();
 
@@ -69,7 +69,7 @@ namespace Kostic017.Pigeon
             return left;
         }
 
-        ExpressionNode ParsePrimaryExpression()
+        private ExpressionNode ParsePrimaryExpression()
         {
             switch (Current.Type)
             {
@@ -157,7 +157,7 @@ namespace Kostic017.Pigeon
             return new UnaryExpressionNode(op.Type, primary);
         }
 
-        SyntaxToken Match(SyntaxTokenType type)
+        private SyntaxToken Match(SyntaxTokenType type)
         {
             if (Current.Type != type)
             {
@@ -167,15 +167,15 @@ namespace Kostic017.Pigeon
 
             return NextToken();
         }
-        
-        SyntaxToken NextToken()
+
+        private SyntaxToken NextToken()
         {
             var current = Current;
             ++index;
             return current;
         }
 
-        void ReportError(CodeErrorType type, params string[] data)
+        private void ReportError(CodeErrorType type, params string[] data)
         {
             Errors.Add(new CodeError(type, Current.StartLine, Current.StartColumn, data));
         }

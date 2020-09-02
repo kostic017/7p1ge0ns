@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Kostic017.Pigeon
 {
@@ -55,7 +54,7 @@ namespace Kostic017.Pigeon
             return tokens.ToArray();
         }
 
-        SyntaxToken NextToken()
+        private SyntaxToken NextToken()
         {
             while (CurrentChar != '\0')
             {
@@ -215,7 +214,7 @@ namespace Kostic017.Pigeon
             return Token(SyntaxTokenType.EOF);
         }
 
-        SyntaxToken LexString()
+        private SyntaxToken LexString()
         {
             bool done = false;
             string value = "";
@@ -255,7 +254,7 @@ namespace Kostic017.Pigeon
             return Token(SyntaxTokenType.StringLiteral, value);
         }
 
-        SyntaxToken LexComment()
+        private SyntaxToken LexComment()
         {
             if (CurrentChar == '/')
             {
@@ -291,7 +290,7 @@ namespace Kostic017.Pigeon
             return Token(SyntaxTokenType.BlockComment);
         }
 
-        SyntaxToken LexNumber()
+        private SyntaxToken LexNumber()
         {
             bool isReal = false;
             string value = PrevChar.ToString();
@@ -309,7 +308,7 @@ namespace Kostic017.Pigeon
             return Token(isReal ? SyntaxTokenType.FloatLiteral : SyntaxTokenType.IntLiteral, value);
         }
 
-        SyntaxToken LexWord()
+        private SyntaxToken LexWord()
         {
             string value = PrevChar.ToString();
 
@@ -337,7 +336,7 @@ namespace Kostic017.Pigeon
             return Token(SyntaxTokenType.ID, value);
         }
 
-        char EatCurrentChar()
+        private char EatCurrentChar()
         {
             if (index >= code.Length)
             {
@@ -364,7 +363,7 @@ namespace Kostic017.Pigeon
             return ch;
         }
 
-        bool TryEatCurrentChar(char ch)
+        private bool TryEatCurrentChar(char ch)
         {
             if (CurrentChar == ch)
             {
@@ -374,12 +373,12 @@ namespace Kostic017.Pigeon
             return false;
         }
 
-        SyntaxToken Token(SyntaxTokenType type, string lexeme = null)
+        private SyntaxToken Token(SyntaxTokenType type, string lexeme = null)
         {
             return new SyntaxToken(type, tokenStartIndex, index, tokenStartLine, tokenStartColumn, lexeme);
         }
 
-        void ReportError(CodeErrorType type, params string[] data)
+        private void ReportError(CodeErrorType type, params string[] data)
         {
             Errors.Add(new CodeError(type, tokenStartLine, tokenStartColumn, data));
         }
