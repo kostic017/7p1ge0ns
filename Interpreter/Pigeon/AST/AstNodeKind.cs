@@ -6,6 +6,7 @@
         IdExpression,
         LiteralExpression,
         ParenthesizedExpression,
-        UnaryExpression
+        UnaryExpression,
+        Program
     }
 }

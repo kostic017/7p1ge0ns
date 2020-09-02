@@ -12,7 +12,7 @@
         public int StartLine { get; }
         public int StartColumn { get; }
 
-        public SyntaxToken(SyntaxTokenType type, int startIndex, int endIndex, int startLine, int startColumn, string value = null)
+        internal SyntaxToken(SyntaxTokenType type, int startIndex, int endIndex, int startLine, int startColumn, string value = null)
         {
             Type = type;
             StartIndex = startIndex;
