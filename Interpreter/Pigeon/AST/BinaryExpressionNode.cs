@@ -13,6 +13,6 @@
             Right = right;
         }
 
-        internal override AstNodeKind Kind() => AstNodeKind.BinaryExpression;
+        internal override AstNodeKind Kind => AstNodeKind.BinaryExpression;
     }
 }

@@ -9,6 +9,6 @@
             Value = value;
         }
 
-        internal override AstNodeKind Kind() => AstNodeKind.IdExpression;
+        internal override AstNodeKind Kind => AstNodeKind.IdExpression;
     }
 }

@@ -48,7 +48,68 @@ namespace Kostic017.Pigeon
 
         internal AstNode Parse()
         {
-            return ParseExpression();
+            return ParseProgram();
+        }
+
+        private AstNode ParseProgram()
+        {
+            var stmtBlock = ParseStatementBlock();
+            return new ProgramNode(stmtBlock);
+        }
+
+        private StatementBlockNode ParseStatementBlock()
+        {
+            var statements = new List<StatementNode>();
+
+            if (Current.Type == SyntaxTokenType.LBrace)
+            {
+                Match(SyntaxTokenType.LBrace);
+
+                while (Current.Type != SyntaxTokenType.RBrace && Current.Type != SyntaxTokenType.EOF)
+                {
+                    statements.Add(ParseStatement());
+                }
+
+                Match(SyntaxTokenType.RBrace);
+            }
+            else
+            {
+                statements.Add(ParseStatement());
+            }
+            
+            return new StatementBlockNode(statements.ToArray());
+        }
+
+        private StatementNode ParseStatement()
+        {
+            switch (Current.Type)
+            {
+                case SyntaxTokenType.LBrace:
+                    return ParseStatementBlock();
+                case SyntaxTokenType.Let:
+                case SyntaxTokenType.Const:
+                    return ParseVariableDeclaration();
+                default:
+                    ReportError(CodeErrorType.EXPECTED_STATEMENT);
+                    throw new System.Exception(); // TODO
+            }
+        }
+
+        // (let|const) id [= <expression>]
+        private VariableDeclarationNode ParseVariableDeclaration()
+        {
+            var keyword = NextToken();
+            var id = Match(SyntaxTokenType.ID);
+            
+            if (Current.Type == SyntaxTokenType.Assign)
+            {
+                Match(SyntaxTokenType.Assign);
+                var value = ParseExpression();
+                return new VariableDeclarationNode(keyword, id, value);
+            }
+
+            Match(SyntaxTokenType.Semicolon);
+            return new VariableDeclarationNode(keyword, id);
         }
 
         /// <summary>

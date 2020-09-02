@@ -33,13 +33,15 @@ namespace Kostic017.Pigeon
         private static readonly Dictionary<CodeErrorType, string> messages =
             new Dictionary<CodeErrorType, string>
             {
-                { CodeErrorType.UNTERMINATED_COMMENT_BLOCK, "Unterminated comment block" },
-                { CodeErrorType.INVALID_ESCAPE_CHAR, "Invalid escape char {0}" },
-                { CodeErrorType.UNTERMINATED_STRING, "Unterminated string" },
-                { CodeErrorType.UNEXPECTED_CHARACTER, "Unexpected character {0}" },
                 { CodeErrorType.ILLEGAL_NUMBER, "Illegal number {0}" },
                 { CodeErrorType.EXPECTED_TOKEN, "Expected {0}" },
+                { CodeErrorType.EXPECTED_STATEMENT, "Expected statement" },
+                { CodeErrorType.UNTERMINATED_STRING, "Unterminated string" },
+                { CodeErrorType.INVALID_ESCAPE_CHAR, "Invalid escape char {0}" },
+                { CodeErrorType.UNEXPECTED_CHARACTER, "Unexpected character {0}" },
                 { CodeErrorType.INVALID_EXPRESSION_TERM, "Invalid expression term {0}" },
+                { CodeErrorType.UNTERMINATED_COMMENT_BLOCK, "Unterminated comment block" },
+                { CodeErrorType.UNTERMINATED_STATEMENT_BLOCK, "Unterminated statement block" },
             };
     }
 }

@@ -17,6 +17,8 @@ namespace Kostic017.Pigeon
                 { "break", SyntaxTokenType.Break },
                 { "continue", SyntaxTokenType.Continue },
                 { "return", SyntaxTokenType.Return },
+                { "let", SyntaxTokenType.Let },
+                { "const", SyntaxTokenType.Const },
             };
 
         public static readonly Dictionary<string, SyntaxTokenType> Types =

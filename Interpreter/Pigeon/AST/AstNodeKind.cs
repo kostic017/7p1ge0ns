@@ -3,10 +3,12 @@
     enum AstNodeKind
     {
         Program,
+        StatementBlock,
         BinaryExpression,
         IdExpression,
         LiteralExpression,
         ParenthesizedExpression,
         UnaryExpression,
+        VariableDeclaration,
     }
 }

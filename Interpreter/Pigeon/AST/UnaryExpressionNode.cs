@@ -11,6 +11,6 @@
             Value = value;
         }
 
-        internal override AstNodeKind Kind() => AstNodeKind.UnaryExpression;
+        internal override AstNodeKind Kind => AstNodeKind.UnaryExpression;
     }
 }

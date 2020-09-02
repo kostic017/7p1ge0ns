@@ -4,36 +4,43 @@ namespace Kostic017.Pigeon.AST
 {
     public abstract class AstNode
     {
-        internal abstract AstNodeKind Kind();
+        internal abstract AstNodeKind Kind { get; }
 
         public override string ToString()
         {
             var writer = new StringWriter();
-            PrettyPrint(this, writer);
+            Print(this, writer);
             return writer.ToString();
         }
 
-        static void PrettyPrint(AstNode node, TextWriter writer, string ident = "")
+        static void Print(AstNode node, TextWriter writer, string ident = "")
         {
-            switch (node.Kind())
+            switch (node.Kind)
             {
                 case AstNodeKind.Program:
-                    PrettyPrintProgram((ProgramNode)node, writer, ident);
+                    PrintProgram((ProgramNode)node, writer);
+                    break;
+                case AstNodeKind.StatementBlock:
+                    PrintStatementBlock((StatementBlockNode)node, writer, ident);
+                    break;
+                case AstNodeKind.VariableDeclaration:
+                    PrintVariableDeclaration((VariableDeclarationNode)node, writer, ident);
+                    break;
                     break;
                 case AstNodeKind.BinaryExpression:
-                    PrettyPrintBinaryExpression((BinaryExpressionNode)node, writer);
+                    PrintBinaryExpression((BinaryExpressionNode)node, writer);
                     break;
                 case AstNodeKind.IdExpression:
-                    PrettyPrintIdExpression((IdExpressionNode)node, writer);
+                    PrintIdExpression((IdExpressionNode)node, writer);
                     break;
                 case AstNodeKind.LiteralExpression:
-                    PrettyPrintLiteralExpression((LiteralExpressionNode)node, writer);
+                    PrintLiteralExpression((LiteralExpressionNode)node, writer);
                     break;
                 case AstNodeKind.ParenthesizedExpression:
-                    PrettyPrintParenthesizedExpression((ParenthesizedExpressionNode)node, writer);
+                    PrintParenthesizedExpression((ParenthesizedExpressionNode)node, writer);
                     break;
                 case AstNodeKind.UnaryExpression:
-                    PrettyPrintUnaryExpression((UnaryExpressionNode)node, writer);
+                    PrintUnaryExpression((UnaryExpressionNode)node, writer);
                     break;
                 default:
                     node.GetType().ToString();
@@ -41,46 +48,62 @@ namespace Kostic017.Pigeon.AST
             }
         }
 
-        static void PrettyPrintProgram(ProgramNode node, TextWriter writer, string ident)
+        private static void PrintProgram(ProgramNode node, TextWriter writer)
         {
-            
-            foreach (StatementNode stmt in node.Statements)
+            Print(node.StatementBlock, writer);
+        }
+
+        private static void PrintStatementBlock(StatementBlockNode node, TextWriter writer, string ident)
+        {
+            foreach (var stmt in node.Statements)
             {
-                PrettyPrint(stmt, writer, ident + "    ");
+                Print(stmt, writer, ident + "    ");
             }
         }
 
-        static void PrettyPrintBinaryExpression(BinaryExpressionNode node, TextWriter writer)
+        private static void PrintVariableDeclaration(VariableDeclarationNode node, TextWriter writer, string ident)
+        {
+            writer.Write(ident);
+            writer.Write($"{node.Keyword.Type} {node.Name.Value}");
+            
+            if (node.Value != null)
+            {
+                writer.Write(" = ");
+                Print(node.Value, writer);
+            }
+        }
+
+        private static void PrintBinaryExpression(BinaryExpressionNode node, TextWriter writer)
         {
             writer.Write("(");
-            PrettyPrint(node.Left, writer);
+            Print(node.Left, writer);
             writer.Write($" {node.Op.PrettyPrint()} ");
-            PrettyPrint(node.Right, writer);
+            Print(node.Right, writer);
             writer.Write(")");
         }
 
-        static void PrettyPrintIdExpression(IdExpressionNode node, TextWriter writer)
+        private static void PrintIdExpression(IdExpressionNode node, TextWriter writer)
         {
             writer.Write(node.Value);
         }
 
-        static void PrettyPrintLiteralExpression(LiteralExpressionNode node, TextWriter writer)
+        private static void PrintLiteralExpression(LiteralExpressionNode node, TextWriter writer)
         {
             writer.Write(node.Value);
         }
 
-        static void PrettyPrintParenthesizedExpression(ParenthesizedExpressionNode node, TextWriter writer)
+        private static void PrintParenthesizedExpression(ParenthesizedExpressionNode node, TextWriter writer)
         {
             writer.Write("[");
-            PrettyPrint(node.Expression, writer);
+            Print(node.Expression, writer);
             writer.Write("]");
         }
 
-        static void PrettyPrintUnaryExpression(UnaryExpressionNode node, TextWriter writer)
+        private static void PrintUnaryExpression(UnaryExpressionNode node, TextWriter writer)
         {
             writer.Write("(");
             writer.Write(node.Op.PrettyPrint());
-            PrettyPrint(node.Value, writer);
+            Print(node.Value, writer);
             writer.Write(")");
         }
     }

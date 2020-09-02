@@ -8,7 +8,6 @@ namespace TestProject
         static void Main()
         {
             
-
             while (true)
             {
                 Console.Write("> ");
@@ -25,14 +24,7 @@ namespace TestProject
 
                 var syntaxTree = new SyntaxTree(line);
 
-                foreach (var token in syntaxTree.Tokens)
-                {
-                    Console.WriteLine($"{token.Type} {token.Value}");
-                }
-
                 Console.WriteLine(syntaxTree.Ast);
-
-                Console.WriteLine();
 
                 foreach (var error in syntaxTree.Errors)
                 {

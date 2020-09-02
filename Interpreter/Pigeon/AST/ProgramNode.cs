@@ -1,16 +1,14 @@
-﻿using System.Collections.Generic;
-
-namespace Kostic017.Pigeon.AST
+﻿namespace Kostic017.Pigeon.AST
 {
     class ProgramNode : AstNode
     {
-        internal List<StatementNode> Statements { get; }
+        internal StatementBlockNode StatementBlock { get; }
 
-        internal ProgramNode(List<StatementNode> statements)
+        internal ProgramNode(StatementBlockNode statementBlock)
         {
-            Statements = statements;
+            StatementBlock = statementBlock;
         }
 
-        internal override AstNodeKind Kind() => AstNodeKind.Program;
+        internal override AstNodeKind Kind => AstNodeKind.Program;
     }
 }

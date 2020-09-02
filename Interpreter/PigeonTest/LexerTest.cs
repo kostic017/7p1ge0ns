@@ -62,6 +62,8 @@ namespace Kostic017.Pigeon.Tests
             ("bool", E(SyntaxTokenType.Bool)),
             ("string", E(SyntaxTokenType.String)),
             ("void", E(SyntaxTokenType.Void)),
+            ("let", E(SyntaxTokenType.Let)),
+            ("const", E(SyntaxTokenType.Const)),
             ("x", E(SyntaxTokenType.ID, "x")),
             ("17", E(SyntaxTokenType.IntLiteral, "17")),
             ("17.0", E(SyntaxTokenType.FloatLiteral, "17.0")),

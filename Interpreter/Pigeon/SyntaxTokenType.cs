@@ -24,6 +24,8 @@ namespace Kostic017.Pigeon
         Bool,
         String,
         Void,
+        Let,
+        Const,
 
         ID,
         IntLiteral,
