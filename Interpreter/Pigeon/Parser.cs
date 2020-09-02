@@ -66,9 +66,10 @@ namespace Kostic017.Pigeon
                 Match(SyntaxTokenType.LBrace);
 
                 while (Current.Type != SyntaxTokenType.RBrace && Current.Type != SyntaxTokenType.EOF)
-                {
                     statements.Add(ParseStatement());
-                }
+
+                if (Current.Type == SyntaxTokenType.EOF)
+                    ReportError(CodeErrorType.UNTERMINATED_STATEMENT_BLOCK);
 
                 Match(SyntaxTokenType.RBrace);
             }
@@ -90,8 +91,7 @@ namespace Kostic017.Pigeon
                 case SyntaxTokenType.Const:
                     return ParseVariableDeclaration();
                 default:
-                    ReportError(CodeErrorType.EXPECTED_STATEMENT);
-                    throw new System.Exception(); // TODO
+                    return ParseExpressionStatement();
             }
         }
 
@@ -110,6 +110,15 @@ namespace Kostic017.Pigeon
 
             Match(SyntaxTokenType.Semicolon);
             return new VariableDeclarationNode(keyword, id);
+        }
+
+        // id = <expression>
+        // id([<expression>, ...])
+        // <expression>
+        private StatementNode ParseExpressionStatement()
+        {
+            var expression = ParseExpression();
+            return new ExpressionStatementNode(expression);
         }
 
         /// <summary>
@@ -223,7 +232,7 @@ namespace Kostic017.Pigeon
             if (Current.Type != type)
             {
                 ReportError(CodeErrorType.EXPECTED_TOKEN, type.PrettyPrint());
-                return new SyntaxToken(type, -1, -1, -1, -1); // return dummy token to avoid null checks later on
+                return new SyntaxToken(type, -1, -1, -1, -1); // fabricate token to avoid null checks later on
             }
 
             return NextToken();

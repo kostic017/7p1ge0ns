@@ -10,5 +10,6 @@
         ParenthesizedExpression,
         UnaryExpression,
         VariableDeclaration,
+        ExpressionStatement,
     }
 }

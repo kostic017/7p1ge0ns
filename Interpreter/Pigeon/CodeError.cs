@@ -34,8 +34,7 @@ namespace Kostic017.Pigeon
             new Dictionary<CodeErrorType, string>
             {
                 { CodeErrorType.ILLEGAL_NUMBER, "Illegal number {0}" },
-                { CodeErrorType.EXPECTED_TOKEN, "Expected {0}" },
-                { CodeErrorType.EXPECTED_STATEMENT, "Expected statement" },
+                { CodeErrorType.EXPECTED_TOKEN, "Expected {0} token" },
                 { CodeErrorType.UNTERMINATED_STRING, "Unterminated string" },
                 { CodeErrorType.INVALID_ESCAPE_CHAR, "Invalid escape char {0}" },
                 { CodeErrorType.UNEXPECTED_CHARACTER, "Unexpected character {0}" },

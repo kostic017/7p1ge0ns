@@ -26,6 +26,8 @@ namespace Kostic017.Pigeon.AST
                 case AstNodeKind.VariableDeclaration:
                     PrintVariableDeclaration((VariableDeclarationNode)node, writer, ident);
                     break;
+                case AstNodeKind.ExpressionStatement:
+                    PrintExpressionStatement((ExpressionStatementNode)node, writer, ident);
                     break;
                 case AstNodeKind.BinaryExpression:
                     PrintBinaryExpression((BinaryExpressionNode)node, writer);
@@ -71,6 +73,12 @@ namespace Kostic017.Pigeon.AST
                 writer.Write(" = ");
                 Print(node.Value, writer);
             }
+        }
+
+        private static void PrintExpressionStatement(ExpressionStatementNode node, TextWriter writer, string ident)
+        {
+            writer.Write(ident);
+            Print(node.expression, writer);
         }
 
         private static void PrintBinaryExpression(BinaryExpressionNode node, TextWriter writer)
