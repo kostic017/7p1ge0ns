@@ -1,5 +1,6 @@
 ﻿using Kostic017.Pigeon.AST;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Kostic017.Pigeon
@@ -55,13 +56,13 @@ namespace Kostic017.Pigeon
         /// </summary>
         ExpressionNode ParseExpression(int precedence = 0)
         {
-            ExpressionNode left = ParsePrimaryExpression();
+            var left = ParsePrimaryExpression();
 
             while (binOps.ContainsKey(Current.Type) && binOps[Current.Type].precedence >= precedence)
             {
-                SyntaxTokenType op = Current.Type;
+                var op = Current.Type;
                 NextToken();
-                ExpressionNode right = ParseExpression(binOps[op].precedence + (binOps[op].leftAssoc ? 1 : 0));
+                var right = ParseExpression(binOps[op].precedence + (binOps[op].leftAssoc ? 1 : 0));
                 left = new BinaryExpressionNode(left, op, right);
             }
 
@@ -73,38 +74,87 @@ namespace Kostic017.Pigeon
             switch (Current.Type)
             {
                 case SyntaxTokenType.ID:
-                    return new IdExpressionNode(NextToken().Value.ToString());
+                    return ParseIdExpression();
 
                 case SyntaxTokenType.IntLiteral:
+                    return ParseIntLiteralExpression();
+
                 case SyntaxTokenType.FloatLiteral:
+                    return ParseFloatLiteralExpression();
+
                 case SyntaxTokenType.StringLiteral:
+                    return ParseStringLiteralExpression();
+
                 case SyntaxTokenType.BoolLiteral:
-                    {
-                        SyntaxToken token = NextToken();
-                        return new LiteralExpressionNode(token.Type, token.Value);
-                    }
+                    return ParseBoolLiteralExpression();
 
                 case SyntaxTokenType.LPar:
-                    {
-                        NextToken();
-                        ExpressionNode expression = ParseExpression();
-                        Match(SyntaxTokenType.RPar);
-                        return new ParenthesizedExpressionNode(expression);
-                    }
+                    return ParseParenthesizedExpression();
 
                 case SyntaxTokenType.Minus:
                 case SyntaxTokenType.Plus:
                 case SyntaxTokenType.Not:
-                    {
-                        SyntaxToken op = NextToken();
-                        ExpressionNode primary = ParsePrimaryExpression();
-                        return new UnaryExpressionNode(op.Type, primary);
-                    }
+                    return ParseUnaryExpression();
 
                 default:
                     ReportError(CodeErrorType.INVALID_EXPRESSION_TERM, Current.Type.PrettyPrint());
                     return new LiteralExpressionNode(SyntaxTokenType.Illegal, "");
             }
+        }
+
+        private ExpressionNode ParseIdExpression()
+        {
+            var token = Match(SyntaxTokenType.ID);
+            return new IdExpressionNode(token.Value.ToString());
+        }
+
+        private ExpressionNode ParseIntLiteralExpression()
+        {
+            var token = Match(SyntaxTokenType.IntLiteral);
+            
+            if (int.TryParse(token.Value, out int i))
+                return new LiteralExpressionNode(token.Type, i);
+            
+            ReportError(CodeErrorType.ILLEGAL_NUMBER, token.Value);
+            return new LiteralExpressionNode(token.Type, token.Value);
+        }
+
+        private ExpressionNode ParseFloatLiteralExpression()
+        {
+            var token = Match(SyntaxTokenType.IntLiteral);
+            
+            if (float.TryParse(token.Value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float f))
+                return new LiteralExpressionNode(token.Type, f);
+     
+            ReportError(CodeErrorType.ILLEGAL_NUMBER, token.Value);
+            return new LiteralExpressionNode(token.Type, token.Value);
+        }
+
+        private ExpressionNode ParseStringLiteralExpression()
+        {
+            var token = Match(SyntaxTokenType.StringLiteral);
+            return new LiteralExpressionNode(token.Type, token.Value);
+        }
+
+        private ExpressionNode ParseBoolLiteralExpression()
+        {
+            var token = Match(SyntaxTokenType.BoolLiteral);
+            return new LiteralExpressionNode(token.Type, bool.Parse(token.Value));
+        }
+
+        private ExpressionNode ParseParenthesizedExpression()
+        {
+            Match(SyntaxTokenType.LPar);
+            var expression = ParseExpression();
+            Match(SyntaxTokenType.RPar);
+            return new ParenthesizedExpressionNode(expression);
+        }
+
+        private ExpressionNode ParseUnaryExpression()
+        {
+            var op = NextToken();
+            var primary = ParsePrimaryExpression();
+            return new UnaryExpressionNode(op.Type, primary);
         }
 
         SyntaxToken Match(SyntaxTokenType type)
@@ -120,7 +170,7 @@ namespace Kostic017.Pigeon
         
         SyntaxToken NextToken()
         {
-            SyntaxToken current = Current;
+            var current = Current;
             ++index;
             return current;
         }

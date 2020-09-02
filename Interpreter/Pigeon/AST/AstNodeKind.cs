@@ -2,11 +2,11 @@
 {
     enum AstNodeKind
     {
+        Program,
         BinaryExpression,
         IdExpression,
         LiteralExpression,
         ParenthesizedExpression,
         UnaryExpression,
-        Program
     }
 }
