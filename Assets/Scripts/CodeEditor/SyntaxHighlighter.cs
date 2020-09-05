@@ -59,12 +59,12 @@ public class SyntaxHighlighter : MonoBehaviour
             case SyntaxTokenType.ID:
                 return identifierColor;
             default:
-                if (ReservedWords.Types.ContainsValue(tokenType))
+                if (SyntaxFacts.Types.ContainsValue(tokenType))
                 {
                     return typeNameColor;
                 }
 
-                if (ReservedWords.Keywords.ContainsValue(tokenType))
+                if (SyntaxFacts.Keywords.ContainsValue(tokenType))
                 {
                     return keywordColor;
                 }

@@ -11,7 +11,7 @@ namespace Kostic017.Pigeon.AST
             Expression = expression;
         }
         
-        internal override AstNodeKind Kind => AstNodeKind.ExpressionStatement;
+        internal override SyntaxNodeKind Kind => SyntaxNodeKind.ExpressionStatement;
 
         internal override IEnumerable<AstNode> GetChildren()
         {

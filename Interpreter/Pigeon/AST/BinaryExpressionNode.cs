@@ -15,7 +15,7 @@ namespace Kostic017.Pigeon.AST
             Right = right;
         }
 
-        internal override AstNodeKind Kind => AstNodeKind.BinaryExpression;
+        internal override SyntaxNodeKind Kind => SyntaxNodeKind.BinaryExpression;
 
         internal override IEnumerable<AstNode> GetChildren()
         {

@@ -12,7 +12,7 @@ namespace Kostic017.Pigeon.AST
             Token = token;
         }
 
-        internal override AstNodeKind Kind => AstNodeKind.SyntaxTokenWrap;
+        internal override SyntaxNodeKind Kind => SyntaxNodeKind.SyntaxTokenWrap;
         internal override IEnumerable<AstNode> GetChildren() => Enumerable.Empty<AstNode>();
     }
 }

@@ -94,14 +94,14 @@ namespace Kostic017.Pigeon
         /// <summary>
         /// Parses expressions by precedence climbing.
         /// </summary>
-        ExpressionNode ParseExpression(int precedence = 1)
+        ExpressionNode ParseExpression(int precedence = 0)
         {
             var left = ParsePrimaryExpression();
 
-            while (GetOperatorPrecedence(Current.Type) > 0 && GetOperatorPrecedence(Current.Type) >= precedence)
+            while (SyntaxFacts.BinOpPrec.ContainsKey(Current.Type) && SyntaxFacts.BinOpPrec[Current.Type] >= precedence)
             {
                 var op = NextToken();
-                var right = ParseExpression(GetOperatorPrecedence(op.Type) + IsLeftAssoc(op.Type));
+                var right = ParseExpression(SyntaxFacts.BinOpPrec[op.Type] + (int)SyntaxFacts.BinOpAssoc(op.Type));
                 left = new BinaryExpressionNode(left, op, right);
             }
 
@@ -160,7 +160,7 @@ namespace Kostic017.Pigeon
 
         ExpressionNode ParseFloatLiteralExpression()
         {
-            var token = Match(SyntaxTokenType.IntLiteral);
+            var token = Match(SyntaxTokenType.FloatLiteral);
             
             if (float.TryParse(token.Value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float f))
                 return new LiteralExpressionNode(token, f);
@@ -220,40 +220,6 @@ namespace Kostic017.Pigeon
         SyntaxToken DummyToken(SyntaxTokenType type)
         {
             return new SyntaxToken(type, -1, -1, -1, -1);
-        }
-
-        int GetOperatorPrecedence(SyntaxTokenType op)
-        {
-            switch (op)
-            {
-                case SyntaxTokenType.And:
-                case SyntaxTokenType.Or:
-                    return 1;
-                case SyntaxTokenType.Eq:
-                case SyntaxTokenType.Neq:
-                    return 2;
-                case SyntaxTokenType.Lt:
-                case SyntaxTokenType.Gt:
-                case SyntaxTokenType.Leq:
-                case SyntaxTokenType.Geq:
-                    return 3;
-                case SyntaxTokenType.Plus:
-                case SyntaxTokenType.Minus:
-                    return 4;
-                case SyntaxTokenType.Mul:
-                case SyntaxTokenType.Div:
-                case SyntaxTokenType.Mod:
-                    return 5;
-                case SyntaxTokenType.Power:
-                    return 6;
-                default:
-                    return 0;
-            }
-        }
-
-        int IsLeftAssoc(SyntaxTokenType op)
-        {
-            return op != SyntaxTokenType.Power ? 1 : 0;
         }
 
         void ReportError(CodeErrorType type, params string[] data)

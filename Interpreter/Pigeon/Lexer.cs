@@ -314,14 +314,14 @@ namespace Kostic017.Pigeon
                 return Token(SyntaxTokenType.BoolLiteral, value);
             }
 
-            if (ReservedWords.Keywords.ContainsKey(value))
+            if (SyntaxFacts.Keywords.ContainsKey(value))
             {
-                return Token(ReservedWords.Keywords[value]);
+                return Token(SyntaxFacts.Keywords[value]);
             }
 
-            if (ReservedWords.Types.ContainsKey(value))
+            if (SyntaxFacts.Types.ContainsKey(value))
             {
-                return Token(ReservedWords.Types[value]);
+                return Token(SyntaxFacts.Types[value]);
             }
 
             return Token(SyntaxTokenType.ID, value);

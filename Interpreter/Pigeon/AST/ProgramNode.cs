@@ -11,7 +11,7 @@ namespace Kostic017.Pigeon.AST
             StatementBlock = statementBlock;
         }
 
-        internal override AstNodeKind Kind => AstNodeKind.Program;
+        internal override SyntaxNodeKind Kind => SyntaxNodeKind.Program;
 
         internal override IEnumerable<AstNode> GetChildren()
         {

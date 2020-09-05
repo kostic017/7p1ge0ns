@@ -11,7 +11,7 @@ namespace Kostic017.Pigeon.AST
             IdToken = idToken;
         }
 
-        internal override AstNodeKind Kind => AstNodeKind.IdExpression;
+        internal override SyntaxNodeKind Kind => SyntaxNodeKind.IdentifierExpression;
 
         internal override IEnumerable<AstNode> GetChildren()
         {

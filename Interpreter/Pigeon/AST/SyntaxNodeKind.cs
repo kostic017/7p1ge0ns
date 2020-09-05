@@ -1,11 +1,11 @@
 ﻿namespace Kostic017.Pigeon.AST
 {
-    enum AstNodeKind
+    enum SyntaxNodeKind
     {
         Program,
         StatementBlock,
         BinaryExpression,
-        IdExpression,
+        IdentifierExpression,
         LiteralExpression,
         ParenthesizedExpression,
         UnaryExpression,

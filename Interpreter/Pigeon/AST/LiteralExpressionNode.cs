@@ -13,7 +13,7 @@ namespace Kostic017.Pigeon.AST
             ParsedValue = parsedValue;
         }
 
-        internal override AstNodeKind Kind => AstNodeKind.LiteralExpression;
+        internal override SyntaxNodeKind Kind => SyntaxNodeKind.LiteralExpression;
 
         internal override IEnumerable<AstNode> GetChildren()
         {

@@ -13,7 +13,7 @@ namespace Kostic017.Pigeon.AST
             Value = value;
         }
 
-        internal override AstNodeKind Kind => AstNodeKind.UnaryExpression;
+        internal override SyntaxNodeKind Kind => SyntaxNodeKind.UnaryExpression;
 
         internal override IEnumerable<AstNode> GetChildren()
         {

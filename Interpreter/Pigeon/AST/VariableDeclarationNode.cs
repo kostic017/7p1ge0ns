@@ -21,7 +21,7 @@ namespace Kostic017.Pigeon.AST
             Value = value;
         }
 
-        internal override AstNodeKind Kind => AstNodeKind.VariableDeclaration;
+        internal override SyntaxNodeKind Kind => SyntaxNodeKind.VariableDeclaration;
 
         internal override IEnumerable<AstNode> GetChildren()
         {
