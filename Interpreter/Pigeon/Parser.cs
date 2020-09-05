@@ -78,7 +78,6 @@ namespace Kostic017.Pigeon
             var id = Match(SyntaxTokenType.ID);
             Match(SyntaxTokenType.Assign);
             var value = ParseExpression();
-            Match(SyntaxTokenType.Semicolon);
             return new VariableDeclarationNode(keyword, id, value);
         }
 

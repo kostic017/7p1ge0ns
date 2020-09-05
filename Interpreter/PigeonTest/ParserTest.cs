@@ -6,6 +6,21 @@ namespace Kostic017.Pigeon.Tests
 {
     public class ParserTest
     {
+        [Fact]
+        public void ParseVaraibleDeclaration()
+        {
+            var text = "let a = 4";
+            var ast = SyntaxTree.Parse(text).Ast;
+            using var e = new AssertingEnumerator(ast);
+            e.AssertNode(SyntaxNodeKind.Program);
+            e.AssertNode(SyntaxNodeKind.StatementBlock);
+            e.AssertNode(SyntaxNodeKind.VariableDeclaration);
+                e.AssertToken(SyntaxTokenType.Let);
+                    e.AssertToken(SyntaxTokenType.ID, "a");
+                    e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                        e.AssertToken(SyntaxTokenType.IntLiteral, "4");
+        }
+        
         [Theory]
         [MemberData(nameof(GetOperatorPairs))]
         public void ParseBinaryExpressions(SyntaxTokenType op1, SyntaxTokenType op2)
@@ -14,7 +29,7 @@ namespace Kostic017.Pigeon.Tests
             var p2 = SyntaxFacts.BinOpPrec[op2];
             var a1 = SyntaxFacts.BinOpAssoc(op1);
 
-            string text = $"1 {op1.PrettyPrint()} 2.3 {op2.PrettyPrint()} x";
+            var text = $"1 {op1.PrettyPrint()} 2.3 {op2.PrettyPrint()} x";
 
             var ast = SyntaxTree.Parse(text).Ast;
             using var e = new AssertingEnumerator(ast);
