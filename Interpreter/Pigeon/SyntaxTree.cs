@@ -8,7 +8,9 @@ namespace Kostic017.Pigeon
     {
 
         internal AstNode Ast { get; }
-        
+        internal CodeError[] LexerErrors { get; }
+        internal CodeError[] ParserErrors { get; }
+
         public SyntaxToken[] Tokens { get; }
         public CodeError[] Errors { get; }
 
@@ -16,10 +18,12 @@ namespace Kostic017.Pigeon
         {
             var lexer = new Lexer(code, tabSize);
             Tokens = lexer.Lex();
-
+            
             var parser = new Parser(Tokens);
             Ast = parser.Parse();
 
+            LexerErrors = lexer.Errors.ToArray();
+            ParserErrors = parser.Errors.ToArray();
             Errors = lexer.Errors.Concat(parser.Errors).ToArray();
         }
 

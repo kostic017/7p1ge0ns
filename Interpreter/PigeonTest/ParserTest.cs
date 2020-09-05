@@ -10,8 +10,12 @@ namespace Kostic017.Pigeon.Tests
         public void ParseVaraibleDeclaration()
         {
             var text = "let a = 4";
-            var ast = SyntaxTree.Parse(text).Ast;
-            using var e = new AssertingEnumerator(ast);
+
+            var syntaxtTree = SyntaxTree.Parse(text);
+            Assert.Empty(syntaxtTree.ParserErrors);
+
+            using var e = new AssertingEnumerator(syntaxtTree.Ast);
+
             e.AssertNode(SyntaxNodeKind.Program);
             e.AssertNode(SyntaxNodeKind.StatementBlock);
             e.AssertNode(SyntaxNodeKind.VariableDeclaration);
@@ -31,8 +35,10 @@ namespace Kostic017.Pigeon.Tests
 
             var text = $"1 {op1.PrettyPrint()} 2.3 {op2.PrettyPrint()} x";
 
-            var ast = SyntaxTree.Parse(text).Ast;
-            using var e = new AssertingEnumerator(ast);
+            var syntaxtTree = SyntaxTree.Parse(text);
+            Assert.Empty(syntaxtTree.ParserErrors);
+
+            using var e = new AssertingEnumerator(syntaxtTree.Ast);
 
             e.AssertNode(SyntaxNodeKind.Program);
             e.AssertNode(SyntaxNodeKind.StatementBlock);
