@@ -1,5 +1,4 @@
 ﻿using Kostic017.Pigeon;
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -40,7 +39,7 @@ public class EditorController : MonoBehaviour
 
         UpdateLineNumbers(code);
 
-        var syntaxTree = new SyntaxTree(code, textBox.fontAsset.tabSize);
+        var syntaxTree = SyntaxTree.Parse(code, textBox.fontAsset.tabSize);
 
         code = highlighter.Highlight(code, syntaxTree.Tokens);
 

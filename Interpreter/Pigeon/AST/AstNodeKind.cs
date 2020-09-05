@@ -11,5 +11,6 @@
         UnaryExpression,
         VariableDeclaration,
         ExpressionStatement,
+        SyntaxTokenWrap,
     }
 }

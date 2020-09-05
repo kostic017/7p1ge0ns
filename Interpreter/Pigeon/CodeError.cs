@@ -30,7 +30,7 @@ namespace Kostic017.Pigeon
             DetailedMessage = $"{Line}:{Column} " + Message;
         }
 
-        private static readonly Dictionary<CodeErrorType, string> messages =
+        static readonly Dictionary<CodeErrorType, string> messages =
             new Dictionary<CodeErrorType, string>
             {
                 { CodeErrorType.ILLEGAL_NUMBER, "Illegal number {0}" },

@@ -9,7 +9,7 @@ namespace Kostic017.Pigeon.Tests
         [MemberData(nameof(GetTestData))]
         public void Lex(string text, Expected expected)
         {
-            var syntaxTree = new SyntaxTree(text);
+            var syntaxTree = SyntaxTree.Parse(text);
             var tokens = syntaxTree.Tokens;
 
             Assert.True(tokens.Length > 0 && tokens.Length <= 2);

@@ -1,4 +1,6 @@
-﻿namespace Kostic017.Pigeon.AST
+﻿using System.Collections.Generic;
+
+namespace Kostic017.Pigeon.AST
 {
     internal class VariableDeclarationNode : StatementNode
     {
@@ -20,5 +22,12 @@
         }
 
         internal override AstNodeKind Kind => AstNodeKind.VariableDeclaration;
+
+        internal override IEnumerable<AstNode> GetChildren()
+        {
+            yield return new SyntaxTokenWrap(Keyword);
+            yield return new SyntaxTokenWrap(Name);
+            yield return Value;
+        }
     }
 }

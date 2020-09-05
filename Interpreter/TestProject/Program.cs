@@ -22,9 +22,9 @@ namespace TestProject
                     break;
                 }
 
-                var syntaxTree = new SyntaxTree(line);
+                var syntaxTree = SyntaxTree.Parse(line);
 
-                Console.WriteLine(syntaxTree.Ast);
+                Console.WriteLine(syntaxTree.PrintTree());
 
                 foreach (var error in syntaxTree.Errors)
                 {

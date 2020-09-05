@@ -1,14 +1,21 @@
-﻿namespace Kostic017.Pigeon.AST
+﻿using System.Collections.Generic;
+
+namespace Kostic017.Pigeon.AST
 {
     internal class ExpressionStatementNode : StatementNode
     {
-        internal ExpressionNode expression { get; }
+        internal ExpressionNode Expression { get; }
 
         internal ExpressionStatementNode(ExpressionNode expression)
         {
-            this.expression = expression;
+            Expression = expression;
         }
         
         internal override AstNodeKind Kind => AstNodeKind.ExpressionStatement;
+
+        internal override IEnumerable<AstNode> GetChildren()
+        {
+            yield return Expression;
+        }
     }
 }

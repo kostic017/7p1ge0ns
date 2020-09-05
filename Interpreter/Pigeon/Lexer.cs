@@ -4,15 +4,6 @@ namespace Kostic017.Pigeon
 {
     class Lexer
     {
-        static readonly HashSet<char> escapes =
-            new HashSet<char>
-            {
-                '\\',
-                't',
-                'n',
-                '"',
-            };
-
         int line;
         int column;
         int index;
@@ -24,11 +15,11 @@ namespace Kostic017.Pigeon
         readonly int tabSize;
         readonly string code;
         
-        internal List<CodeError> Errors { get; }
-
         char PrevChar => index - 1 >= 0 ? code[index - 1] : '\0';
         char CurrentChar => index < code.Length ? code[index] : '\0';
         char NextChar => index + 1 < code.Length ? code[index + 1] : '\0';
+
+        internal List<CodeError> Errors { get; }
 
         internal Lexer(string code, int tabSize)
         {
@@ -54,7 +45,7 @@ namespace Kostic017.Pigeon
             return tokens.ToArray();
         }
 
-        private SyntaxToken NextToken()
+        SyntaxToken NextToken()
         {
             while (CurrentChar != '\0')
             {
@@ -214,7 +205,7 @@ namespace Kostic017.Pigeon
             return Token(SyntaxTokenType.EOF);
         }
 
-        private SyntaxToken LexString()
+        SyntaxToken LexString()
         {
             bool done = false;
             string value = "";
@@ -254,7 +245,7 @@ namespace Kostic017.Pigeon
             return Token(SyntaxTokenType.StringLiteral, value);
         }
 
-        private SyntaxToken LexComment()
+        SyntaxToken LexComment()
         {
             if (CurrentChar == '/')
             {
@@ -290,7 +281,7 @@ namespace Kostic017.Pigeon
             return Token(SyntaxTokenType.BlockComment);
         }
 
-        private SyntaxToken LexNumber()
+        SyntaxToken LexNumber()
         {
             bool isReal = false;
             string value = PrevChar.ToString();
@@ -308,7 +299,7 @@ namespace Kostic017.Pigeon
             return Token(isReal ? SyntaxTokenType.FloatLiteral : SyntaxTokenType.IntLiteral, value);
         }
 
-        private SyntaxToken LexWord()
+        SyntaxToken LexWord()
         {
             string value = PrevChar.ToString();
 
@@ -336,7 +327,7 @@ namespace Kostic017.Pigeon
             return Token(SyntaxTokenType.ID, value);
         }
 
-        private char EatCurrentChar()
+        char EatCurrentChar()
         {
             if (index >= code.Length)
             {
@@ -363,7 +354,7 @@ namespace Kostic017.Pigeon
             return ch;
         }
 
-        private bool TryEatCurrentChar(char ch)
+        bool TryEatCurrentChar(char ch)
         {
             if (CurrentChar == ch)
             {
@@ -373,14 +364,23 @@ namespace Kostic017.Pigeon
             return false;
         }
 
-        private SyntaxToken Token(SyntaxTokenType type, string lexeme = null)
+        SyntaxToken Token(SyntaxTokenType type, string lexeme = null)
         {
             return new SyntaxToken(type, tokenStartIndex, index, tokenStartLine, tokenStartColumn, lexeme);
         }
 
-        private void ReportError(CodeErrorType type, params string[] data)
+        void ReportError(CodeErrorType type, params string[] data)
         {
             Errors.Add(new CodeError(type, tokenStartLine, tokenStartColumn, data));
         }
+
+        static readonly HashSet<char> escapes =
+            new HashSet<char>
+            {
+                '\\',
+                't',
+                'n',
+                '"',
+            };
     }
 }

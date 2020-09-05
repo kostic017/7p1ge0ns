@@ -1,16 +1,24 @@
-﻿namespace Kostic017.Pigeon.AST
+﻿using System.Collections.Generic;
+
+namespace Kostic017.Pigeon.AST
 {
     class UnaryExpressionNode : ExpressionNode
     {
-        internal SyntaxTokenType Op { get; }
+        internal SyntaxToken Op { get; }
         internal ExpressionNode Value { get; }
 
-        internal UnaryExpressionNode(SyntaxTokenType op, ExpressionNode value)
+        internal UnaryExpressionNode(SyntaxToken op, ExpressionNode value)
         {
             Op = op;
             Value = value;
         }
 
         internal override AstNodeKind Kind => AstNodeKind.UnaryExpression;
+
+        internal override IEnumerable<AstNode> GetChildren()
+        {
+            yield return new SyntaxTokenWrap(Op);
+            yield return Value;
+        }
     }
 }
