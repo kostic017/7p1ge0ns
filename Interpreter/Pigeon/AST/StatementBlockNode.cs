@@ -2,7 +2,7 @@
 
 namespace Kostic017.Pigeon.AST
 {
-    internal class StatementBlockNode : StatementNode
+    class StatementBlockNode : StatementNode
     {
         internal StatementNode[] Statements { get; }
 

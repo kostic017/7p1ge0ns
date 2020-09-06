@@ -90,9 +90,7 @@ namespace Kostic017.Pigeon
             return new ExpressionStatementNode(expression);
         }
 
-        /// <summary>
-        /// Parses expressions by precedence climbing.
-        /// </summary>
+        // precedence climbing algorithm
         ExpressionNode ParseExpression(int precedence = 0)
         {
             var left = ParsePrimaryExpression();
@@ -135,7 +133,7 @@ namespace Kostic017.Pigeon
                     return ParseUnaryExpression();
 
                 default:
-                    ReportError(CodeErrorType.INVALID_EXPRESSION_TERM, Current.Type.PrettyPrint());
+                    ReportError(CodeErrorType.INVALID_EXPRESSION_TERM, Current.Type.GetDescription());
                     return new LiteralExpressionNode(DummyToken(SyntaxTokenType.Illegal), "");
             }
         }
@@ -199,7 +197,7 @@ namespace Kostic017.Pigeon
         {
             if (Current.Type != type)
             {
-                ReportError(CodeErrorType.EXPECTED_TOKEN, type.PrettyPrint());
+                ReportError(CodeErrorType.MISSING_EXPECTED_TOKEN, type.GetDescription());
                 return DummyToken(type);
             }
 
@@ -214,7 +212,7 @@ namespace Kostic017.Pigeon
         }
 
         /// <summary>
-        /// Fabricates tokens so we could avoid null checks later on.
+        /// Fabricates tokens so we can avoid null checks later on.
         /// </summary>
         SyntaxToken DummyToken(SyntaxTokenType type)
         {

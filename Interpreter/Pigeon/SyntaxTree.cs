@@ -6,25 +6,22 @@ namespace Kostic017.Pigeon
 {
     public class SyntaxTree
     {
-
+        readonly Lexer lexer;
+        readonly Parser parser;
+        
         internal AstNode Ast { get; }
-        internal CodeError[] LexerErrors { get; }
-        internal CodeError[] ParserErrors { get; }
+        internal CodeError[] LexerErrors => lexer.Errors.ToArray();
+        internal CodeError[] ParserErrors => parser.Errors.ToArray();
 
         public SyntaxToken[] Tokens { get; }
-        public CodeError[] Errors { get; }
+        public CodeError[] Errors => lexer.Errors.Concat(parser.Errors).ToArray();
 
         SyntaxTree(string code, int tabSize = 4)
         {
-            var lexer = new Lexer(code, tabSize);
+            lexer = new Lexer(code, tabSize);
             Tokens = lexer.Lex();
-            
-            var parser = new Parser(Tokens);
+            parser = new Parser(Tokens);
             Ast = parser.Parse();
-
-            LexerErrors = lexer.Errors.ToArray();
-            ParserErrors = parser.Errors.ToArray();
-            Errors = lexer.Errors.Concat(parser.Errors).ToArray();
         }
 
         public string PrintTree()

@@ -23,7 +23,7 @@ namespace Kostic017.Pigeon.Tests
                 Assert.True(enumerator.MoveNext());
                 Assert.Equal(kind, enumerator.Current.Kind);
             }
-            catch when (MarkFailed())
+            catch when (MarkFailed()) // we don't really want to catch the exception
             {
             }
         }
@@ -42,10 +42,6 @@ namespace Kostic017.Pigeon.Tests
             }
         }
 
-        /// <summary>
-        /// Assertion exceptions cause Dispose to be executed early. The assertion in there would
-        /// in that case fail, masking the original cause of the failure if we do not prevent that.
-        /// </summary>
         bool MarkFailed()
         {
             failed = true;
@@ -56,6 +52,7 @@ namespace Kostic017.Pigeon.Tests
         {
             if (!failed)
             {
+                // this used to mask the original cause of failure
                 Assert.False(enumerator.MoveNext());
             }
             enumerator.Dispose();

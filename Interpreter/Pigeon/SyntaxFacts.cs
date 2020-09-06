@@ -47,6 +47,12 @@ namespace Kostic017.Pigeon
             { SyntaxTokenType.Power, 5 },
         };
 
+        internal enum Associativity
+        {
+            Right,
+            Left
+        }
+
         internal static Associativity BinOpAssoc(SyntaxTokenType op)
         {
             return op != SyntaxTokenType.Power ? Associativity.Left : Associativity.Right;

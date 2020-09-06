@@ -2,7 +2,7 @@
 
 namespace Kostic017.Pigeon.AST
 {
-    internal class ExpressionStatementNode : StatementNode
+    class ExpressionStatementNode : StatementNode
     {
         internal ExpressionNode Expression { get; }
 

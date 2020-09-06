@@ -7,7 +7,7 @@ namespace Kostic017.Pigeon.Tests
     public class ParserTest
     {
         [Fact]
-        public void ParseVaraibleDeclaration()
+        public void ParseVariableDeclaration()
         {
             var text = "let a = 4";
 
@@ -33,7 +33,7 @@ namespace Kostic017.Pigeon.Tests
             var p2 = SyntaxFacts.BinOpPrec[op2];
             var a1 = SyntaxFacts.BinOpAssoc(op1);
 
-            var text = $"1 {op1.PrettyPrint()} 2.3 {op2.PrettyPrint()} x";
+            var text = $"1 {op1.GetDescription()} 2.3 {op2.GetDescription()} x";
 
             var syntaxtTree = SyntaxTree.Parse(text);
             Assert.Empty(syntaxtTree.ParserErrors);
@@ -44,7 +44,7 @@ namespace Kostic017.Pigeon.Tests
             e.AssertNode(SyntaxNodeKind.StatementBlock);
             e.AssertNode(SyntaxNodeKind.ExpressionStatement);
 
-            if (p1 > p2 || (p1 == p2 && a1 == Associativity.Left))
+            if (p1 > p2 || (p1 == p2 && a1 == SyntaxFacts.Associativity.Left))
             {
                 e.AssertNode(SyntaxNodeKind.BinaryExpression);
                     e.AssertNode(SyntaxNodeKind.BinaryExpression);
