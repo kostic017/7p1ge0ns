@@ -1,5 +1,4 @@
 ﻿using Kostic017.Pigeon.AST;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Kostic017.Pigeon.Tests
@@ -11,10 +10,10 @@ namespace Kostic017.Pigeon.Tests
         {
             var text = "let a = 4";
 
-            var syntaxtTree = SyntaxTree.Parse(text);
-            Assert.Empty(syntaxtTree.ParserErrors);
+            var syntaxTree = SyntaxTree.Parse(text);
+            Assert.Empty(syntaxTree.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxtTree.Ast);
+            using var e = new AssertingEnumerator(syntaxTree.Ast);
 
             e.AssertNode(SyntaxNodeKind.Program);
             e.AssertNode(SyntaxNodeKind.StatementBlock);
@@ -26,62 +25,37 @@ namespace Kostic017.Pigeon.Tests
         }
         
         [Theory]
-        [MemberData(nameof(GetOperatorPairs))]
-        public void ParseBinaryExpressions(SyntaxTokenType op1, SyntaxTokenType op2)
+        [InlineData("-a * b", "((-a) * b)")]
+        [InlineData("!-a", "(!(-a))")]
+        [InlineData("a + b + c", "((a + b) + c)")]
+        [InlineData("a + b - c", "((a + b) - c)")]
+        [InlineData("a * b * c", "((a * b) * c)")]
+        [InlineData("a * b / c", "((a * b) / c)")]
+        [InlineData("a + b / c", "(a + (b / c))")]
+        [InlineData("a + b * c + d / e - f", "(((a + (b * c)) + (d / e)) - f)")]
+        [InlineData("5 > 4 == 3 < 4", "((5 > 4) == (3 < 4))")]
+        [InlineData("5 < 4 != 3 > 4", "((5 < 4) != (3 > 4))")]
+        [InlineData("3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))")]
+        [InlineData("3 > 5 == false", "((3 > 5) == false)")]
+        [InlineData("3 < 5 == true", "((3 < 5) == true)")]
+        [InlineData("1 + (2 + 3) + 4", "((1 + (2 + 3)) + 4)")]
+        [InlineData("(5 + 5) * 2", "((5 + 5) * 2)")]
+        [InlineData("2 / (5 + 5)", "(2 / (5 + 5))")]
+        [InlineData("-(5 + 5)", "(-(5 + 5))")]
+        [InlineData("!(true == true)", "(!(true == true))")]
+        public void ParseBinaryExpressions(string text, string expected)
         {
-            var p1 = SyntaxFacts.BinOpPrec[op1];
-            var p2 = SyntaxFacts.BinOpPrec[op2];
-            var a1 = SyntaxFacts.BinOpAssoc(op1);
+            var syntaxTree = SyntaxTree.Parse(text);
+            Assert.Empty(syntaxTree.Errors);
 
-            var text = $"1 {op1.GetDescription()} 2.3 {op2.GetDescription()} x";
-
-            var syntaxtTree = SyntaxTree.Parse(text);
-            Assert.Empty(syntaxtTree.ParserErrors);
-
-            using var e = new AssertingEnumerator(syntaxtTree.Ast);
+            using var e = new AssertingEnumerator(syntaxTree.Ast, false);
 
             e.AssertNode(SyntaxNodeKind.Program);
             e.AssertNode(SyntaxNodeKind.StatementBlock);
             e.AssertNode(SyntaxNodeKind.ExpressionStatement);
 
-            if (p1 > p2 || (p1 == p2 && a1 == SyntaxFacts.Associativity.Left))
-            {
-                e.AssertNode(SyntaxNodeKind.BinaryExpression);
-                    e.AssertNode(SyntaxNodeKind.BinaryExpression);
-                        e.AssertNode(SyntaxNodeKind.LiteralExpression);
-                            e.AssertToken(SyntaxTokenType.IntLiteral, "1");
-                        e.AssertToken(op1);
-                        e.AssertNode(SyntaxNodeKind.LiteralExpression);
-                            e.AssertToken(SyntaxTokenType.FloatLiteral, "2.3");
-                    e.AssertToken(op2);
-                    e.AssertNode(SyntaxNodeKind.IdentifierExpression);
-                        e.AssertToken(SyntaxTokenType.ID, "x");
-            }
-            else
-            {
-                e.AssertNode(SyntaxNodeKind.BinaryExpression);
-                    e.AssertNode(SyntaxNodeKind.LiteralExpression);
-                        e.AssertToken(SyntaxTokenType.IntLiteral, "1");
-                    e.AssertToken(op1);
-                    e.AssertNode(SyntaxNodeKind.BinaryExpression);
-                        e.AssertNode(SyntaxNodeKind.LiteralExpression);
-                            e.AssertToken(SyntaxTokenType.FloatLiteral, "2.3");
-                        e.AssertToken(op2);
-                        e.AssertNode(SyntaxNodeKind.IdentifierExpression);
-                            e.AssertToken(SyntaxTokenType.ID, "x");
-            }
-
-        }
-
-        public static IEnumerable<object[]> GetOperatorPairs()
-        {
-            foreach (var op1 in SyntaxFacts.BinOpPrec.Keys)
-            {
-                foreach (var op2 in SyntaxFacts.BinOpPrec.Keys)
-                {
-                    yield return new object[] { op1, op2 };
-                }
-            }
+            var expression = Assert.IsAssignableFrom<ExpressionNode>(e.GetNext());
+            Assert.Equal(expected, expression.ToString());
         }
     }
 }

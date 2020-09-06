@@ -2,17 +2,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Xunit;
 
 namespace Kostic017.Pigeon.Tests
 {
     class AssertingEnumerator : IDisposable
     {
-        bool failed;
+        bool assertEmpty;
+
         readonly IEnumerator<AstNode> enumerator;
 
-        internal AssertingEnumerator(AstNode root)
+        internal AssertingEnumerator(AstNode root, bool assertEmpty = true)
         {
+            this.assertEmpty = assertEmpty;
             enumerator = Flatten(root).GetEnumerator();
         }
 
@@ -42,17 +45,22 @@ namespace Kostic017.Pigeon.Tests
             }
         }
 
+        internal AstNode GetNext()
+        {
+            Assert.True(enumerator.MoveNext());
+            return enumerator.Current;
+        }
+
         bool MarkFailed()
         {
-            failed = true;
+            assertEmpty = false; // that assert would mask the original cause of failure
             return false;
         }
 
         public void Dispose()
         {
-            if (!failed)
+            if (assertEmpty)
             {
-                // this used to mask the original cause of failure
                 Assert.False(enumerator.MoveNext());
             }
             enumerator.Dispose();

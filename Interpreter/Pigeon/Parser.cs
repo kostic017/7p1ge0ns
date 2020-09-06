@@ -141,7 +141,7 @@ namespace Kostic017.Pigeon
         ExpressionNode ParseIdExpression()
         {
             var token = Match(SyntaxTokenType.ID);
-            return new IdExpressionNode(token);
+            return new IdentifierExpressionNode(token);
         }
 
         ExpressionNode ParseIntLiteralExpression()
