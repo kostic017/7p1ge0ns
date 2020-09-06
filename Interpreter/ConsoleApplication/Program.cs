@@ -23,8 +23,7 @@ namespace TestProject
                 }
 
                 var syntaxTree = SyntaxTree.Parse(line);
-
-                Console.WriteLine(syntaxTree.PrintTree());
+                syntaxTree.PrintTree(Console.Out);
 
                 foreach (var error in syntaxTree.Errors)
                 {

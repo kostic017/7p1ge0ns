@@ -1,4 +1,5 @@
 ﻿using Kostic017.Pigeon.AST;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -29,30 +30,37 @@ namespace Kostic017.Pigeon
             return new SyntaxTree(code, tabSize);
         }
 
-        public string PrintTree()
-        {
-            return PrintTree(new StringWriter());
-        }
-
-        public string PrintTree(TextWriter writer)
+        public void PrintTree(TextWriter writer)
         {
             Print(Ast, writer);
-            return writer.ToString();
         }
 
         static void Print(AstNode root, TextWriter writer, string ident = "")
         {
+            var isConsole = writer == Console.Out;
             if (root is SyntaxTokenWrap tokenWrap)
             {
+                if (isConsole)
+                {
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                }
                 writer.WriteLine(ident + tokenWrap.Token.Type + " " + tokenWrap.Token.Value);
             }
             else
             {
+                if (isConsole)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                }
                 writer.WriteLine(ident + root.Kind.ToString());
                 foreach (var node in root.GetChildren())
                 {
-                    Print(node, writer, ident + "--");
+                    Print(node, writer, ident + "  ");
                 }
+            }
+            if (isConsole)
+            {
+                Console.ResetColor();
             }
         }
 
