@@ -61,14 +61,33 @@ namespace Kostic017.Pigeon
         {
             switch (Current.Type)
             {
-                case SyntaxTokenType.LBrace:
-                    return ParseStatementBlock();
+                case SyntaxTokenType.If:
+                    return ParseIfStatement();
                 case SyntaxTokenType.Let:
                 case SyntaxTokenType.Const:
                     return ParseVariableDeclaration();
+                case SyntaxTokenType.LBrace:
+                    return ParseStatementBlock();
                 default:
                     return ParseExpressionStatement();
             }
+        }
+
+        // if <expression> <statement_block> [else <statement_block>]
+        private StatementNode ParseIfStatement()
+        {
+            Match(SyntaxTokenType.If);
+            var conditon = ParseExpression();
+            var thenBlock = ParseStatementBlock();
+
+            if (Current.Type == SyntaxTokenType.Else)
+            {
+                Match(SyntaxTokenType.Else);
+                var elseBlock = ParseStatementBlock();
+                return new IfStatementNode(conditon, thenBlock, elseBlock);
+            }
+
+            return new IfStatementNode(conditon, thenBlock);
         }
 
         // (let|const) id = <expression>

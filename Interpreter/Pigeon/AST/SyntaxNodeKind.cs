@@ -12,5 +12,6 @@
         VariableDeclaration,
         ExpressionStatement,
         SyntaxTokenWrap,
+        IfStatement,
     }
 }

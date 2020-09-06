@@ -16,12 +16,67 @@ namespace Kostic017.Pigeon.Tests
             using var e = new AssertingEnumerator(syntaxTree.Ast);
 
             e.AssertNode(SyntaxNodeKind.Program);
-            e.AssertNode(SyntaxNodeKind.StatementBlock);
-            e.AssertNode(SyntaxNodeKind.VariableDeclaration);
-                e.AssertToken(SyntaxTokenType.Let);
-                    e.AssertToken(SyntaxTokenType.ID, "a");
-                    e.AssertNode(SyntaxNodeKind.LiteralExpression);
-                        e.AssertToken(SyntaxTokenType.IntLiteral, "4");
+                e.AssertNode(SyntaxNodeKind.StatementBlock);
+                    e.AssertNode(SyntaxNodeKind.VariableDeclaration);
+                        e.AssertToken(SyntaxTokenType.Let);
+                            e.AssertToken(SyntaxTokenType.ID, "a");
+                            e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                                e.AssertToken(SyntaxTokenType.IntLiteral, "4");
+        }
+
+        [Fact]
+        public void ParseIfStatement()
+        {
+            var text = @"
+                if (a > b)
+                    a
+                else if a < b
+                    b
+                else
+                {
+                    a + b
+                }
+            ";
+
+            var syntaxTree = SyntaxTree.Parse(text);
+            Assert.Empty(syntaxTree.ParserErrors);
+
+            using var e = new AssertingEnumerator(syntaxTree.Ast);
+
+            e.AssertNode(SyntaxNodeKind.Program);
+                e.AssertNode(SyntaxNodeKind.StatementBlock);
+                    e.AssertNode(SyntaxNodeKind.IfStatement); // if 1
+                        e.AssertNode(SyntaxNodeKind.ParenthesizedExpression);
+                            e.AssertNode(SyntaxNodeKind.BinaryExpression);
+                                e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                    e.AssertToken(SyntaxTokenType.ID, "a");
+                                e.AssertToken(SyntaxTokenType.Gt);
+                                e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                    e.AssertToken(SyntaxTokenType.ID, "b");
+                        e.AssertNode(SyntaxNodeKind.StatementBlock); // then 1
+                            e.AssertNode(SyntaxNodeKind.ExpressionStatement);
+                                e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                    e.AssertToken(SyntaxTokenType.ID, "a");
+                        e.AssertNode(SyntaxNodeKind.StatementBlock); // else 1
+                            e.AssertNode(SyntaxNodeKind.IfStatement); // if 2
+                                e.AssertNode(SyntaxNodeKind.BinaryExpression);
+                                    e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                        e.AssertToken(SyntaxTokenType.ID, "a");
+                                    e.AssertToken(SyntaxTokenType.Lt);
+                                    e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                        e.AssertToken(SyntaxTokenType.ID, "b");
+                                e.AssertNode(SyntaxNodeKind.StatementBlock); // then 2
+                                    e.AssertNode(SyntaxNodeKind.ExpressionStatement);
+                                        e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                            e.AssertToken(SyntaxTokenType.ID, "b");
+                                e.AssertNode(SyntaxNodeKind.StatementBlock); // else 2
+                                    e.AssertNode(SyntaxNodeKind.ExpressionStatement);
+                                        e.AssertNode(SyntaxNodeKind.BinaryExpression);
+                                            e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                                e.AssertToken(SyntaxTokenType.ID, "a");
+                                            e.AssertToken(SyntaxTokenType.Plus);
+                                            e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                                e.AssertToken(SyntaxTokenType.ID, "b");
         }
         
         [Theory]
@@ -43,7 +98,7 @@ namespace Kostic017.Pigeon.Tests
         [InlineData("2 / (5 + 5)", "(2 / (5 + 5))")]
         [InlineData("-(5 + 5)", "(-(5 + 5))")]
         [InlineData("!(true == true)", "(!(true == true))")]
-        public void ParseBinaryExpressions(string text, string expected)
+        public void ParseBinaryExpression(string text, string expected)
         {
             var syntaxTree = SyntaxTree.Parse(text);
             Assert.Empty(syntaxTree.Errors);
