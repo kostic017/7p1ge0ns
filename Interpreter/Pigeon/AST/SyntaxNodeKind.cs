@@ -13,5 +13,6 @@
         ExpressionStatement,
         SyntaxTokenWrap,
         IfStatement,
+        WhileStatement,
     }
 }

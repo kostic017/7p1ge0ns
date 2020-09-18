@@ -1,4 +1,5 @@
 ﻿using Kostic017.Pigeon.AST;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -27,13 +28,13 @@ namespace Kostic017.Pigeon
             return ParseProgram();
         }
 
-        AstNode ParseProgram()
+        private AstNode ParseProgram()
         {
             var stmtBlock = ParseStatementBlock();
             return new ProgramNode(stmtBlock);
         }
 
-        StatementBlockNode ParseStatementBlock()
+        private StatementBlockNode ParseStatementBlock()
         {
             var statements = new List<StatementNode>();
 
@@ -57,12 +58,14 @@ namespace Kostic017.Pigeon
             return new StatementBlockNode(statements.ToArray());
         }
 
-        StatementNode ParseStatement()
+        private StatementNode ParseStatement()
         {
             switch (Current.Type)
             {
                 case SyntaxTokenType.If:
                     return ParseIfStatement();
+                case SyntaxTokenType.While:
+                    return ParseWhileStatement();
                 case SyntaxTokenType.Let:
                 case SyntaxTokenType.Const:
                     return ParseVariableDeclaration();
@@ -71,6 +74,15 @@ namespace Kostic017.Pigeon
                 default:
                     return ParseExpressionStatement();
             }
+        }
+
+        // while <expression> <statement_block>
+        private StatementNode ParseWhileStatement()
+        {
+            Match(SyntaxTokenType.While);
+            var condition = ParseExpression();
+            var body = ParseStatementBlock();
+            return new WhileStatementNode(condition, body);
         }
 
         // if <expression> <statement_block> [else <statement_block>]
@@ -91,7 +103,7 @@ namespace Kostic017.Pigeon
         }
 
         // (let|const) id = <expression>
-        VariableDeclarationNode ParseVariableDeclaration()
+        private VariableDeclarationNode ParseVariableDeclaration()
         {
             var keyword = NextToken();
             var id = Match(SyntaxTokenType.ID);
@@ -103,14 +115,14 @@ namespace Kostic017.Pigeon
         // id = <expression>
         // id([<expression>, ...])
         // <expression>
-        StatementNode ParseExpressionStatement()
+        private StatementNode ParseExpressionStatement()
         {
             var expression = ParseExpression();
             return new ExpressionStatementNode(expression);
         }
 
         // precedence climbing algorithm
-        ExpressionNode ParseExpression(int precedence = 0)
+        private ExpressionNode ParseExpression(int precedence = 0)
         {
             var left = ParsePrimaryExpression();
 
@@ -124,7 +136,7 @@ namespace Kostic017.Pigeon
             return left;
         }
 
-        ExpressionNode ParsePrimaryExpression()
+        private ExpressionNode ParsePrimaryExpression()
         {
             switch (Current.Type)
             {
@@ -157,13 +169,13 @@ namespace Kostic017.Pigeon
             }
         }
 
-        ExpressionNode ParseIdExpression()
+        private ExpressionNode ParseIdExpression()
         {
             var token = Match(SyntaxTokenType.ID);
             return new IdentifierExpressionNode(token);
         }
 
-        ExpressionNode ParseIntLiteralExpression()
+        private ExpressionNode ParseIntLiteralExpression()
         {
             var token = Match(SyntaxTokenType.IntLiteral);
             
@@ -174,7 +186,7 @@ namespace Kostic017.Pigeon
             return new LiteralExpressionNode(token, token.Value);
         }
 
-        ExpressionNode ParseFloatLiteralExpression()
+        private ExpressionNode ParseFloatLiteralExpression()
         {
             var token = Match(SyntaxTokenType.FloatLiteral);
             
@@ -185,19 +197,19 @@ namespace Kostic017.Pigeon
             return new LiteralExpressionNode(token, token.Value);
         }
 
-        ExpressionNode ParseStringLiteralExpression()
+        private ExpressionNode ParseStringLiteralExpression()
         {
             var token = Match(SyntaxTokenType.StringLiteral);
             return new LiteralExpressionNode(token, token.Value);
         }
 
-        ExpressionNode ParseBoolLiteralExpression()
+        private ExpressionNode ParseBoolLiteralExpression()
         {
             var token = Match(SyntaxTokenType.BoolLiteral);
             return new LiteralExpressionNode(token, bool.Parse(token.Value));
         }
 
-        ExpressionNode ParseParenthesizedExpression()
+        private ExpressionNode ParseParenthesizedExpression()
         {
             Match(SyntaxTokenType.LPar);
             var expression = ParseExpression();
@@ -205,14 +217,14 @@ namespace Kostic017.Pigeon
             return new ParenthesizedExpressionNode(expression);
         }
 
-        ExpressionNode ParseUnaryExpression()
+        private ExpressionNode ParseUnaryExpression()
         {
             var opToken = NextToken();
             var primary = ParsePrimaryExpression();
             return new UnaryExpressionNode(opToken, primary);
         }
 
-        SyntaxToken Match(SyntaxTokenType type)
+        private SyntaxToken Match(SyntaxTokenType type)
         {
             if (Current.Type != type)
             {
@@ -223,7 +235,7 @@ namespace Kostic017.Pigeon
             return NextToken();
         }
 
-        SyntaxToken NextToken()
+        private SyntaxToken NextToken()
         {
             var current = Current;
             ++index;
@@ -233,12 +245,12 @@ namespace Kostic017.Pigeon
         /// <summary>
         /// Fabricates tokens so we can avoid null checks later on.
         /// </summary>
-        SyntaxToken DummyToken(SyntaxTokenType type)
+        private SyntaxToken DummyToken(SyntaxTokenType type)
         {
             return new SyntaxToken(type, -1, -1, -1, -1);
         }
 
-        void ReportError(CodeErrorType type, params string[] data)
+        private void ReportError(CodeErrorType type, params string[] data)
         {
             Errors.Add(new CodeError(type, Current.StartLine, Current.StartColumn, data));
         }
