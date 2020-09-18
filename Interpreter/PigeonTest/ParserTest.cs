@@ -25,6 +25,62 @@ namespace Kostic017.Pigeon.Tests
         }
 
         [Fact]
+        public void ParseForStatement()
+        {
+            var text = @"
+                for i = 1 to 10
+                    i
+            ";
+            var syntaxTree = SyntaxTree.Parse(text);
+            Assert.Empty(syntaxTree.ParserErrors);
+
+            using var e = new AssertingEnumerator(syntaxTree.Ast);
+
+            e.AssertNode(SyntaxNodeKind.Program);
+                e.AssertNode(SyntaxNodeKind.StatementBlock);
+                    e.AssertNode(SyntaxNodeKind.ForStatement);
+                        e.AssertToken(SyntaxTokenType.ID, "i");
+                        e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                            e.AssertToken(SyntaxTokenType.IntLiteral, "1");
+                        e.AssertToken(SyntaxTokenType.To);
+                        e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                            e.AssertToken(SyntaxTokenType.IntLiteral, "10");
+                        e.AssertNode(SyntaxNodeKind.StatementBlock);
+                            e.AssertNode(SyntaxNodeKind.ExpressionStatement);
+                                e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                    e.AssertToken(SyntaxTokenType.ID, "i");
+        }
+
+        [Fact]
+        public void ParseForStatement_DowntoWithStep()
+        {
+            var text = @"
+                for i = 1 downto 10 step 2
+                    i
+            ";
+                        var syntaxTree = SyntaxTree.Parse(text);
+            Assert.Empty(syntaxTree.ParserErrors);
+
+            using var e = new AssertingEnumerator(syntaxTree.Ast);
+
+            e.AssertNode(SyntaxNodeKind.Program);
+                e.AssertNode(SyntaxNodeKind.StatementBlock);
+                    e.AssertNode(SyntaxNodeKind.ForStatement);
+                        e.AssertToken(SyntaxTokenType.ID, "i");
+                        e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                            e.AssertToken(SyntaxTokenType.IntLiteral, "1");
+                        e.AssertToken(SyntaxTokenType.Downto);
+                        e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                            e.AssertToken(SyntaxTokenType.IntLiteral, "10");
+                        e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                            e.AssertToken(SyntaxTokenType.IntLiteral, "2");
+                        e.AssertNode(SyntaxNodeKind.StatementBlock);
+                            e.AssertNode(SyntaxNodeKind.ExpressionStatement);
+                                e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                    e.AssertToken(SyntaxTokenType.ID, "i");
+        }
+
+        [Fact]
         public void ParseWhileStatement()
         {
             var text = @"

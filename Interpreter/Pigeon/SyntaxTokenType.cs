@@ -13,6 +13,7 @@ namespace Kostic017.Pigeon
         Else,
         For,
         To,
+        Downto,
         Step,
         Do,
         While,

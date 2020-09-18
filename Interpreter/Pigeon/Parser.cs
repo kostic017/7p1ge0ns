@@ -66,6 +66,8 @@ namespace Kostic017.Pigeon
                     return ParseIfStatement();
                 case SyntaxTokenType.While:
                     return ParseWhileStatement();
+                case SyntaxTokenType.For:
+                    return ParseForStatement();
                 case SyntaxTokenType.Let:
                 case SyntaxTokenType.Const:
                     return ParseVariableDeclaration();
@@ -74,15 +76,6 @@ namespace Kostic017.Pigeon
                 default:
                     return ParseExpressionStatement();
             }
-        }
-
-        // while <expression> <statement_block>
-        private StatementNode ParseWhileStatement()
-        {
-            Match(SyntaxTokenType.While);
-            var condition = ParseExpression();
-            var body = ParseStatementBlock();
-            return new WhileStatementNode(condition, body);
         }
 
         // if <expression> <statement_block> [else <statement_block>]
@@ -102,18 +95,44 @@ namespace Kostic017.Pigeon
             return new IfStatementNode(conditon, thenBlock);
         }
 
+        // while <expression> <statement_block>
+        private StatementNode ParseWhileStatement()
+        {
+            Match(SyntaxTokenType.While);
+            var condition = ParseExpression();
+            var body = ParseStatementBlock();
+            return new WhileStatementNode(condition, body);
+        }
+
+        // for id = <expression> (to|downto) <expression> [step <expression>] <statement_block>
+        private StatementNode ParseForStatement()
+        {
+            ExpressionNode step = null;
+            Match(SyntaxTokenType.For);
+            var id = Match(SyntaxTokenType.ID);
+            Match(SyntaxTokenType.Assign);
+            var from = ParseExpression();
+            var dir = Match(SyntaxTokenType.To, SyntaxTokenType.Downto);
+            var to = ParseExpression();
+            if (Current.Type == SyntaxTokenType.Step)
+            {
+                Match(SyntaxTokenType.Step);
+                step = ParseExpression();
+            }
+            var body = ParseStatementBlock();
+            return new ForStatementNode(id, from, dir, to, step, body);
+        }
+
         // (let|const) id = <expression>
         private VariableDeclarationNode ParseVariableDeclaration()
         {
-            var keyword = NextToken();
+            var keyword = Match(SyntaxTokenType.Let, SyntaxTokenType.Const);
             var id = Match(SyntaxTokenType.ID);
             Match(SyntaxTokenType.Assign);
             var value = ParseExpression();
             return new VariableDeclarationNode(keyword, id, value);
         }
 
-        // id = <expression>
-        // id([<expression>, ...])
         // <expression>
         private StatementNode ParseExpressionStatement()
         {
@@ -224,15 +243,13 @@ namespace Kostic017.Pigeon
             return new UnaryExpressionNode(opToken, primary);
         }
 
-        private SyntaxToken Match(SyntaxTokenType type)
+        private SyntaxToken Match(params SyntaxTokenType[] types)
         {
-            if (Current.Type != type)
-            {
-                ReportError(CodeErrorType.MISSING_EXPECTED_TOKEN, type.GetDescription());
-                return DummyToken(type);
-            }
-
-            return NextToken();
+            var token = NextToken();
+            if (types.Any(t => t == token.Type))
+                return token;
+            ReportError(CodeErrorType.MISSING_EXPECTED_TOKEN, string.Join(", ", types.Select(t => t.GetDescription())));
+            return DummyToken(types[0]);
         }
 
         private SyntaxToken NextToken()

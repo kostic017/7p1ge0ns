@@ -10,6 +10,7 @@ namespace Kostic017.Pigeon
             { "else", SyntaxTokenType.Else },
             { "for", SyntaxTokenType.For },
             { "to", SyntaxTokenType.To },
+            { "downto", SyntaxTokenType.Downto },
             { "step", SyntaxTokenType.Step },
             { "do", SyntaxTokenType.Do },
             { "while", SyntaxTokenType.While },

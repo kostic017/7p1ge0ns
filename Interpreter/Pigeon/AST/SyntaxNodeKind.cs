@@ -14,5 +14,6 @@
         SyntaxTokenWrap,
         IfStatement,
         WhileStatement,
+        ForStatement,
     }
 }
