@@ -15,5 +15,6 @@
         IfStatement,
         WhileStatement,
         ForStatement,
+        DoWhileStatement,
     }
 }

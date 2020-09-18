@@ -64,10 +64,12 @@ namespace Kostic017.Pigeon
             {
                 case SyntaxTokenType.If:
                     return ParseIfStatement();
-                case SyntaxTokenType.While:
-                    return ParseWhileStatement();
                 case SyntaxTokenType.For:
                     return ParseForStatement();
+                case SyntaxTokenType.While:
+                    return ParseWhileStatement();
+                case SyntaxTokenType.Do:
+                    return ParseDoWhileStatement();
                 case SyntaxTokenType.Let:
                 case SyntaxTokenType.Const:
                     return ParseVariableDeclaration();
@@ -95,15 +97,6 @@ namespace Kostic017.Pigeon
             return new IfStatementNode(conditon, thenBlock);
         }
 
-        // while <expression> <statement_block>
-        private StatementNode ParseWhileStatement()
-        {
-            Match(SyntaxTokenType.While);
-            var condition = ParseExpression();
-            var body = ParseStatementBlock();
-            return new WhileStatementNode(condition, body);
-        }
-
         // for id = <expression> (to|downto) <expression> [step <expression>] <statement_block>
         private StatementNode ParseForStatement()
         {
@@ -121,6 +114,25 @@ namespace Kostic017.Pigeon
             }
             var body = ParseStatementBlock();
             return new ForStatementNode(id, from, dir, to, step, body);
+        }
+
+        // while <expression> <statement_block>
+        private StatementNode ParseWhileStatement()
+        {
+            Match(SyntaxTokenType.While);
+            var condition = ParseExpression();
+            var body = ParseStatementBlock();
+            return new WhileStatementNode(condition, body);
+        }
+
+        // do <statement_block> while <expression>
+        private StatementNode ParseDoWhileStatement()
+        {
+            Match(SyntaxTokenType.Do);
+            var body = ParseStatementBlock();
+            Match(SyntaxTokenType.While);
+            var condition = ParseExpression();
+            return new DoWhileStatementNode(body, condition);
         }
 
         // (let|const) id = <expression>

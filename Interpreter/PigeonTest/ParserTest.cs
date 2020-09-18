@@ -108,6 +108,35 @@ namespace Kostic017.Pigeon.Tests
         }
 
         [Fact]
+        public void ParseDoWhileStatement()
+        {
+            var text = @"
+                do
+                    a
+                while a > 4
+            ";
+            var syntaxTree = SyntaxTree.Parse(text);
+            Assert.Empty(syntaxTree.ParserErrors);
+
+            using var e = new AssertingEnumerator(syntaxTree.Ast);
+
+            e.AssertNode(SyntaxNodeKind.Program);
+                e.AssertNode(SyntaxNodeKind.StatementBlock);
+                    e.AssertNode(SyntaxNodeKind.DoWhileStatement);
+                        e.AssertNode(SyntaxNodeKind.StatementBlock);
+                            e.AssertNode(SyntaxNodeKind.ExpressionStatement);
+                                e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                    e.AssertToken(SyntaxTokenType.ID, "a");
+                        e.AssertNode(SyntaxNodeKind.BinaryExpression);
+                            e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                e.AssertToken(SyntaxTokenType.ID, "a");
+                            e.AssertToken(SyntaxTokenType.Gt);
+                            e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                                e.AssertToken(SyntaxTokenType.IntLiteral, "4");
+
+        }
+
+        [Fact]
         public void ParseIfStatement()
         {
             var text = @"
