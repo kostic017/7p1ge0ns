@@ -43,7 +43,15 @@ namespace Kostic017.Pigeon
                 Match(SyntaxTokenType.LBrace);
 
                 while (Current.Type != SyntaxTokenType.RBrace && Current.Type != SyntaxTokenType.EOF)
+                {
+                    var startToken = Current;
                     statements.Add(ParseStatement());
+                    // If ParseStatement() did not consume any tokens,
+                    // we need to skip the current token in order to
+                    // avoid an infinite loop (e.g. for input '{ )').
+                    if (startToken == Current)
+                        NextToken();
+                }   
 
                 if (Current.Type == SyntaxTokenType.EOF)
                     ReportError(CodeErrorType.UNTERMINATED_STATEMENT_BLOCK);
@@ -267,7 +275,7 @@ namespace Kostic017.Pigeon
         private SyntaxToken NextToken()
         {
             var current = Current;
-            ++index;
+            index = Math.Min(index + 1, tokens.Length - 1);
             return current;
         }
 

@@ -46,7 +46,7 @@ namespace Kostic017.Pigeon
                 { CodeErrorType.UNTERMINATED_STRING, "Unterminated string" },
                 { CodeErrorType.INVALID_ESCAPE_CHAR, "Invalid escape char {0}" },
                 { CodeErrorType.UNEXPECTED_CHARACTER, "Unexpected character {0}" },
-                { CodeErrorType.MISSING_EXPECTED_TOKEN, "Expected tokens: {0}" },
+                { CodeErrorType.MISSING_EXPECTED_TOKEN, "Expected token(s): {0}" },
                 { CodeErrorType.INVALID_EXPRESSION_TERM, "Invalid expression term {0}" },
                 { CodeErrorType.UNTERMINATED_COMMENT_BLOCK, "Unterminated comment block" },
                 { CodeErrorType.UNTERMINATED_STATEMENT_BLOCK, "Unterminated statement block" },
