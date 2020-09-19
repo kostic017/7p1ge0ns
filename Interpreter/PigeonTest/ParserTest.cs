@@ -210,7 +210,11 @@ namespace Kostic017.Pigeon.Tests
         [InlineData("2 / (5 + 5)", "(2 / (5 + 5))")]
         [InlineData("-(5 + 5)", "(-(5 + 5))")]
         [InlineData("!(true == true)", "(!(true == true))")]
-        public void ParseBinaryExpression(string text, string expected)
+        [InlineData("a = 4", "(a = 4)")]
+        [InlineData("a = b + 4", "(a = (b + 4))")]
+        [InlineData("4 + a = 4", "(4 + (a = 4))")]
+        [InlineData("a = b = c = 4", "(a = (b = (c = 4)))")]
+        public void ParseExpression(string text, string expected)
         {
             var syntaxTree = SyntaxTree.Parse(text);
             Assert.Empty(syntaxTree.Errors);

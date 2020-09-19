@@ -16,5 +16,6 @@
         WhileStatement,
         ForStatement,
         DoWhileStatement,
+        AssignmentExpression,
     }
 }

@@ -13,6 +13,7 @@ namespace Kostic017.Pigeon
         readonly SyntaxToken[] tokens;
 
         SyntaxToken Current => index < tokens.Length ? tokens[index] : tokens[tokens.Length - 1];
+        SyntaxToken Peek => index + 1 < tokens.Length ? tokens[index + 1] : tokens[tokens.Length - 1];
 
         internal List<CodeError> Errors { get; }
 
@@ -163,6 +164,9 @@ namespace Kostic017.Pigeon
         // precedence climbing algorithm
         private ExpressionNode ParseExpression(int precedence = 0)
         {
+            if (Current.Type == SyntaxTokenType.ID && Peek.Type == SyntaxTokenType.Assign)
+                return ParseAssignmentExpression();
+
             var left = ParsePrimaryExpression();
 
             while (SyntaxFacts.BinOpPrec.ContainsKey(Current.Type) && SyntaxFacts.BinOpPrec[Current.Type] >= precedence)
@@ -173,6 +177,14 @@ namespace Kostic017.Pigeon
             }
 
             return left;
+        }
+
+        private ExpressionNode ParseAssignmentExpression()
+        {
+            var id = Match(SyntaxTokenType.ID);
+            Match(SyntaxTokenType.Assign);
+            var value = ParseExpression();
+            return new AssignmentExpressionNode(id, value);
         }
 
         private ExpressionNode ParsePrimaryExpression()

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Kostic017.Pigeon
 {
-    public static class ExtensionMethods
+    public static class Extensions
     {
         public static string GetDescription(this Enum value)
         {
