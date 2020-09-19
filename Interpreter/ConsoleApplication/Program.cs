@@ -1,5 +1,6 @@
 ﻿using Kostic017.Pigeon;
 using System;
+using System.Text;
 
 namespace TestProject
 {
@@ -7,22 +8,30 @@ namespace TestProject
     {
         static void Main()
         {
-            
             while (true)
             {
                 Console.Write("> ");
+                var sb = new StringBuilder();
+
                 string line = Console.ReadLine();
 
-                if (string.IsNullOrWhiteSpace(line))
-                    break;
-
-                if (line == "#cls")
+                switch (line)
                 {
-                    Console.Clear();
-                    break;
+                    case "#quit":
+                        return;
+                    case "#cls":
+                        Console.Clear();
+                        continue;
                 }
 
-                var syntaxTree = SyntaxTree.Parse(line);
+                while (!string.IsNullOrWhiteSpace(line))
+                {
+                    sb.AppendLine(line);
+                    Console.Write("| ");
+                    line = Console.ReadLine();
+                }
+
+                var syntaxTree = SyntaxTree.Parse(sb.ToString());
                 syntaxTree.PrintTree(Console.Out);
 
                 foreach (var error in syntaxTree.Errors)
@@ -33,7 +42,6 @@ namespace TestProject
                 Console.WriteLine();
 
             }
-
         }
     }
 }
