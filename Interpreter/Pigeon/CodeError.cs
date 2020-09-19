@@ -12,6 +12,7 @@ namespace Kostic017.Pigeon
         INVALID_EXPRESSION_TERM,
         UNTERMINATED_COMMENT_BLOCK,
         UNTERMINATED_STATEMENT_BLOCK,
+        LEFTOVER_TOKENS_FOUND,
     }
 
     public class CodeError
@@ -39,7 +40,7 @@ namespace Kostic017.Pigeon
             DetailedMessage = $"{Line}:{Column} " + Message;
         }
 
-        static readonly Dictionary<CodeErrorType, string> messages =
+        private static readonly Dictionary<CodeErrorType, string> messages =
             new Dictionary<CodeErrorType, string>
             {
                 { CodeErrorType.ILLEGAL_NUMBER, "Illegal number {0}" },
@@ -50,6 +51,7 @@ namespace Kostic017.Pigeon
                 { CodeErrorType.INVALID_EXPRESSION_TERM, "Invalid expression term {0}" },
                 { CodeErrorType.UNTERMINATED_COMMENT_BLOCK, "Unterminated comment block" },
                 { CodeErrorType.UNTERMINATED_STATEMENT_BLOCK, "Unterminated statement block" },
+                { CodeErrorType.LEFTOVER_TOKENS_FOUND, "Could not parse some tokens" }
             };
     }
 }

@@ -26,7 +26,12 @@ namespace Kostic017.Pigeon
 
         internal AstNode Parse()
         {
-            return ParseProgram();
+            var ast = ParseProgram();
+            
+            if (Current.Type != SyntaxTokenType.EOF)
+                ReportError(CodeErrorType.LEFTOVER_TOKENS_FOUND);
+            
+            return ast;
         }
 
         private AstNode ParseProgram()
