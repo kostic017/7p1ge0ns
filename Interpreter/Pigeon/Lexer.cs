@@ -93,6 +93,9 @@ namespace Kostic017.Pigeon
                     case ',':
                         return Token(SyntaxTokenType.Comma);
 
+                    case '.':
+                        return Token(SyntaxTokenType.Dot);
+
                     case '+':
                         if (TryEatCurrentChar('='))
                         {

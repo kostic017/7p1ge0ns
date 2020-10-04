@@ -65,6 +65,7 @@ namespace Kostic017.Pigeon
         [Description("?")] QMark,
         [Description(":")] Colon,
         [Description(",")] Comma,
+        [Description(".")] Dot,
         [Description(";")] Semicolon,
     }
 }

@@ -50,13 +50,9 @@ namespace Kostic017.Pigeon
 
                 while (Current.Type != SyntaxTokenType.RBrace && Current.Type != SyntaxTokenType.EOF)
                 {
-                    var startToken = Current;
-                    statements.Add(ParseStatement());
-                    // If ParseStatement() did not consume any tokens,
-                    // we need to skip the current token in order to
-                    // avoid an infinite loop (e.g. for input '{ )').
-                    if (startToken == Current)
-                        NextToken();
+                    var stmt = ParseStatement();
+                    if (stmt == null) break;
+                    statements.Add(stmt);
                 }   
 
                 if (Current.Type == SyntaxTokenType.EOF)
@@ -66,7 +62,9 @@ namespace Kostic017.Pigeon
             }
             else
             {
-                statements.Add(ParseStatement());
+                var stmt = ParseStatement();
+                if (stmt != null)
+                    statements.Add(stmt);
             }
             
             return new StatementBlock(statements.ToArray());
@@ -89,9 +87,13 @@ namespace Kostic017.Pigeon
                     return ParseVariableDeclaration();
                 case SyntaxTokenType.LBrace:
                     return ParseStatementBlock();
-                default:
-                    return ParseExpressionStatement();
+                case SyntaxTokenType.ID:
+                    if (SyntaxFacts.AssignmentOperators.Contains(Peek.Type))
+                        return ParseVariableAssignment();
+                    break;
             }
+            ReportError(CodeErrorType.UNEXPECTED_TOKEN, Current.Type.GetDescription());
+            return null;
         }
 
         // if <expression> <statement_block> [else <statement_block>]
@@ -159,19 +161,18 @@ namespace Kostic017.Pigeon
             return new VariableDeclaration(keyword, id, value);
         }
 
-        // <expression>
-        private Statement ParseExpressionStatement()
+        // id (=|+=|-=|*=|/=|%=|^=) <expression>
+        private VariableAssignment ParseVariableAssignment()
         {
-            var expression = ParseExpression();
-            return new ExpressionStatement(expression);
+            var id = Match(SyntaxTokenType.ID);
+            var op = Match(SyntaxFacts.AssignmentOperators);
+            var value = ParseExpression();
+            return new VariableAssignment(id, op, value);
         }
 
         // precedence climbing algorithm
         private Expression ParseExpression(int precedence = 0)
         {
-            if (Current.Type == SyntaxTokenType.ID && Peek.Type == SyntaxTokenType.Assign)
-                return ParseAssignmentExpression();
-
             var left = ParsePrimaryExpression();
 
             while (SyntaxFacts.BinOpPrec.ContainsKey(Current.Type) && SyntaxFacts.BinOpPrec[Current.Type] >= precedence)
@@ -182,14 +183,6 @@ namespace Kostic017.Pigeon
             }
 
             return left;
-        }
-
-        private Expression ParseAssignmentExpression()
-        {
-            var id = Match(SyntaxTokenType.ID);
-            Match(SyntaxTokenType.Assign);
-            var value = ParseExpression();
-            return new AssignmentExpression(id, value);
         }
 
         private Expression ParsePrimaryExpression()

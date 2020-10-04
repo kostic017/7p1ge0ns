@@ -32,6 +32,17 @@ namespace Kostic017.Pigeon
             { "void", SyntaxTokenType.Void }
         };
 
+        internal static readonly SyntaxTokenType[] AssignmentOperators =
+        {
+            SyntaxTokenType.Assign,
+            SyntaxTokenType.PlusEq,
+            SyntaxTokenType.MinusEq,
+            SyntaxTokenType.MulEq,
+            SyntaxTokenType.DivEq,
+            SyntaxTokenType.ModEq,
+            SyntaxTokenType.PowerEq,
+        };
+
         internal static readonly Dictionary<SyntaxTokenType, int> BinOpPrec
             = new Dictionary<SyntaxTokenType, int>
         {

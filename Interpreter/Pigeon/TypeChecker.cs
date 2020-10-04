@@ -40,7 +40,7 @@ namespace Kostic017.Pigeon
             
             if (top == null)
             {
-                ReportError(CodeErrorType.INVALID_OPERAND_TYPE_UNARY, node.Op, node.Op.Type.GetDescription(), value.Type.ToString());
+                ReportError(CodeErrorType.UNARY_OPERANT_INVALID_TYPE, node.Op, node.Op.Type.GetDescription(), value.Type.ToString());
                 return value; // to avoid null checks later on
             }
             
@@ -55,7 +55,7 @@ namespace Kostic017.Pigeon
 
             if (top == null)
             {
-                ReportError(CodeErrorType.INVALID_OPERAND_TYPE_BINARY, node.Op, node.Op.Type.GetDescription(), left.Type.ToString(), right.Type.ToString());
+                ReportError(CodeErrorType.BINARY_OPERAND_INVALID_TYPE, node.Op, node.Op.Type.GetDescription(), left.Type.ToString(), right.Type.ToString());
                 return left;
             }
 

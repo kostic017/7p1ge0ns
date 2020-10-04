@@ -10,12 +10,12 @@
         ParenthesizedExpression,
         UnaryExpression,
         VariableDeclaration,
-        ExpressionStatement,
         SyntaxTokenWrap,
         IfStatement,
         WhileStatement,
         ForStatement,
         DoWhileStatement,
         AssignmentExpression,
+        VariableAssignment,
     }
 }

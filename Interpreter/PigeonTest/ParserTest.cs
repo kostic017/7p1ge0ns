@@ -19,9 +19,28 @@ namespace Kostic017.Pigeon.Tests
                 e.AssertNode(NodeKind.StatementBlock);
                     e.AssertNode(NodeKind.VariableDeclaration);
                         e.AssertToken(SyntaxTokenType.Let);
-                            e.AssertToken(SyntaxTokenType.ID, "a");
-                            e.AssertNode(NodeKind.LiteralExpression);
-                                e.AssertToken(SyntaxTokenType.IntLiteral, "4");
+                        e.AssertToken(SyntaxTokenType.ID, "a");
+                        e.AssertNode(NodeKind.LiteralExpression);
+                            e.AssertToken(SyntaxTokenType.IntLiteral, "4");
+        }
+
+        [Fact]
+        public void ParseVariableAssignment()
+        {
+            var text = "a += 4";
+
+            var syntaxTree = SyntaxTree.Parse(text);
+            Assert.Empty(syntaxTree.ParserErrors);
+
+            using var e = new AssertingEnumerator(syntaxTree.Ast);
+
+            e.AssertNode(NodeKind.Program);
+                e.AssertNode(NodeKind.StatementBlock);
+                    e.AssertNode(NodeKind.VariableAssignment);
+                        e.AssertToken(SyntaxTokenType.ID, "a");
+                        e.AssertToken(SyntaxTokenType.PlusEq);
+                        e.AssertNode(NodeKind.LiteralExpression);
+                            e.AssertToken(SyntaxTokenType.IntLiteral, "4");
         }
 
         [Fact]
@@ -29,7 +48,7 @@ namespace Kostic017.Pigeon.Tests
         {
             var text = @"
                 for i = 1 to 10
-                    i
+                    j = i + 1
             ";
             var syntaxTree = SyntaxTree.Parse(text);
             Assert.Empty(syntaxTree.ParserErrors);
@@ -46,9 +65,15 @@ namespace Kostic017.Pigeon.Tests
                         e.AssertNode(NodeKind.LiteralExpression);
                             e.AssertToken(SyntaxTokenType.IntLiteral, "10");
                         e.AssertNode(NodeKind.StatementBlock);
-                            e.AssertNode(NodeKind.ExpressionStatement);
-                                e.AssertNode(NodeKind.IdentifierExpression);
-                                    e.AssertToken(SyntaxTokenType.ID, "i");
+                            e.AssertNode(NodeKind.VariableAssignment);
+                                e.AssertToken(SyntaxTokenType.ID, "j");
+                                e.AssertToken(SyntaxTokenType.Assign);
+                                e.AssertNode(NodeKind.BinaryExpression);
+                                    e.AssertNode(NodeKind.IdentifierExpression);
+                                        e.AssertToken(SyntaxTokenType.ID, "i");
+                                    e.AssertToken(SyntaxTokenType.Plus);
+                                    e.AssertNode(NodeKind.LiteralExpression);
+                                        e.AssertToken(SyntaxTokenType.IntLiteral, "1");
         }
 
         [Fact]
@@ -56,9 +81,9 @@ namespace Kostic017.Pigeon.Tests
         {
             var text = @"
                 for i = 1 downto 10 step 2
-                    i
+                    j = i + 1
             ";
-                        var syntaxTree = SyntaxTree.Parse(text);
+            var syntaxTree = SyntaxTree.Parse(text);
             Assert.Empty(syntaxTree.ParserErrors);
 
             using var e = new AssertingEnumerator(syntaxTree.Ast);
@@ -75,17 +100,23 @@ namespace Kostic017.Pigeon.Tests
                         e.AssertNode(NodeKind.LiteralExpression);
                             e.AssertToken(SyntaxTokenType.IntLiteral, "2");
                         e.AssertNode(NodeKind.StatementBlock);
-                            e.AssertNode(NodeKind.ExpressionStatement);
-                                e.AssertNode(NodeKind.IdentifierExpression);
-                                    e.AssertToken(SyntaxTokenType.ID, "i");
+                            e.AssertNode(NodeKind.VariableAssignment);
+                                e.AssertToken(SyntaxTokenType.ID, "j");
+                                e.AssertToken(SyntaxTokenType.Assign);
+                                e.AssertNode(NodeKind.BinaryExpression);
+                                    e.AssertNode(NodeKind.IdentifierExpression);
+                                        e.AssertToken(SyntaxTokenType.ID, "i");
+                                    e.AssertToken(SyntaxTokenType.Plus);
+                                    e.AssertNode(NodeKind.LiteralExpression);
+                                        e.AssertToken(SyntaxTokenType.IntLiteral, "1");
         }
 
         [Fact]
         public void ParseWhileStatement()
         {
             var text = @"
-                while a > 4
-                    a
+                while i > 4
+                    i = i + 1
             ";
             var syntaxTree = SyntaxTree.Parse(text);
             Assert.Empty(syntaxTree.ParserErrors);
@@ -97,14 +128,20 @@ namespace Kostic017.Pigeon.Tests
                     e.AssertNode(NodeKind.WhileStatement);
                         e.AssertNode(NodeKind.BinaryExpression);
                             e.AssertNode(NodeKind.IdentifierExpression);
-                                e.AssertToken(SyntaxTokenType.ID, "a");
+                                e.AssertToken(SyntaxTokenType.ID, "i");
                             e.AssertToken(SyntaxTokenType.Gt);
                             e.AssertNode(NodeKind.LiteralExpression);
                                 e.AssertToken(SyntaxTokenType.IntLiteral, "4");
                         e.AssertNode(NodeKind.StatementBlock);
-                            e.AssertNode(NodeKind.ExpressionStatement);
-                                e.AssertNode(NodeKind.IdentifierExpression);
-                                    e.AssertToken(SyntaxTokenType.ID, "a");
+                            e.AssertNode(NodeKind.VariableAssignment);
+                                e.AssertToken(SyntaxTokenType.ID, "i");
+                                e.AssertToken(SyntaxTokenType.Assign);
+                                e.AssertNode(NodeKind.BinaryExpression);
+                                    e.AssertNode(NodeKind.IdentifierExpression);
+                                        e.AssertToken(SyntaxTokenType.ID, "i");
+                                    e.AssertToken(SyntaxTokenType.Plus);
+                                    e.AssertNode(NodeKind.LiteralExpression);
+                                        e.AssertToken(SyntaxTokenType.IntLiteral, "1");
         }
 
         [Fact]
@@ -112,8 +149,8 @@ namespace Kostic017.Pigeon.Tests
         {
             var text = @"
                 do
-                    a
-                while a > 4
+                    i = i + 1
+                while i > 4
             ";
             var syntaxTree = SyntaxTree.Parse(text);
             Assert.Empty(syntaxTree.ParserErrors);
@@ -124,12 +161,18 @@ namespace Kostic017.Pigeon.Tests
                 e.AssertNode(NodeKind.StatementBlock);
                     e.AssertNode(NodeKind.DoWhileStatement);
                         e.AssertNode(NodeKind.StatementBlock);
-                            e.AssertNode(NodeKind.ExpressionStatement);
-                                e.AssertNode(NodeKind.IdentifierExpression);
-                                    e.AssertToken(SyntaxTokenType.ID, "a");
+                            e.AssertNode(NodeKind.VariableAssignment);
+                                e.AssertToken(SyntaxTokenType.ID, "i");
+                                e.AssertToken(SyntaxTokenType.Assign);
+                                e.AssertNode(NodeKind.BinaryExpression);
+                                    e.AssertNode(NodeKind.IdentifierExpression);
+                                        e.AssertToken(SyntaxTokenType.ID, "i");
+                                    e.AssertToken(SyntaxTokenType.Plus);
+                                    e.AssertNode(NodeKind.LiteralExpression);
+                                        e.AssertToken(SyntaxTokenType.IntLiteral, "1");
                         e.AssertNode(NodeKind.BinaryExpression);
                             e.AssertNode(NodeKind.IdentifierExpression);
-                                e.AssertToken(SyntaxTokenType.ID, "a");
+                                e.AssertToken(SyntaxTokenType.ID, "i");
                             e.AssertToken(SyntaxTokenType.Gt);
                             e.AssertNode(NodeKind.LiteralExpression);
                                 e.AssertToken(SyntaxTokenType.IntLiteral, "4");
@@ -141,12 +184,12 @@ namespace Kostic017.Pigeon.Tests
         {
             var text = @"
                 if (a > b)
-                    a
+                    j = a
                 else if a < b
-                    b
+                    j = b
                 else
                 {
-                    a + b
+                    j = a + b
                 }
             ";
 
@@ -166,7 +209,9 @@ namespace Kostic017.Pigeon.Tests
                                 e.AssertNode(NodeKind.IdentifierExpression);
                                     e.AssertToken(SyntaxTokenType.ID, "b");
                         e.AssertNode(NodeKind.StatementBlock); // then 1
-                            e.AssertNode(NodeKind.ExpressionStatement);
+                            e.AssertNode(NodeKind.VariableAssignment);
+                                e.AssertToken(SyntaxTokenType.ID, "j");
+                                e.AssertToken(SyntaxTokenType.Assign);
                                 e.AssertNode(NodeKind.IdentifierExpression);
                                     e.AssertToken(SyntaxTokenType.ID, "a");
                         e.AssertNode(NodeKind.StatementBlock); // else 1
@@ -178,11 +223,15 @@ namespace Kostic017.Pigeon.Tests
                                     e.AssertNode(NodeKind.IdentifierExpression);
                                         e.AssertToken(SyntaxTokenType.ID, "b");
                                 e.AssertNode(NodeKind.StatementBlock); // then 2
-                                    e.AssertNode(NodeKind.ExpressionStatement);
+                                    e.AssertNode(NodeKind.VariableAssignment);
+                                        e.AssertToken(SyntaxTokenType.ID, "j");
+                                        e.AssertToken(SyntaxTokenType.Assign);
                                         e.AssertNode(NodeKind.IdentifierExpression);
                                             e.AssertToken(SyntaxTokenType.ID, "b");
                                 e.AssertNode(NodeKind.StatementBlock); // else 2
-                                    e.AssertNode(NodeKind.ExpressionStatement);
+                                    e.AssertNode(NodeKind.VariableAssignment);
+                                        e.AssertToken(SyntaxTokenType.ID, "j");
+                                        e.AssertToken(SyntaxTokenType.Assign);
                                         e.AssertNode(NodeKind.BinaryExpression);
                                             e.AssertNode(NodeKind.IdentifierExpression);
                                                 e.AssertToken(SyntaxTokenType.ID, "a");
@@ -210,20 +259,18 @@ namespace Kostic017.Pigeon.Tests
         [InlineData("2 / (5 + 5)", "(2 / (5 + 5))")]
         [InlineData("-(5 + 5)", "(-(5 + 5))")]
         [InlineData("!(true == true)", "(!(true == true))")]
-        [InlineData("a = 4", "(a = 4)")]
-        [InlineData("a = b + 4", "(a = (b + 4))")]
-        [InlineData("4 + a = 4", "(4 + (a = 4))")]
-        [InlineData("a = b = c = 4", "(a = (b = (c = 4)))")]
         public void ParseExpression(string text, string expected)
         {
-            var syntaxTree = SyntaxTree.Parse(text);
+            var syntaxTree = SyntaxTree.Parse("i = " + text);
             Assert.Empty(syntaxTree.Errors);
 
             using var e = new AssertingEnumerator(syntaxTree.Ast, false);
 
             e.AssertNode(NodeKind.Program);
             e.AssertNode(NodeKind.StatementBlock);
-            e.AssertNode(NodeKind.ExpressionStatement);
+            e.AssertNode(NodeKind.VariableAssignment);
+                e.AssertToken(SyntaxTokenType.ID, "i");
+                e.AssertToken(SyntaxTokenType.Assign);
 
             var expression = Assert.IsAssignableFrom<Expression>(e.GetNext());
             Assert.Equal(expected, expression.ToString());

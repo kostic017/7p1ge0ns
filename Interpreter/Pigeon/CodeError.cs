@@ -13,8 +13,9 @@ namespace Kostic017.Pigeon
         UNTERMINATED_COMMENT_BLOCK,
         UNTERMINATED_STATEMENT_BLOCK,
         LEFTOVER_TOKENS_FOUND,
-        INVALID_OPERAND_TYPE_UNARY,
-        INVALID_OPERAND_TYPE_BINARY,
+        UNARY_OPERANT_INVALID_TYPE,
+        BINARY_OPERAND_INVALID_TYPE,
+        UNEXPECTED_TOKEN,
     }
 
     public class CodeError
@@ -53,9 +54,10 @@ namespace Kostic017.Pigeon
                 { CodeErrorType.INVALID_EXPRESSION_TERM, "Invalid expression term {0}" },
                 { CodeErrorType.UNTERMINATED_COMMENT_BLOCK, "Unterminated comment block" },
                 { CodeErrorType.UNTERMINATED_STATEMENT_BLOCK, "Unterminated statement block" },
-                { CodeErrorType.LEFTOVER_TOKENS_FOUND, "Could not parse some tokens" },
-                { CodeErrorType.INVALID_OPERAND_TYPE_UNARY, "Operator {0} is not defined for type {1}" },
-                { CodeErrorType.INVALID_OPERAND_TYPE_BINARY, "Operator {0} is not defined for types {1} and {2}" },
+                { CodeErrorType.LEFTOVER_TOKENS_FOUND, "Some tokens left unparsed" },
+                { CodeErrorType.UNEXPECTED_TOKEN, "Token {0} was not expected here" },
+                { CodeErrorType.UNARY_OPERANT_INVALID_TYPE, "Operator {0} is not defined for type {1}" },
+                { CodeErrorType.BINARY_OPERAND_INVALID_TYPE, "Operator {0} is not defined for types {1} and {2}" },
             };
     }
 }
