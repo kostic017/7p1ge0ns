@@ -2,18 +2,18 @@
 
 namespace Kostic017.Pigeon.AST
 {
-    class LiteralExpressionNode : ExpressionNode
+    class LiteralExpression : Expression
     {
         internal SyntaxToken LiteralToken { get; }
         internal object ParsedValue { get; }
 
-        internal LiteralExpressionNode(SyntaxToken literalToken, object parsedValue)
+        internal LiteralExpression(SyntaxToken literalToken, object parsedValue)
         {
             LiteralToken = literalToken;
             ParsedValue = parsedValue;
         }
 
-        internal override SyntaxNodeKind Kind => SyntaxNodeKind.LiteralExpression;
+        internal override NodeKind Kind => NodeKind.LiteralExpression;
 
         internal override IEnumerable<AstNode> GetChildren()
         {

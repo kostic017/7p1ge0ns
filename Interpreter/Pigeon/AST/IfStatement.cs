@@ -2,20 +2,20 @@
 
 namespace Kostic017.Pigeon.AST
 {
-    class IfStatementNode : StatementNode
+    class IfStatement : Statement
     {
-        internal ExpressionNode Condition { get; }
-        internal StatementBlockNode ThenBlock { get; }
-        internal StatementBlockNode ElseBlock { get; }
+        internal Expression Condition { get; }
+        internal StatementBlock ThenBlock { get; }
+        internal StatementBlock ElseBlock { get; }
 
-        internal IfStatementNode(ExpressionNode condition, StatementBlockNode thenBlock, StatementBlockNode elseBlock = null)
+        internal IfStatement(Expression condition, StatementBlock thenBlock, StatementBlock elseBlock = null)
         {
             Condition = condition;
             ThenBlock = thenBlock;
             ElseBlock = elseBlock;
         }
 
-        internal override SyntaxNodeKind Kind => SyntaxNodeKind.IfStatement;
+        internal override NodeKind Kind => NodeKind.IfStatement;
 
         internal override IEnumerable<AstNode> GetChildren()
         {

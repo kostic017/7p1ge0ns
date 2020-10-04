@@ -15,12 +15,12 @@ namespace Kostic017.Pigeon.Tests
 
             using var e = new AssertingEnumerator(syntaxTree.Ast);
 
-            e.AssertNode(SyntaxNodeKind.Program);
-                e.AssertNode(SyntaxNodeKind.StatementBlock);
-                    e.AssertNode(SyntaxNodeKind.VariableDeclaration);
+            e.AssertNode(NodeKind.Program);
+                e.AssertNode(NodeKind.StatementBlock);
+                    e.AssertNode(NodeKind.VariableDeclaration);
                         e.AssertToken(SyntaxTokenType.Let);
                             e.AssertToken(SyntaxTokenType.ID, "a");
-                            e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                            e.AssertNode(NodeKind.LiteralExpression);
                                 e.AssertToken(SyntaxTokenType.IntLiteral, "4");
         }
 
@@ -36,18 +36,18 @@ namespace Kostic017.Pigeon.Tests
 
             using var e = new AssertingEnumerator(syntaxTree.Ast);
 
-            e.AssertNode(SyntaxNodeKind.Program);
-                e.AssertNode(SyntaxNodeKind.StatementBlock);
-                    e.AssertNode(SyntaxNodeKind.ForStatement);
+            e.AssertNode(NodeKind.Program);
+                e.AssertNode(NodeKind.StatementBlock);
+                    e.AssertNode(NodeKind.ForStatement);
                         e.AssertToken(SyntaxTokenType.ID, "i");
-                        e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                        e.AssertNode(NodeKind.LiteralExpression);
                             e.AssertToken(SyntaxTokenType.IntLiteral, "1");
                         e.AssertToken(SyntaxTokenType.To);
-                        e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                        e.AssertNode(NodeKind.LiteralExpression);
                             e.AssertToken(SyntaxTokenType.IntLiteral, "10");
-                        e.AssertNode(SyntaxNodeKind.StatementBlock);
-                            e.AssertNode(SyntaxNodeKind.ExpressionStatement);
-                                e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                        e.AssertNode(NodeKind.StatementBlock);
+                            e.AssertNode(NodeKind.ExpressionStatement);
+                                e.AssertNode(NodeKind.IdentifierExpression);
                                     e.AssertToken(SyntaxTokenType.ID, "i");
         }
 
@@ -63,20 +63,20 @@ namespace Kostic017.Pigeon.Tests
 
             using var e = new AssertingEnumerator(syntaxTree.Ast);
 
-            e.AssertNode(SyntaxNodeKind.Program);
-                e.AssertNode(SyntaxNodeKind.StatementBlock);
-                    e.AssertNode(SyntaxNodeKind.ForStatement);
+            e.AssertNode(NodeKind.Program);
+                e.AssertNode(NodeKind.StatementBlock);
+                    e.AssertNode(NodeKind.ForStatement);
                         e.AssertToken(SyntaxTokenType.ID, "i");
-                        e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                        e.AssertNode(NodeKind.LiteralExpression);
                             e.AssertToken(SyntaxTokenType.IntLiteral, "1");
                         e.AssertToken(SyntaxTokenType.Downto);
-                        e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                        e.AssertNode(NodeKind.LiteralExpression);
                             e.AssertToken(SyntaxTokenType.IntLiteral, "10");
-                        e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                        e.AssertNode(NodeKind.LiteralExpression);
                             e.AssertToken(SyntaxTokenType.IntLiteral, "2");
-                        e.AssertNode(SyntaxNodeKind.StatementBlock);
-                            e.AssertNode(SyntaxNodeKind.ExpressionStatement);
-                                e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                        e.AssertNode(NodeKind.StatementBlock);
+                            e.AssertNode(NodeKind.ExpressionStatement);
+                                e.AssertNode(NodeKind.IdentifierExpression);
                                     e.AssertToken(SyntaxTokenType.ID, "i");
         }
 
@@ -92,18 +92,18 @@ namespace Kostic017.Pigeon.Tests
 
             using var e = new AssertingEnumerator(syntaxTree.Ast);
 
-            e.AssertNode(SyntaxNodeKind.Program);
-                e.AssertNode(SyntaxNodeKind.StatementBlock);
-                    e.AssertNode(SyntaxNodeKind.WhileStatement);
-                        e.AssertNode(SyntaxNodeKind.BinaryExpression);
-                            e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+            e.AssertNode(NodeKind.Program);
+                e.AssertNode(NodeKind.StatementBlock);
+                    e.AssertNode(NodeKind.WhileStatement);
+                        e.AssertNode(NodeKind.BinaryExpression);
+                            e.AssertNode(NodeKind.IdentifierExpression);
                                 e.AssertToken(SyntaxTokenType.ID, "a");
                             e.AssertToken(SyntaxTokenType.Gt);
-                            e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                            e.AssertNode(NodeKind.LiteralExpression);
                                 e.AssertToken(SyntaxTokenType.IntLiteral, "4");
-                        e.AssertNode(SyntaxNodeKind.StatementBlock);
-                            e.AssertNode(SyntaxNodeKind.ExpressionStatement);
-                                e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                        e.AssertNode(NodeKind.StatementBlock);
+                            e.AssertNode(NodeKind.ExpressionStatement);
+                                e.AssertNode(NodeKind.IdentifierExpression);
                                     e.AssertToken(SyntaxTokenType.ID, "a");
         }
 
@@ -120,18 +120,18 @@ namespace Kostic017.Pigeon.Tests
 
             using var e = new AssertingEnumerator(syntaxTree.Ast);
 
-            e.AssertNode(SyntaxNodeKind.Program);
-                e.AssertNode(SyntaxNodeKind.StatementBlock);
-                    e.AssertNode(SyntaxNodeKind.DoWhileStatement);
-                        e.AssertNode(SyntaxNodeKind.StatementBlock);
-                            e.AssertNode(SyntaxNodeKind.ExpressionStatement);
-                                e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+            e.AssertNode(NodeKind.Program);
+                e.AssertNode(NodeKind.StatementBlock);
+                    e.AssertNode(NodeKind.DoWhileStatement);
+                        e.AssertNode(NodeKind.StatementBlock);
+                            e.AssertNode(NodeKind.ExpressionStatement);
+                                e.AssertNode(NodeKind.IdentifierExpression);
                                     e.AssertToken(SyntaxTokenType.ID, "a");
-                        e.AssertNode(SyntaxNodeKind.BinaryExpression);
-                            e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                        e.AssertNode(NodeKind.BinaryExpression);
+                            e.AssertNode(NodeKind.IdentifierExpression);
                                 e.AssertToken(SyntaxTokenType.ID, "a");
                             e.AssertToken(SyntaxTokenType.Gt);
-                            e.AssertNode(SyntaxNodeKind.LiteralExpression);
+                            e.AssertNode(NodeKind.LiteralExpression);
                                 e.AssertToken(SyntaxTokenType.IntLiteral, "4");
 
         }
@@ -155,39 +155,39 @@ namespace Kostic017.Pigeon.Tests
 
             using var e = new AssertingEnumerator(syntaxTree.Ast);
 
-            e.AssertNode(SyntaxNodeKind.Program);
-                e.AssertNode(SyntaxNodeKind.StatementBlock);
-                    e.AssertNode(SyntaxNodeKind.IfStatement); // if 1
-                        e.AssertNode(SyntaxNodeKind.ParenthesizedExpression);
-                            e.AssertNode(SyntaxNodeKind.BinaryExpression);
-                                e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+            e.AssertNode(NodeKind.Program);
+                e.AssertNode(NodeKind.StatementBlock);
+                    e.AssertNode(NodeKind.IfStatement); // if 1
+                        e.AssertNode(NodeKind.ParenthesizedExpression);
+                            e.AssertNode(NodeKind.BinaryExpression);
+                                e.AssertNode(NodeKind.IdentifierExpression);
                                     e.AssertToken(SyntaxTokenType.ID, "a");
                                 e.AssertToken(SyntaxTokenType.Gt);
-                                e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                e.AssertNode(NodeKind.IdentifierExpression);
                                     e.AssertToken(SyntaxTokenType.ID, "b");
-                        e.AssertNode(SyntaxNodeKind.StatementBlock); // then 1
-                            e.AssertNode(SyntaxNodeKind.ExpressionStatement);
-                                e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                        e.AssertNode(NodeKind.StatementBlock); // then 1
+                            e.AssertNode(NodeKind.ExpressionStatement);
+                                e.AssertNode(NodeKind.IdentifierExpression);
                                     e.AssertToken(SyntaxTokenType.ID, "a");
-                        e.AssertNode(SyntaxNodeKind.StatementBlock); // else 1
-                            e.AssertNode(SyntaxNodeKind.IfStatement); // if 2
-                                e.AssertNode(SyntaxNodeKind.BinaryExpression);
-                                    e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                        e.AssertNode(NodeKind.StatementBlock); // else 1
+                            e.AssertNode(NodeKind.IfStatement); // if 2
+                                e.AssertNode(NodeKind.BinaryExpression);
+                                    e.AssertNode(NodeKind.IdentifierExpression);
                                         e.AssertToken(SyntaxTokenType.ID, "a");
                                     e.AssertToken(SyntaxTokenType.Lt);
-                                    e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                    e.AssertNode(NodeKind.IdentifierExpression);
                                         e.AssertToken(SyntaxTokenType.ID, "b");
-                                e.AssertNode(SyntaxNodeKind.StatementBlock); // then 2
-                                    e.AssertNode(SyntaxNodeKind.ExpressionStatement);
-                                        e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                e.AssertNode(NodeKind.StatementBlock); // then 2
+                                    e.AssertNode(NodeKind.ExpressionStatement);
+                                        e.AssertNode(NodeKind.IdentifierExpression);
                                             e.AssertToken(SyntaxTokenType.ID, "b");
-                                e.AssertNode(SyntaxNodeKind.StatementBlock); // else 2
-                                    e.AssertNode(SyntaxNodeKind.ExpressionStatement);
-                                        e.AssertNode(SyntaxNodeKind.BinaryExpression);
-                                            e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                e.AssertNode(NodeKind.StatementBlock); // else 2
+                                    e.AssertNode(NodeKind.ExpressionStatement);
+                                        e.AssertNode(NodeKind.BinaryExpression);
+                                            e.AssertNode(NodeKind.IdentifierExpression);
                                                 e.AssertToken(SyntaxTokenType.ID, "a");
                                             e.AssertToken(SyntaxTokenType.Plus);
-                                            e.AssertNode(SyntaxNodeKind.IdentifierExpression);
+                                            e.AssertNode(NodeKind.IdentifierExpression);
                                                 e.AssertToken(SyntaxTokenType.ID, "b");
         }
         
@@ -221,11 +221,11 @@ namespace Kostic017.Pigeon.Tests
 
             using var e = new AssertingEnumerator(syntaxTree.Ast, false);
 
-            e.AssertNode(SyntaxNodeKind.Program);
-            e.AssertNode(SyntaxNodeKind.StatementBlock);
-            e.AssertNode(SyntaxNodeKind.ExpressionStatement);
+            e.AssertNode(NodeKind.Program);
+            e.AssertNode(NodeKind.StatementBlock);
+            e.AssertNode(NodeKind.ExpressionStatement);
 
-            var expression = Assert.IsAssignableFrom<ExpressionNode>(e.GetNext());
+            var expression = Assert.IsAssignableFrom<Expression>(e.GetNext());
             Assert.Equal(expected, expression.ToString());
         }
     }

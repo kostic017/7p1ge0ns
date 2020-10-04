@@ -2,18 +2,18 @@
 
 namespace Kostic017.Pigeon.AST
 {
-    internal class AssignmentExpressionNode : ExpressionNode
+    internal class AssignmentExpression : Expression
     {
         internal SyntaxToken IdentifierToken { get; }
-        internal ExpressionNode Value { get; }
+        internal Expression Value { get; }
 
-        public AssignmentExpressionNode(SyntaxToken identifierToken, ExpressionNode value)
+        public AssignmentExpression(SyntaxToken identifierToken, Expression value)
         {
             IdentifierToken = identifierToken;
             Value = value;
         }
 
-        internal override SyntaxNodeKind Kind => SyntaxNodeKind.AssignmentExpression;
+        internal override NodeKind Kind => NodeKind.AssignmentExpression;
 
         internal override IEnumerable<AstNode> GetChildren()
         {

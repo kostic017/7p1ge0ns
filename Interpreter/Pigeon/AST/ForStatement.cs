@@ -2,16 +2,16 @@
 
 namespace Kostic017.Pigeon.AST
 {
-    internal class ForStatementNode : StatementNode
+    internal class ForStatement : Statement
     {
         internal SyntaxToken Variable { get; }
-        internal ExpressionNode From { get; }
+        internal Expression From { get; }
         internal SyntaxToken Dir { get; }
-        internal ExpressionNode To { get; }
-        internal ExpressionNode Step { get; }
-        internal StatementBlockNode Body { get; }
+        internal Expression To { get; }
+        internal Expression Step { get; }
+        internal StatementBlock Body { get; }
 
-        public ForStatementNode(SyntaxToken variable, ExpressionNode from, SyntaxToken dir, ExpressionNode to, ExpressionNode step, StatementBlockNode body)
+        public ForStatement(SyntaxToken variable, Expression from, SyntaxToken dir, Expression to, Expression step, StatementBlock body)
         {
             Variable = variable;
             From = from;
@@ -21,7 +21,7 @@ namespace Kostic017.Pigeon.AST
             Body = body;
         }
 
-        internal override SyntaxNodeKind Kind => SyntaxNodeKind.ForStatement;
+        internal override NodeKind Kind => NodeKind.ForStatement;
 
         internal override IEnumerable<AstNode> GetChildren()
         {

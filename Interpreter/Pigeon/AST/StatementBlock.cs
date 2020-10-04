@@ -2,16 +2,16 @@
 
 namespace Kostic017.Pigeon.AST
 {
-    class StatementBlockNode : StatementNode
+    class StatementBlock : Statement
     {
-        internal StatementNode[] Statements { get; }
+        internal Statement[] Statements { get; }
 
-        internal StatementBlockNode(StatementNode[] statements)
+        internal StatementBlock(Statement[] statements)
         {
             Statements = statements;
         }
 
-        internal override SyntaxNodeKind Kind => SyntaxNodeKind.StatementBlock;
+        internal override NodeKind Kind => NodeKind.StatementBlock;
 
         internal override IEnumerable<AstNode> GetChildren()
         {

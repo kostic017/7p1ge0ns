@@ -18,7 +18,7 @@ namespace Kostic017.Pigeon.Tests
             enumerator = Flatten(root).GetEnumerator();
         }
 
-        internal void AssertNode(SyntaxNodeKind kind)
+        internal void AssertNode(NodeKind kind)
         {
             try
             {

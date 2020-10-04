@@ -2,26 +2,26 @@
 
 namespace Kostic017.Pigeon.AST
 {
-    internal class VariableDeclarationNode : StatementNode
+    internal class VariableDeclaration : Statement
     {
         internal SyntaxToken Keyword { get; }
         internal SyntaxToken Name { get; }
-        internal ExpressionNode Value { get; }
+        internal Expression Value { get; }
 
-        internal VariableDeclarationNode(SyntaxToken type, SyntaxToken name)
+        internal VariableDeclaration(SyntaxToken type, SyntaxToken name)
         {
             Keyword = type;
             Name = name;
         }
 
-        internal VariableDeclarationNode(SyntaxToken type, SyntaxToken name, ExpressionNode value)
+        internal VariableDeclaration(SyntaxToken type, SyntaxToken name, Expression value)
         {
             Keyword = type;
             Name = name;
             Value = value;
         }
 
-        internal override SyntaxNodeKind Kind => SyntaxNodeKind.VariableDeclaration;
+        internal override NodeKind Kind => NodeKind.VariableDeclaration;
 
         internal override IEnumerable<AstNode> GetChildren()
         {

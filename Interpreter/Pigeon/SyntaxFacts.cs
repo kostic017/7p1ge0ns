@@ -4,7 +4,8 @@ namespace Kostic017.Pigeon
 {
     public static class SyntaxFacts
     {
-        public static readonly Dictionary<string, SyntaxTokenType> Keywords = new Dictionary<string, SyntaxTokenType>
+        public static readonly Dictionary<string, SyntaxTokenType> Keywords
+            = new Dictionary<string, SyntaxTokenType>
         {
             { "if", SyntaxTokenType.If },
             { "else", SyntaxTokenType.Else },
@@ -21,7 +22,8 @@ namespace Kostic017.Pigeon
             { "const", SyntaxTokenType.Const },
         };
 
-        public static readonly Dictionary<string, SyntaxTokenType> Types = new Dictionary<string, SyntaxTokenType>
+        public static readonly Dictionary<string, SyntaxTokenType> Types
+            = new Dictionary<string, SyntaxTokenType>
         {
             { "int", SyntaxTokenType.Int },
             { "float", SyntaxTokenType.Float },
@@ -30,7 +32,8 @@ namespace Kostic017.Pigeon
             { "void", SyntaxTokenType.Void }
         };
 
-        internal static readonly Dictionary<SyntaxTokenType, int> BinOpPrec = new Dictionary<SyntaxTokenType, int>
+        internal static readonly Dictionary<SyntaxTokenType, int> BinOpPrec
+            = new Dictionary<SyntaxTokenType, int>
         {
             { SyntaxTokenType.And, 0 },
             { SyntaxTokenType.Or, 0 },

@@ -2,16 +2,16 @@
 
 namespace Kostic017.Pigeon.AST
 {
-    class ProgramNode : AstNode
+    class Program : AstNode
     {
-        internal StatementBlockNode StatementBlock { get; }
+        internal StatementBlock StatementBlock { get; }
 
-        internal ProgramNode(StatementBlockNode statementBlock)
+        internal Program(StatementBlock statementBlock)
         {
             StatementBlock = statementBlock;
         }
 
-        internal override SyntaxNodeKind Kind => SyntaxNodeKind.Program;
+        internal override NodeKind Kind => NodeKind.Program;
 
         internal override IEnumerable<AstNode> GetChildren()
         {

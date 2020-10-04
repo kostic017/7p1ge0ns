@@ -1,6 +1,6 @@
-﻿namespace Kostic017.Pigeon.AST
+﻿namespace Kostic017.Pigeon
 {
-    enum SyntaxNodeKind
+    enum NodeKind
     {
         Program,
         StatementBlock,

@@ -2,20 +2,20 @@
 
 namespace Kostic017.Pigeon.AST
 {
-    class BinaryExpressionNode : ExpressionNode
+    class BinaryExpression : Expression
     {
-        internal ExpressionNode Left { get; }
+        internal Expression Left { get; }
         internal SyntaxToken Op { get; }
-        internal ExpressionNode Right { get; }
+        internal Expression Right { get; }
 
-        internal BinaryExpressionNode(ExpressionNode left, SyntaxToken op, ExpressionNode right)
+        internal BinaryExpression(Expression left, SyntaxToken op, Expression right)
         {
             Left = left;
             Op = op;
             Right = right;
         }
 
-        internal override SyntaxNodeKind Kind => SyntaxNodeKind.BinaryExpression;
+        internal override NodeKind Kind => NodeKind.BinaryExpression;
 
         internal override IEnumerable<AstNode> GetChildren()
         {

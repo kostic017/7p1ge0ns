@@ -2,16 +2,16 @@
 
 namespace Kostic017.Pigeon.AST
 {
-    class ExpressionStatementNode : StatementNode
+    class ExpressionStatement : Statement
     {
-        internal ExpressionNode Expression { get; }
+        internal Expression Expression { get; }
 
-        internal ExpressionStatementNode(ExpressionNode expression)
+        internal ExpressionStatement(Expression expression)
         {
             Expression = expression;
         }
         
-        internal override SyntaxNodeKind Kind => SyntaxNodeKind.ExpressionStatement;
+        internal override NodeKind Kind => NodeKind.ExpressionStatement;
 
         internal override IEnumerable<AstNode> GetChildren()
         {
