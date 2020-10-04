@@ -12,6 +12,8 @@ namespace Kostic017.Pigeon.TAST
         Div,
         Mod,
         Pow,
+        And,
+        Or,
     }
 
     class TypedBinaryOperator
@@ -107,7 +109,21 @@ namespace Kostic017.Pigeon.TAST
                         new TypedBinaryOperator(BinaryOperator.Div, typeof(float), typeof(int), typeof(float)),
                         new TypedBinaryOperator(BinaryOperator.Div, typeof(float), typeof(float), typeof(float)),
                     }
-                }
+                },
+                {
+                    SyntaxTokenType.And,
+                    new []
+                    {
+                        new TypedBinaryOperator(BinaryOperator.And, typeof(bool), typeof(bool), typeof(bool)),
+                    }
+                },
+                {
+                    SyntaxTokenType.Or,
+                    new []
+                    {
+                        new TypedBinaryOperator(BinaryOperator.Or, typeof(bool), typeof(bool), typeof(bool)),
+                    }
+                },
             };
     }
 }

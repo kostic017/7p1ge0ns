@@ -2,8 +2,6 @@
 
 namespace Kostic017.Pigeon.TAST
 {
-
-
     class TypedBinaryExpression : TypedExpression
     {
         internal TypedExpression Left { get; }
