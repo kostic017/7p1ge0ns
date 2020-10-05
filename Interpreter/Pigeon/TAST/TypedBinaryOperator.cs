@@ -14,6 +14,8 @@ namespace Kostic017.Pigeon.TAST
         Pow,
         And,
         Or,
+        Eq,
+        Neq,
     }
 
     class TypedBinaryOperator
@@ -38,8 +40,8 @@ namespace Kostic017.Pigeon.TAST
 
         internal static TypedBinaryOperator Bind(SyntaxTokenType op, Type leftType, Type rightType)
         {
-            if (operators.TryGetValue(op, out var tops))
-                return tops.FirstOrDefault(t => t.Supports(leftType, rightType));
+            if (operators.TryGetValue(op, out var typedOperators))
+                return typedOperators.FirstOrDefault(t => t.Supports(leftType, rightType));
             return null;
         }
 
@@ -122,6 +124,30 @@ namespace Kostic017.Pigeon.TAST
                     new []
                     {
                         new TypedBinaryOperator(BinaryOperator.Or, typeof(bool), typeof(bool), typeof(bool)),
+                    }
+                },
+                {
+                    SyntaxTokenType.Eq,
+                    new []
+                    {
+                        new TypedBinaryOperator(BinaryOperator.Eq, typeof(int), typeof(int), typeof(bool)),
+                        new TypedBinaryOperator(BinaryOperator.Eq, typeof(int), typeof(float), typeof(bool)),
+                        new TypedBinaryOperator(BinaryOperator.Eq, typeof(float), typeof(int), typeof(bool)),
+                        new TypedBinaryOperator(BinaryOperator.Eq, typeof(float), typeof(float), typeof(bool)),
+                        new TypedBinaryOperator(BinaryOperator.Eq, typeof(bool), typeof(bool), typeof(bool)),
+                        new TypedBinaryOperator(BinaryOperator.Eq, typeof(string), typeof(string), typeof(bool)),
+                    }
+                },
+                {
+                    SyntaxTokenType.Neq,
+                    new []
+                    {
+                        new TypedBinaryOperator(BinaryOperator.Neq, typeof(int), typeof(int), typeof(bool)),
+                        new TypedBinaryOperator(BinaryOperator.Neq, typeof(int), typeof(float), typeof(bool)),
+                        new TypedBinaryOperator(BinaryOperator.Neq, typeof(float), typeof(int), typeof(bool)),
+                        new TypedBinaryOperator(BinaryOperator.Neq, typeof(float), typeof(float), typeof(bool)),
+                        new TypedBinaryOperator(BinaryOperator.Neq, typeof(bool), typeof(bool), typeof(bool)),
+                        new TypedBinaryOperator(BinaryOperator.Neq, typeof(string), typeof(string), typeof(bool)),
                     }
                 },
             };

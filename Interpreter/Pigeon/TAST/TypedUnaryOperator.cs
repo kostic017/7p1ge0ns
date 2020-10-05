@@ -36,9 +36,9 @@ namespace Kostic017.Pigeon.TAST
 
         internal static TypedUnaryOperator Bind(SyntaxTokenType op, Type operandType)
         {
-            if (operators.TryGetValue(op, out var top))
-                if (top.Supports(operandType))
-                    return top;
+            if (operators.TryGetValue(op, out var typedOperator))
+                if (typedOperator.Supports(operandType))
+                    return typedOperator;
             return null;
         }
     }

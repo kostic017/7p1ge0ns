@@ -40,7 +40,7 @@ namespace Kostic017.Pigeon
             
             if (top == null)
             {
-                ReportError(CodeErrorType.UNARY_OPERANT_INVALID_TYPE, node.Op, node.Op.Type.GetDescription(), value.Type.ToString());
+                ReportError(CodeErrorType.UNARY_OPERAND_INVALID_TYPE, node.Op, node.Op.Type.GetDescription(), value.Type.ToString());
                 return value; // to avoid null checks later on
             }
             
@@ -51,15 +51,15 @@ namespace Kostic017.Pigeon
         {
             var left = BindExpression(node.Left);
             var right = BindExpression(node.Right);
-            var top = TypedBinaryOperator.Bind(node.Op.Type, left.Type, right.Type);
+            var typedOperator = TypedBinaryOperator.Bind(node.Op.Type, left.Type, right.Type);
 
-            if (top == null)
+            if (typedOperator == null)
             {
                 ReportError(CodeErrorType.BINARY_OPERAND_INVALID_TYPE, node.Op, node.Op.Type.GetDescription(), left.Type.ToString(), right.Type.ToString());
                 return left;
             }
 
-            return new TypedBinaryExpression(left, top.Op, right, top.ResultType);
+            return new TypedBinaryExpression(left, typedOperator.Op, right, typedOperator.ResultType);
         }
 
         private void ReportError(CodeErrorType type, SyntaxToken token, params string[] data)
