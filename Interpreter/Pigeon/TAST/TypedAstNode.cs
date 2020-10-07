@@ -1,9 +1,10 @@
 ﻿namespace Kostic017.Pigeon.TAST
 {
     /// <summary>
-    /// One might put type info directly in AST classes as a field that can be changed
-    /// appropriately, but I made all classes immutable to increase thread safety, so
-    /// we kinda need to duplicate the structure while adding more data.
+    /// One might put type and related info directly in AST classes as fields that can be
+    /// modified appropriately, but I made all AST classes immutable to increase thread safety.
+    /// If this was a compiler and we wanted to do some optimisations before code generation,
+    /// we would modify this tree, while leaving alone the tree that represents original input.
     /// </summary>
     abstract class TypedAstNode
     {

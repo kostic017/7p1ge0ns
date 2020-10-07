@@ -24,8 +24,15 @@ namespace Kostic017.Pigeon
                     return BindUnaryExpression((UnaryExpression) node);
                 case NodeKind.BinaryExpression:
                     return BindBinaryExpression((BinaryExpression) node);
+                case NodeKind.ParenthesizedExpression:
+                    return BindParenthesizedExpression((ParenthesizedExpression) node);
             }
             throw new NotImplementedException();
+        }
+
+        private TypedExpression BindParenthesizedExpression(ParenthesizedExpression node)
+        {
+            return BindExpression(node.Expression);
         }
 
         private TypedExpression BindLiteralExpression(LiteralExpression node)
