@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Kostic017.Pigeon.Error;
+using System.Collections.Generic;
 
 namespace Kostic017.Pigeon
 {
@@ -19,7 +20,7 @@ namespace Kostic017.Pigeon
         char CurrentChar => index < code.Length ? code[index] : '\0';
         char NextChar => index + 1 < code.Length ? code[index + 1] : '\0';
 
-        internal List<CodeError> Errors { get; }
+        internal CodeErrorBag ErrorBag { get; }
 
         internal Lexer(string code, int tabSize)
         {
@@ -28,7 +29,7 @@ namespace Kostic017.Pigeon
             column = 0;
             this.code = code;
             this.tabSize = tabSize;
-            Errors = new List<CodeError>();
+            ErrorBag = new CodeErrorBag();
         }
 
         internal SyntaxToken[] Lex()
@@ -45,7 +46,7 @@ namespace Kostic017.Pigeon
             return tokens.ToArray();
         }
 
-        SyntaxToken NextToken()
+        private SyntaxToken NextToken()
         {
             while (CurrentChar != '\0')
             {
@@ -200,7 +201,7 @@ namespace Kostic017.Pigeon
                             return LexWord();
                         }
 
-                        ReportError(CodeErrorType.UNEXPECTED_CHARACTER, $"{ch}");
+                        ReportError(CodeErrorType.UNEXPECTED_CHARACTER, 1, $"{ch}");
                         return Token(SyntaxTokenType.Illegal);
                 }
             }
@@ -208,7 +209,7 @@ namespace Kostic017.Pigeon
             return Token(SyntaxTokenType.EOF);
         }
 
-        SyntaxToken LexString()
+        private SyntaxToken LexString()
         {
             bool done = false;
             string value = "";
@@ -220,17 +221,17 @@ namespace Kostic017.Pigeon
                     case '\0':
                     case '\n':
                         done = true;
-                        ReportError(CodeErrorType.UNTERMINATED_STRING);
+                        ReportError(CodeErrorType.UNTERMINATED_STRING, 1);
                         break;
                     
                     case '\\':
-                        if (escapes.Contains(NextChar))
+                        if (SyntaxFacts.EscapeChars.Contains(NextChar))
                         {
                             value += NextChar;
                         }
                         else
                         {
-                            ReportError(CodeErrorType.INVALID_ESCAPE_CHAR, $"\\{NextChar}");
+                            ReportError(CodeErrorType.INVALID_ESCAPE_CHAR, 2, $"\\{NextChar}");
                         }
                         EatCurrentChar();
                         break;
@@ -248,7 +249,7 @@ namespace Kostic017.Pigeon
             return Token(SyntaxTokenType.StringLiteral, value);
         }
 
-        SyntaxToken LexComment()
+        private SyntaxToken LexComment()
         {
             if (CurrentChar == '/')
             {
@@ -274,7 +275,7 @@ namespace Kostic017.Pigeon
 
                 if (CurrentChar == '\0')
                 {
-                    ReportError(CodeErrorType.UNTERMINATED_COMMENT_BLOCK);
+                    ReportError(CodeErrorType.UNTERMINATED_COMMENT_BLOCK, 2);
                     break;
                 }
 
@@ -284,7 +285,7 @@ namespace Kostic017.Pigeon
             return Token(SyntaxTokenType.BlockComment);
         }
 
-        SyntaxToken LexNumber()
+        private SyntaxToken LexNumber()
         {
             bool isReal = false;
             string value = PrevChar.ToString();
@@ -302,7 +303,7 @@ namespace Kostic017.Pigeon
             return Token(isReal ? SyntaxTokenType.FloatLiteral : SyntaxTokenType.IntLiteral, value);
         }
 
-        SyntaxToken LexWord()
+        private SyntaxToken LexWord()
         {
             string value = PrevChar.ToString();
 
@@ -330,7 +331,7 @@ namespace Kostic017.Pigeon
             return Token(SyntaxTokenType.ID, value);
         }
 
-        char EatCurrentChar()
+        private char EatCurrentChar()
         {
             if (index >= code.Length)
             {
@@ -357,7 +358,7 @@ namespace Kostic017.Pigeon
             return ch;
         }
 
-        bool TryEatCurrentChar(char ch)
+        private bool TryEatCurrentChar(char ch)
         {
             if (CurrentChar == ch)
             {
@@ -367,23 +368,16 @@ namespace Kostic017.Pigeon
             return false;
         }
 
-        SyntaxToken Token(SyntaxTokenType type, string lexeme = null)
+        private SyntaxToken Token(SyntaxTokenType type, string lexeme = null)
         {
-            return new SyntaxToken(type, tokenStartIndex, index, tokenStartLine, tokenStartColumn, lexeme);
+            var textSpan = new TextSpan(tokenStartLine, tokenStartColumn, tokenStartIndex, index);
+            return new SyntaxToken(type, textSpan, lexeme);
         }
 
-        void ReportError(CodeErrorType type, params string[] data)
+        private void ReportError(CodeErrorType type, int length, params string[] data)
         {
-            Errors.Add(new CodeError(type, tokenStartLine, tokenStartColumn, data));
+            var textSpan = new TextSpan(tokenStartLine, tokenStartColumn, tokenStartIndex, tokenStartIndex + length);
+            ErrorBag.Report(type, textSpan, data);
         }
-
-        static readonly HashSet<char> escapes =
-            new HashSet<char>
-            {
-                '\\',
-                't',
-                'n',
-                '"',
-            };
     }
 }

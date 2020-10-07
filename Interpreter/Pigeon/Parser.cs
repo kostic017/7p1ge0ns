@@ -1,4 +1,5 @@
 ﻿using Kostic017.Pigeon.AST;
+using Kostic017.Pigeon.Error;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -15,13 +16,13 @@ namespace Kostic017.Pigeon
         SyntaxToken Current => index < tokens.Length ? tokens[index] : tokens[tokens.Length - 1];
         SyntaxToken Peek => index + 1 < tokens.Length ? tokens[index + 1] : tokens[tokens.Length - 1];
 
-        internal List<CodeError> Errors { get; }
+        internal CodeErrorBag ErrorBag { get; }
 
         internal Parser(SyntaxToken[] syntaxTokens)
         {
             index = 0;
             tokens = syntaxTokens.Where(token => token.Type != SyntaxTokenType.Comment && token.Type != SyntaxTokenType.BlockComment).ToArray();
-            Errors = new List<CodeError>();
+            ErrorBag = new CodeErrorBag();
         }
 
         internal AstNode Parse()
@@ -29,7 +30,7 @@ namespace Kostic017.Pigeon
             var ast = ParseProgram();
             
             if (Current.Type != SyntaxTokenType.EOF)
-                ReportError(CodeErrorType.LEFTOVER_TOKENS_FOUND);
+                ErrorBag.Report(CodeErrorType.LEFTOVER_TOKENS_FOUND, Current.TextSpan);
             
             return ast;
         }
@@ -56,7 +57,7 @@ namespace Kostic017.Pigeon
                 }   
 
                 if (Current.Type == SyntaxTokenType.EOF)
-                    ReportError(CodeErrorType.UNTERMINATED_STATEMENT_BLOCK);
+                    ErrorBag.Report(CodeErrorType.UNTERMINATED_STATEMENT_BLOCK, Current.TextSpan);
 
                 Match(SyntaxTokenType.RBrace);
             }
@@ -92,7 +93,7 @@ namespace Kostic017.Pigeon
                         return ParseVariableAssignment();
                     break;
             }
-            ReportError(CodeErrorType.UNEXPECTED_TOKEN, Current.Type.GetDescription());
+            ErrorBag.Report(CodeErrorType.UNEXPECTED_TOKEN, Current.TextSpan, Current.Type.GetDescription());
             return null;
         }
 
@@ -213,7 +214,7 @@ namespace Kostic017.Pigeon
                     return ParseUnaryExpression();
 
                 default:
-                    ReportError(CodeErrorType.INVALID_EXPRESSION_TERM, Current.Type.GetDescription());
+                    ErrorBag.Report(CodeErrorType.INVALID_EXPRESSION_TERM, Current.TextSpan, Current.Type.GetDescription());
                     return new LiteralExpression(DummyToken(SyntaxTokenType.Illegal), "");
             }
         }
@@ -231,7 +232,7 @@ namespace Kostic017.Pigeon
             if (int.TryParse(token.Value, out int i))
                 return new LiteralExpression(token, i);
             
-            ReportError(CodeErrorType.ILLEGAL_NUMBER, token.Value);
+            ErrorBag.Report(CodeErrorType.ILLEGAL_NUMBER, token.TextSpan, token.Value);
             return new LiteralExpression(token, token.Value);
         }
 
@@ -242,7 +243,7 @@ namespace Kostic017.Pigeon
             if (float.TryParse(token.Value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float f))
                 return new LiteralExpression(token, f);
      
-            ReportError(CodeErrorType.ILLEGAL_NUMBER, token.Value);
+            ErrorBag.Report(CodeErrorType.ILLEGAL_NUMBER, token.TextSpan, token.Value);
             return new LiteralExpression(token, token.Value);
         }
 
@@ -278,7 +279,7 @@ namespace Kostic017.Pigeon
             var token = NextToken();
             if (types.Any(t => t == token.Type))
                 return token;
-            ReportError(CodeErrorType.MISSING_EXPECTED_TOKEN, string.Join(", ", types.Select(t => t.GetDescription())));
+            ErrorBag.Report(CodeErrorType.MISSING_EXPECTED_TOKEN, token.TextSpan, string.Join(", ", types.Select(t => t.GetDescription())));
             return DummyToken(types[0]);
         }
 
@@ -294,12 +295,7 @@ namespace Kostic017.Pigeon
         /// </summary>
         private SyntaxToken DummyToken(SyntaxTokenType type)
         {
-            return new SyntaxToken(type, -1, -1, -1, -1);
-        }
-
-        private void ReportError(CodeErrorType type, params string[] data)
-        {
-            Errors.Add(new CodeError(type, Current.StartLine, Current.StartColumn, data));
+            return new SyntaxToken(type, new TextSpan(-1, -1, -1, -1));
         }
     }
 }

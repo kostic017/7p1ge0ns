@@ -1,4 +1,5 @@
 ﻿using Kostic017.Pigeon.AST;
+using Kostic017.Pigeon.Error;
 using System;
 using System.IO;
 using System.Linq;
@@ -11,11 +12,11 @@ namespace Kostic017.Pigeon
         readonly Parser parser;
 
         internal AstNode Ast { get; }
-        internal CodeError[] LexerErrors => lexer.Errors.ToArray();
-        internal CodeError[] ParserErrors => parser.Errors.ToArray();
+        internal CodeError[] LexerErrors => lexer.ErrorBag.Errors.ToArray();
+        internal CodeError[] ParserErrors => parser.ErrorBag.Errors.ToArray();
 
         public SyntaxToken[] Tokens { get; }
-        public CodeError[] Errors => lexer.Errors.Concat(parser.Errors).ToArray();
+        public CodeError[] Errors => lexer.ErrorBag.Errors.Concat(parser.ErrorBag.Errors).ToArray();
 
         SyntaxTree(string code, int tabSize = 4)
         {

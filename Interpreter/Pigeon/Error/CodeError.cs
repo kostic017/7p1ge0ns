@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Kostic017.Pigeon
+namespace Kostic017.Pigeon.Error
 {
     public enum CodeErrorType
     {
@@ -21,27 +21,22 @@ namespace Kostic017.Pigeon
     public class CodeError
     {
         public CodeErrorType Type { get; }
+        public TextSpan TextSpan { get; }
         public string[] Data { get; }
-
-        public int Line { get; }
-        public int Column { get; }
-        
         public string Message { get; }
-        public string DetailedMessage { get; }
 
-        public CodeError(CodeErrorType type, int line, int column, params string[] data)
+        public CodeError(CodeErrorType type, TextSpan textSpan, params string[] data)
         {
             Type = type;
             Data = data;
-            Line = line;
-            Column = column;
+            TextSpan = textSpan;
 
             Message = messages[Type];
             for (int i = 0; i < data.Length; ++i)
                 Message = Message.Replace("{" + i + "}", Data[i]);
-
-            DetailedMessage = $"{Line}:{Column} " + Message;
         }
+
+        public string DetailedMessage => $"{TextSpan.Line}:{TextSpan.Column} {Message}";
 
         private static readonly Dictionary<CodeErrorType, string> messages =
             new Dictionary<CodeErrorType, string>

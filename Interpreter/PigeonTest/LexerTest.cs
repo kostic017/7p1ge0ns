@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Kostic017.Pigeon.Error;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Kostic017.Pigeon.Tests
@@ -31,10 +32,10 @@ namespace Kostic017.Pigeon.Tests
             Assert.Equal(tokens[0].Value, expected.Value);
 
             if (expected.Line > -1)
-                Assert.Equal(expected.Line, tokens[0].StartLine);
+                Assert.Equal(expected.Line, tokens[0].TextSpan.Line);
 
             if (expected.Column > -1)
-                Assert.Equal(expected.Column, tokens[0].StartColumn);
+                Assert.Equal(expected.Column, tokens[0].TextSpan.Column);
         }
 
         public static IEnumerable<object[]> GetTestData()

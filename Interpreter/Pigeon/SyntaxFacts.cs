@@ -32,6 +32,15 @@ namespace Kostic017.Pigeon
             { "void", SyntaxTokenType.Void }
         };
 
+        internal static readonly HashSet<char> EscapeChars
+            = new HashSet<char>
+        {
+            '\\',
+            't',
+            'n',
+            '"',
+        };
+
         internal static readonly SyntaxTokenType[] AssignmentOperators =
         {
             SyntaxTokenType.Assign,

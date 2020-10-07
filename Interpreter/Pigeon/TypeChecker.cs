@@ -1,17 +1,17 @@
 ﻿using Kostic017.Pigeon.AST;
+using Kostic017.Pigeon.Error;
 using Kostic017.Pigeon.TAST;
 using System;
-using System.Collections.Generic;
 
 namespace Kostic017.Pigeon
 {
     class TypeChecker
     {
-        internal List<CodeError> Errors { get; }
+        internal CodeErrorBag ErrorBag { get; }
 
         internal TypeChecker()
         {
-            Errors = new List<CodeError>();
+            ErrorBag = new CodeErrorBag();
         }
 
         public TypedExpression BindExpression(Expression node)
@@ -40,7 +40,7 @@ namespace Kostic017.Pigeon
             
             if (top == null)
             {
-                ReportError(CodeErrorType.UNARY_OPERAND_INVALID_TYPE, node.Op, node.Op.Type.GetDescription(), value.Type.ToString());
+                ErrorBag.Report(CodeErrorType.UNARY_OPERAND_INVALID_TYPE, node.Op.TextSpan, node.Op.Type.GetDescription(), value.Type.ToString());
                 return value; // to avoid null checks later on
             }
             
@@ -55,16 +55,11 @@ namespace Kostic017.Pigeon
 
             if (typedOperator == null)
             {
-                ReportError(CodeErrorType.BINARY_OPERAND_INVALID_TYPE, node.Op, node.Op.Type.GetDescription(), left.Type.ToString(), right.Type.ToString());
+                ErrorBag.Report(CodeErrorType.BINARY_OPERAND_INVALID_TYPE, node.Op.TextSpan, node.Op.Type.GetDescription(), left.Type.ToString(), right.Type.ToString());
                 return left;
             }
 
             return new TypedBinaryExpression(left, typedOperator.Op, right, typedOperator.ResultType);
-        }
-
-        private void ReportError(CodeErrorType type, SyntaxToken token, params string[] data)
-        {
-            Errors.Add(new CodeError(type, token.StartLine, token.StartColumn, data));
         }
     }
 }
