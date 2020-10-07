@@ -23,20 +23,23 @@ namespace Kostic017.Pigeon.Error
         public CodeErrorType Type { get; }
         public TextSpan TextSpan { get; }
         public string[] Data { get; }
-        public string Message { get; }
 
         public CodeError(CodeErrorType type, TextSpan textSpan, params string[] data)
         {
             Type = type;
             Data = data;
             TextSpan = textSpan;
-
-            Message = messages[Type];
-            for (int i = 0; i < data.Length; ++i)
-                Message = Message.Replace("{" + i + "}", Data[i]);
         }
 
-        public string DetailedMessage => $"{TextSpan.Line}:{TextSpan.Column} {Message}";
+        public string Message()
+        {
+            var message = messages[Type];
+            for (int i = 0; i < Data.Length; ++i)
+                message = message.Replace("{" + i + "}", Data[i]);
+            return message;
+        }
+
+        public override string ToString() => $"{TextSpan.Line}:{TextSpan.Column} {Message()}";
 
         private static readonly Dictionary<CodeErrorType, string> messages =
             new Dictionary<CodeErrorType, string>

@@ -18,7 +18,7 @@ namespace Kostic017.Pigeon
         public SyntaxToken[] Tokens { get; }
         public CodeError[] Errors => lexer.ErrorBag.Errors.Concat(parser.ErrorBag.Errors).ToArray();
 
-        SyntaxTree(string code, int tabSize = 4)
+        private SyntaxTree(string code, int tabSize = 4)
         {
             lexer = new Lexer(code, tabSize);
             Tokens = lexer.Lex();
@@ -36,7 +36,7 @@ namespace Kostic017.Pigeon
             Print(Ast, writer);
         }
 
-        static void Print(AstNode root, TextWriter writer, string ident = "")
+        private static void Print(AstNode root, TextWriter writer, string ident = "")
         {
             var isConsole = writer == Console.Out;
             if (root is SyntaxTokenWrap tokenWrap)

@@ -36,7 +36,7 @@ namespace TestProject
 
                 foreach (var error in syntaxTree.Errors)
                 {
-                    Console.WriteLine(error.DetailedMessage);
+                    Console.WriteLine(error);
                 }
 
                 Console.WriteLine();
