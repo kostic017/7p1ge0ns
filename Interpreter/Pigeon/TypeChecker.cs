@@ -30,11 +30,6 @@ namespace Kostic017.Pigeon
             throw new NotImplementedException();
         }
 
-        private TypedExpression BindParenthesizedExpression(ParenthesizedExpression node)
-        {
-            return BindExpression(node.Expression);
-        }
-
         private TypedExpression BindLiteralExpression(LiteralExpression node)
         {
             return new TypedLiteralExpression(node.ParsedValue ?? 0);
@@ -67,6 +62,11 @@ namespace Kostic017.Pigeon
             }
 
             return new TypedBinaryExpression(left, typedOperator, right);
+        }
+
+        private TypedExpression BindParenthesizedExpression(ParenthesizedExpression node)
+        {
+            return BindExpression(node.Expression);
         }
     }
 }

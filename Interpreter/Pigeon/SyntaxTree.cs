@@ -12,9 +12,9 @@ namespace Kostic017.Pigeon
         readonly Parser parser;
 
         internal AstNode Ast { get; }
-        internal CodeError[] LexerErrors => lexer.ErrorBag.Errors.ToArray();
-        internal CodeError[] ParserErrors => parser.ErrorBag.Errors.ToArray();
-
+        internal CodeError[] LexerErrors => lexer.ErrorBag.Errors;
+        internal CodeError[] ParserErrors => parser.ErrorBag.Errors;
+        
         public SyntaxToken[] Tokens { get; }
         public CodeError[] Errors => lexer.ErrorBag.Errors.Concat(parser.ErrorBag.Errors).ToArray();
 

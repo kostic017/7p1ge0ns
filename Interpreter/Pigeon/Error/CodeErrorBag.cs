@@ -4,16 +4,18 @@ namespace Kostic017.Pigeon.Error
 {
     public class CodeErrorBag
     {
-        public List<CodeError> Errors { get; }
+        readonly List<CodeError> errors;
 
-        public CodeErrorBag()
+        internal CodeErrorBag()
         {
-            Errors = new List<CodeError>();
+            errors = new List<CodeError>();
         }
 
         internal void Report(CodeErrorType errorType, TextSpan textSpan, params string[] data)
         {
-            Errors.Add(new CodeError(errorType, textSpan, data));
+            errors.Add(new CodeError(errorType, textSpan, data));
         }
+
+        public CodeError[] Errors => errors.ToArray();
     }
 }
