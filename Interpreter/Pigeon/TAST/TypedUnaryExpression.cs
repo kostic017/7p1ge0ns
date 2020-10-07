@@ -4,15 +4,15 @@ namespace Kostic017.Pigeon.TAST
 {
     class TypedUnaryExpression : TypedExpression
     {
-        internal UnaryOperator Op { get; }
-        internal TypedExpression Value { get; }
+        internal TypedUnaryOperator Op { get; }
+        internal TypedExpression Operand { get; }
 
-        internal TypedUnaryExpression(UnaryOperator op, TypedExpression value) {
+        internal TypedUnaryExpression(TypedUnaryOperator op, TypedExpression operand) {
             Op = op;
-            Value = value;
+            Operand = operand;
         }
 
-        internal override Type Type => Value.Type;
+        internal override Type Type => Op.Type;
         internal override NodeKind Kind => NodeKind.UnaryExpression;
     }
 }

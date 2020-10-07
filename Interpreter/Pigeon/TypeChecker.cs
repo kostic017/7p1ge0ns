@@ -36,15 +36,15 @@ namespace Kostic017.Pigeon
         private TypedExpression BindUnaryExpression(UnaryExpression node)
         {
             var value = BindExpression(node.Value);
-            var top = TypedUnaryOperator.Bind(node.Op.Type, value.Type);
+            var typedOperator = TypedUnaryOperator.Bind(node.Op.Type, value.Type);
             
-            if (top == null)
+            if (typedOperator == null)
             {
                 ErrorBag.Report(CodeErrorType.UNARY_OPERAND_INVALID_TYPE, node.Op.TextSpan, node.Op.Type.GetDescription(), value.Type.ToString());
                 return value; // to avoid null checks later on
             }
             
-            return new TypedUnaryExpression(top.Op, value);
+            return new TypedUnaryExpression(typedOperator, value);
         }
 
         private TypedExpression BindBinaryExpression(BinaryExpression node)
@@ -59,7 +59,7 @@ namespace Kostic017.Pigeon
                 return left;
             }
 
-            return new TypedBinaryExpression(left, typedOperator.Op, right, typedOperator.ResultType);
+            return new TypedBinaryExpression(left, typedOperator, right);
         }
     }
 }
