@@ -40,12 +40,12 @@ namespace Kostic017.Pigeon.TAST
 
         internal static TypedBinaryOperator Bind(SyntaxTokenType op, Type leftType, Type rightType)
         {
-            if (operators.TryGetValue(op, out var typedOperators))
+            if (combinations.TryGetValue(op, out var typedOperators))
                 return typedOperators.FirstOrDefault(t => t.Supports(leftType, rightType));
             return null;
         }
 
-        private static readonly Dictionary<SyntaxTokenType, TypedBinaryOperator[]> operators
+        private static readonly Dictionary<SyntaxTokenType, TypedBinaryOperator[]> combinations
             = new Dictionary<SyntaxTokenType, TypedBinaryOperator[]>
             {
                 {
@@ -127,7 +127,7 @@ namespace Kostic017.Pigeon.TAST
                     }
                 },
                 {
-                    SyntaxTokenType.Eq,
+                    SyntaxTokenType.EqEq,
                     new []
                     {
                         new TypedBinaryOperator(BinaryOperator.Eq, typeof(int), typeof(int), typeof(bool)),

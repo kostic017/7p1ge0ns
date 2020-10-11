@@ -120,7 +120,7 @@ namespace Kostic017.Pigeon
             Expression step = null;
             Match(SyntaxTokenType.For);
             var id = Match(SyntaxTokenType.ID);
-            Match(SyntaxTokenType.Assign);
+            Match(SyntaxTokenType.Eq);
             var from = ParseExpression();
             var dir = Match(SyntaxTokenType.To, SyntaxTokenType.Downto);
             var to = ParseExpression();
@@ -157,7 +157,7 @@ namespace Kostic017.Pigeon
         {
             var keyword = Match(SyntaxTokenType.Let, SyntaxTokenType.Const);
             var id = Match(SyntaxTokenType.ID);
-            Match(SyntaxTokenType.Assign);
+            Match(SyntaxTokenType.Eq);
             var value = ParseExpression();
             return new VariableDeclaration(keyword, id, value);
         }
@@ -191,7 +191,7 @@ namespace Kostic017.Pigeon
             switch (Current.Type)
             {
                 case SyntaxTokenType.ID:
-                    return ParseIdExpression();
+                    return ParsVarableExpression();
 
                 case SyntaxTokenType.IntLiteral:
                     return ParseIntLiteralExpression();
@@ -219,10 +219,10 @@ namespace Kostic017.Pigeon
             }
         }
 
-        private Expression ParseIdExpression()
+        private Expression ParsVarableExpression()
         {
             var token = Match(SyntaxTokenType.ID);
-            return new IdentifierExpression(token);
+            return new VariableExpression(token);
         }
 
         private Expression ParseIntLiteralExpression()

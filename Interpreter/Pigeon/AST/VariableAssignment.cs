@@ -4,13 +4,13 @@ namespace Kostic017.Pigeon.AST
 {
     class VariableAssignment : Statement
     {
-        internal SyntaxToken Name { get; }
+        internal SyntaxToken NameToken { get; }
         internal SyntaxToken Op { get; }
         internal Expression Value { get; }
 
         internal VariableAssignment(SyntaxToken name, SyntaxToken op, Expression value)
         {
-            Name = name;
+            NameToken = name;
             Op = op;
             Value = value;
         }
@@ -19,7 +19,7 @@ namespace Kostic017.Pigeon.AST
 
         internal override IEnumerable<AstNode> GetChildren()
         {
-            yield return new SyntaxTokenWrap(Name);
+            yield return new SyntaxTokenWrap(NameToken);
             yield return new SyntaxTokenWrap(Op);
             yield return Value;
         }

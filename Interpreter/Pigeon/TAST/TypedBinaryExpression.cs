@@ -8,7 +8,7 @@ namespace Kostic017.Pigeon.TAST
         internal TypedBinaryOperator Op { get; }
         internal TypedExpression Right { get; }
 
-        public TypedBinaryExpression(TypedExpression left, TypedBinaryOperator op, TypedExpression right)
+        internal TypedBinaryExpression(TypedExpression left, TypedBinaryOperator op, TypedExpression right)
         {
             Left = left;
             Op = op;

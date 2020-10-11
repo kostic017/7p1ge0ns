@@ -6,7 +6,7 @@ namespace Kostic017.Pigeon.TAST
     {
         internal object Value { get; }
 
-        public TypedLiteralExpression(object value)
+        internal TypedLiteralExpression(object value)
         {
             Value = value;
         }

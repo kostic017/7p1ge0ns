@@ -43,7 +43,7 @@ namespace Kostic017.Pigeon
 
         internal static readonly SyntaxTokenType[] AssignmentOperators =
         {
-            SyntaxTokenType.Assign,
+            SyntaxTokenType.Eq,
             SyntaxTokenType.PlusEq,
             SyntaxTokenType.MinusEq,
             SyntaxTokenType.MulEq,
@@ -57,7 +57,7 @@ namespace Kostic017.Pigeon
         {
             { SyntaxTokenType.And, 0 },
             { SyntaxTokenType.Or, 0 },
-            { SyntaxTokenType.Eq, 1 },
+            { SyntaxTokenType.EqEq, 1 },
             { SyntaxTokenType.Neq, 1 },
             { SyntaxTokenType.Lt, 2 },
             { SyntaxTokenType.Gt, 2 },

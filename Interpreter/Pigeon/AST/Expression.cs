@@ -15,11 +15,8 @@ namespace Kostic017.Pigeon.AST
         {
             switch (node.Kind)
             {
-                case NodeKind.AssignmentExpression:
-                    PrintAssignmentExpression((AssignmentExpression)node, writer);
-                    break;
-                case NodeKind.IdentifierExpression:
-                    PrintIdentiferExpression((IdentifierExpression)node, writer);
+                case NodeKind.VariableExpression:
+                    PrintIdentiferExpression((VariableExpression)node, writer);
                     break;
                 case NodeKind.BinaryExpression:
                     PrintBinaryExpression((BinaryExpression)node, writer);
@@ -48,16 +45,7 @@ namespace Kostic017.Pigeon.AST
             writer.Write(")");
         }
 
-        private static void PrintAssignmentExpression(AssignmentExpression node, TextWriter writer)
-        {
-            writer.Write("(");
-            writer.Write(node.IdentifierToken.Value);
-            writer.Write(" = ");
-            Print(node.Value, writer);
-            writer.Write(")");
-        }
-
-        private static void PrintIdentiferExpression(IdentifierExpression node, TextWriter writer)
+        private static void PrintIdentiferExpression(VariableExpression node, TextWriter writer)
         {
             writer.Write(node.IdentifierToken.Value);
         }

@@ -177,9 +177,9 @@ namespace Kostic017.Pigeon
                     case '=':
                         if (TryEatCurrentChar('='))
                         {
-                            return Token(SyntaxTokenType.Eq);
+                            return Token(SyntaxTokenType.EqEq);
                         }
-                        return Token(SyntaxTokenType.Assign);
+                        return Token(SyntaxTokenType.Eq);
 
                     case '&':
                         if (TryEatCurrentChar('&'))
