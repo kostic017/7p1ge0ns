@@ -13,7 +13,7 @@ namespace Kostic017.Pigeon.Tests
             var syntaxTree = SyntaxTree.Parse(text);
             Assert.Empty(syntaxTree.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Ast);
+            using var e = new AssertingEnumerator(syntaxTree.Root);
 
             e.AssertNode(NodeKind.Program);
                 e.AssertNode(NodeKind.StatementBlock);
@@ -32,7 +32,7 @@ namespace Kostic017.Pigeon.Tests
             var syntaxTree = SyntaxTree.Parse(text);
             Assert.Empty(syntaxTree.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Ast);
+            using var e = new AssertingEnumerator(syntaxTree.Root);
 
             e.AssertNode(NodeKind.Program);
                 e.AssertNode(NodeKind.StatementBlock);
@@ -53,7 +53,7 @@ namespace Kostic017.Pigeon.Tests
             var syntaxTree = SyntaxTree.Parse(text);
             Assert.Empty(syntaxTree.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Ast);
+            using var e = new AssertingEnumerator(syntaxTree.Root);
 
             e.AssertNode(NodeKind.Program);
                 e.AssertNode(NodeKind.StatementBlock);
@@ -86,7 +86,7 @@ namespace Kostic017.Pigeon.Tests
             var syntaxTree = SyntaxTree.Parse(text);
             Assert.Empty(syntaxTree.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Ast);
+            using var e = new AssertingEnumerator(syntaxTree.Root);
 
             e.AssertNode(NodeKind.Program);
                 e.AssertNode(NodeKind.StatementBlock);
@@ -121,7 +121,7 @@ namespace Kostic017.Pigeon.Tests
             var syntaxTree = SyntaxTree.Parse(text);
             Assert.Empty(syntaxTree.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Ast);
+            using var e = new AssertingEnumerator(syntaxTree.Root);
 
             e.AssertNode(NodeKind.Program);
                 e.AssertNode(NodeKind.StatementBlock);
@@ -155,7 +155,7 @@ namespace Kostic017.Pigeon.Tests
             var syntaxTree = SyntaxTree.Parse(text);
             Assert.Empty(syntaxTree.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Ast);
+            using var e = new AssertingEnumerator(syntaxTree.Root);
 
             e.AssertNode(NodeKind.Program);
                 e.AssertNode(NodeKind.StatementBlock);
@@ -196,7 +196,7 @@ namespace Kostic017.Pigeon.Tests
             var syntaxTree = SyntaxTree.Parse(text);
             Assert.Empty(syntaxTree.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Ast);
+            using var e = new AssertingEnumerator(syntaxTree.Root);
 
             e.AssertNode(NodeKind.Program);
                 e.AssertNode(NodeKind.StatementBlock);
@@ -264,7 +264,7 @@ namespace Kostic017.Pigeon.Tests
             var syntaxTree = SyntaxTree.Parse("i = " + text);
             Assert.Empty(syntaxTree.Errors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Ast, false);
+            using var e = new AssertingEnumerator(syntaxTree.Root, false);
 
             e.AssertNode(NodeKind.Program);
             e.AssertNode(NodeKind.StatementBlock);

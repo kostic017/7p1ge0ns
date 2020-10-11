@@ -1,5 +1,6 @@
 ﻿using Kostic017.Pigeon;
 using System;
+using System.Linq;
 using System.Text;
 
 namespace TestProject
@@ -33,11 +34,10 @@ namespace TestProject
 
                 var syntaxTree = SyntaxTree.Parse(sb.ToString());
                 syntaxTree.PrintTree(Console.Out);
+                var globalScope = SemanticAnalyzer.Anaylize(syntaxTree);
 
-                foreach (var error in syntaxTree.Errors)
-                {
+                foreach (var error in syntaxTree.Errors.Concat(globalScope.Errors))
                     Console.WriteLine(error);
-                }
 
                 Console.WriteLine();
 

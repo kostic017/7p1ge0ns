@@ -25,19 +25,13 @@ namespace Kostic017.Pigeon
             ErrorBag = new CodeErrorBag();
         }
 
-        internal AstNode Parse()
+        internal Program Parse()
         {
-            var ast = ParseProgram();
+            var stmtBlock = ParseStatementBlock();
             
             if (Current.Type != SyntaxTokenType.EOF)
                 ErrorBag.Report(CodeErrorType.LEFTOVER_TOKENS_FOUND, Current.TextSpan);
             
-            return ast;
-        }
-
-        private AstNode ParseProgram()
-        {
-            var stmtBlock = ParseStatementBlock();
             return new Program(stmtBlock);
         }
 

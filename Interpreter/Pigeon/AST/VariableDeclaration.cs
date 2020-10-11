@@ -5,19 +5,19 @@ namespace Kostic017.Pigeon.AST
     internal class VariableDeclaration : Statement
     {
         internal SyntaxToken Keyword { get; }
-        internal SyntaxToken Name { get; }
+        internal SyntaxToken IdentifierToken { get; }
         internal Expression Value { get; }
 
         internal VariableDeclaration(SyntaxToken type, SyntaxToken name)
         {
             Keyword = type;
-            Name = name;
+            IdentifierToken = name;
         }
 
         internal VariableDeclaration(SyntaxToken type, SyntaxToken name, Expression value)
         {
             Keyword = type;
-            Name = name;
+            IdentifierToken = name;
             Value = value;
         }
 
@@ -26,7 +26,7 @@ namespace Kostic017.Pigeon.AST
         internal override IEnumerable<AstNode> GetChildren()
         {
             yield return new SyntaxTokenWrap(Keyword);
-            yield return new SyntaxTokenWrap(Name);
+            yield return new SyntaxTokenWrap(IdentifierToken);
             yield return Value;
         }
     }

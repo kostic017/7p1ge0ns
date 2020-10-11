@@ -11,10 +11,10 @@ namespace Kostic017.Pigeon
         readonly Lexer lexer;
         readonly Parser parser;
 
-        internal AstNode Ast { get; }
+        internal Program Root { get; }
         internal CodeError[] LexerErrors => lexer.ErrorBag.Errors;
         internal CodeError[] ParserErrors => parser.ErrorBag.Errors;
-        
+
         public SyntaxToken[] Tokens { get; }
         public CodeError[] Errors => lexer.ErrorBag.Errors.Concat(parser.ErrorBag.Errors).ToArray();
 
@@ -23,7 +23,7 @@ namespace Kostic017.Pigeon
             lexer = new Lexer(code, tabSize);
             Tokens = lexer.Lex();
             parser = new Parser(Tokens);
-            Ast = parser.Parse();
+            Root = parser.Parse();
         }
 
         public static SyntaxTree Parse(string code, int tabSize = 4)
@@ -33,7 +33,7 @@ namespace Kostic017.Pigeon
 
         public void PrintTree(TextWriter writer)
         {
-            Print(Ast, writer);
+            Print(Root, writer);
         }
 
         private static void Print(AstNode root, TextWriter writer, string ident = "")
