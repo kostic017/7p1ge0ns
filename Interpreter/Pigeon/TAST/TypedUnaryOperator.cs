@@ -27,11 +27,12 @@ namespace Kostic017.Pigeon.TAST
             return Type == type;
         }
 
-        internal static TypedUnaryOperator Bind(SyntaxTokenType op, TypeSymbol operandType)
+        internal static bool TryBind(SyntaxTokenType op, TypeSymbol operandType, out TypedUnaryOperator typedOperator)
         {
+            typedOperator = null;
             if (combinations.TryGetValue(op, out var typedOperators))
-                return (typedOperators.FirstOrDefault(t => t.Supports(operandType)));
-            return null;
+                typedOperator = typedOperators.FirstOrDefault(t => t.Supports(operandType));
+            return typedOperator != null;
         }
 
         private static readonly Dictionary<SyntaxTokenType, TypedUnaryOperator[]> combinations

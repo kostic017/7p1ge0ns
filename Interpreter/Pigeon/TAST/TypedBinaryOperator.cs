@@ -38,11 +38,12 @@ namespace Kostic017.Pigeon.TAST
             return leftType == left && rightType == right;
         }
 
-        internal static TypedBinaryOperator Bind(SyntaxTokenType op, TypeSymbol leftType, TypeSymbol rightType)
+        internal static bool TryBind(SyntaxTokenType op, TypeSymbol leftType, TypeSymbol rightType, out TypedBinaryOperator typedOperator)
         {
+            typedOperator = null;
             if (combinations.TryGetValue(op, out var typedOperators))
-                return typedOperators.FirstOrDefault(t => t.Supports(leftType, rightType));
-            return null;
+                typedOperator = typedOperators.FirstOrDefault(t => t.Supports(leftType, rightType));
+            return typedOperator != null;
         }
 
         private static readonly Dictionary<SyntaxTokenType, TypedBinaryOperator[]> combinations

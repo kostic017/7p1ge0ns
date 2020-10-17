@@ -34,11 +34,12 @@ namespace Kostic017.Pigeon.TAST
             return VariableType == variableType && ValueType == valueType;
         }
 
-        internal static TypedAssignmentOperator Bind(SyntaxTokenType op, TypeSymbol variableType, TypeSymbol valueType)
+        internal static bool TryBind(SyntaxTokenType op, TypeSymbol variableType, TypeSymbol valueType, out TypedAssignmentOperator typedOperator)
         {
+            typedOperator = null;
             if (combinations.TryGetValue(op, out var typedOperators))
-                return typedOperators.FirstOrDefault(t => t.Supports(variableType, valueType));
-            return null;
+                typedOperator = typedOperators.FirstOrDefault(t => t.Supports(variableType, valueType);
+            return typedOperator != null;
         }
 
         private static readonly Dictionary<SyntaxTokenType, TypedAssignmentOperator[]> combinations

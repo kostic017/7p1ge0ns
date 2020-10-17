@@ -2,6 +2,7 @@
 {
     class TypeSymbol : Symbol
     {
+        public static readonly TypeSymbol Error = new TypeSymbol("?");
         public static readonly TypeSymbol Bool = new TypeSymbol("bool");
         public static readonly TypeSymbol Int = new TypeSymbol("int");
         public static readonly TypeSymbol Float = new TypeSymbol("float");

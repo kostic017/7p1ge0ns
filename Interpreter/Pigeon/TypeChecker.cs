@@ -105,7 +105,10 @@ namespace Kostic017.Pigeon
             var variable = new VariableSymbol(node.IdentifierToken.Value, value.Type, node.Keyword.Type == SyntaxTokenType.Const);
             
             if (!scope.TryDeclare(variable))
+            {
                 errorBag.Report(CodeErrorType.NAME_ALREADY_DEFINED, node.IdentifierToken.TextSpan, variable.Name);
+                throw new NotImplementedException();
+            }
           
             return new TypedVariableDeclaration(variable, value);
         }
@@ -115,18 +118,23 @@ namespace Kostic017.Pigeon
             if (!scope.TryLookup(node.IdentifierToken.Value, out var variable))
             {
                 errorBag.Report(CodeErrorType.NAME_NOT_DEFINED, node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
-                return new TypedVariableAssignment(null, null, null);
+                throw new NotImplementedException();
             }
             
             if (variable.ReadOnly)
+            {
                 errorBag.Report(CodeErrorType.MODIFYING_READ_ONLY_VARIABLE, node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
+                throw new NotImplementedException();
+            }
             
             var value = AnalyzeExpression(node.Value);
-            var typedOperator = TypedAssignmentOperator.Bind(node.Op.Type, variable.Type, value.Type);
 
-            if (typedOperator == null)
+            if (!TypedAssignmentOperator.TryBind(node.Op.Type, variable.Type, value.Type, out var typedOperator))
+            {
                 errorBag.Report(CodeErrorType.INVALID_TYPE_ASSIGNMENT, node.Op.TextSpan, variable.Name, variable.Type.ToString(), value.Type.ToString());
-        
+                throw new NotImplementedException();
+            }
+       
             return new TypedVariableAssignment(variable, typedOperator, value);
         }
 
@@ -134,7 +142,10 @@ namespace Kostic017.Pigeon
         {
             var expression = AnalyzeExpression(node);
             if (expression.Type != expectedType)
+            {
                 errorBag.Report(CodeErrorType.UNEXPECTED_TYPE, node.TextSpan, expectedType.ToString(), expression.Type.ToString());
+                return new TypedErrorExpression();
+            }
             return expression;
         }
 
@@ -158,41 +169,47 @@ namespace Kostic017.Pigeon
 
         private TypedExpression AnalyzeVariableExpression(VariableExpression node)
         {
-            if (scope.TryLookup(node.IdentifierToken.Value, out var variable))
-                return new TypedVariableExpression(variable);
-            errorBag.Report(CodeErrorType.NAME_NOT_DEFINED, node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
-            return new TypedLiteralExpression(0);
+            if (!scope.TryLookup(node.IdentifierToken.Value, out var variable))
+            {
+                errorBag.Report(CodeErrorType.NAME_NOT_DEFINED, node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
+                return new TypedErrorExpression();
+            }
+            return new TypedVariableExpression(variable);
         }
 
         private TypedExpression AnalyzeLiteralExpression(LiteralExpression node)
         {
-            return new TypedLiteralExpression(node.ParsedValue ?? 0);
+            return new TypedLiteralExpression(node.ParsedValue);
         }
 
         private TypedExpression AnalyzeUnaryExpression(UnaryExpression node)
         {
-            var value = AnalyzeExpression(node.Value);
-            var typedOperator = TypedUnaryOperator.Bind(node.Op.Type, value.Type);
+            var operand = AnalyzeExpression(node.Value);
             
-            if (typedOperator == null)
+            if (operand.Type == TypeSymbol.Error)
+                return new TypedErrorExpression();
+
+            if (!TypedUnaryOperator.TryBind(node.Op.Type, operand.Type, out var typedOperator))
             {
-                errorBag.Report(CodeErrorType.INVALID_TYPE_UNARY_OPERAND, node.Op.TextSpan, node.Op.Type.GetDescription(), value.Type.ToString());
-                return value;
+                errorBag.Report(CodeErrorType.INVALID_TYPE_UNARY_OPERAND, node.Op.TextSpan, node.Op.Type.GetDescription(), operand.Type.ToString());
+                return new TypedErrorExpression();
             }
             
-            return new TypedUnaryExpression(typedOperator, value);
+            return new TypedUnaryExpression(typedOperator, operand);
         }
 
         private TypedExpression AnalyzeBinaryExpression(BinaryExpression node)
         {
             var left = AnalyzeExpression(node.Left);
             var right = AnalyzeExpression(node.Right);
-            var typedOperator = TypedBinaryOperator.Bind(node.Op.Type, left.Type, right.Type);
-
-            if (typedOperator == null)
+            
+            if (left.Type == TypeSymbol.Error || right.Type == TypeSymbol.Error)
+                return new TypedErrorExpression();
+            
+            if (!TypedBinaryOperator.TryBind(node.Op.Type, left.Type, right.Type, out var typedOperator))
             {
                 errorBag.Report(CodeErrorType.INVALID_TYPE_BINARY_OPERAND, node.Op.TextSpan, node.Op.Type.GetDescription(), left.Type.ToString(), right.Type.ToString());
-                return left;
+                return new TypedErrorExpression();
             }
 
             return new TypedBinaryExpression(left, typedOperator, right);
