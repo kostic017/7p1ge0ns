@@ -34,7 +34,7 @@ namespace TestProject
 
                 var syntaxTree = SyntaxTree.Parse(sb.ToString());
                 syntaxTree.PrintTree(Console.Out);
-                var globalScope = SemanticAnalyzer.Anaylize(syntaxTree);
+                var globalScope = TypeChecker.Anaylize(syntaxTree);
 
                 foreach (var error in syntaxTree.Errors.Concat(globalScope.Errors))
                     Console.WriteLine(error);

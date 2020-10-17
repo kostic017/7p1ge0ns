@@ -7,23 +7,28 @@ using System.Linq;
 
 namespace Kostic017.Pigeon
 {
-    public class SemanticAnalyzer
+    public class TypeChecker
     {
         private VariableScope scope;
         private readonly CodeErrorBag errorBag;
 
-        internal SemanticAnalyzer()
+        internal TypeChecker()
         {
             scope = new VariableScope(null);
             errorBag = new CodeErrorBag();
         }
 
-        public static AnalyzerResult Anaylize(SyntaxTree syntaxTree)
+        public static AnalysisResult Anaylize(SyntaxTree syntaxTree)
         {
-            var analyzer = new SemanticAnalyzer();
-            var statementBlock = (TypedStatementBlock) analyzer.AnalyzeStatement(syntaxTree.Root.StatementBlock);
-            var program = new TypedProgram(statementBlock);
-            return new AnalyzerResult(program, analyzer.errorBag.Errors);
+            var analyzer = new TypeChecker();
+            var program = analyzer.AnalyzeProgram(syntaxTree.Root);
+            return new AnalysisResult(program, analyzer.errorBag.Errors);
+        }
+
+        private TypedProgram AnalyzeProgram(Program program)
+        {
+            var statementBlock = (TypedStatementBlock) AnalyzeStatement(program.StatementBlock);
+            return new TypedProgram(statementBlock);
         }
 
         private TypedStatement AnalyzeStatement(Statement node)
