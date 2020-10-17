@@ -49,8 +49,9 @@ namespace Kostic017.Pigeon
                     return AnalyzeVariableDeclaration((VariableDeclaration) node);
                 case NodeKind.VariableAssignment:
                     return AnalyzeVariableAssignment((VariableAssignment) node);
+                default:
+                    throw new InternalErrorException($"Unsupported statement '{node.Kind}'");
             }
-            throw new NotImplementedException();
         }
 
         private TypedStatement AnalyzeIfStatement(IfStatement node)
@@ -64,9 +65,16 @@ namespace Kostic017.Pigeon
         private TypedStatement AnalyzeForStatement(ForStatement node)
         {
             if (!scope.TryLookup(node.IdentifierToken.Value, out var variable))
+            {
                 errorBag.Report(CodeErrorType.NAME_NOT_DEFINED, node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
+                return new TypedErrorStatement();
+            }
+
             if (variable.Type != TypeSymbol.Int)
+            {
                 errorBag.Report(CodeErrorType.UNEXPECTED_TYPE, node.IdentifierToken.TextSpan, TypeSymbol.Int.ToString(), variable.Type.ToString());
+                return new TypedErrorStatement();
+            }
                 
             var startValue = AnalyzeExpression(node.StartValue, TypeSymbol.Int);
             var targetValue = AnalyzeExpression(node.TargetValue, TypeSymbol.Int);
@@ -107,7 +115,7 @@ namespace Kostic017.Pigeon
             if (!scope.TryDeclare(variable))
             {
                 errorBag.Report(CodeErrorType.NAME_ALREADY_DEFINED, node.IdentifierToken.TextSpan, variable.Name);
-                throw new NotImplementedException();
+                return new TypedErrorStatement();
             }
           
             return new TypedVariableDeclaration(variable, value);
@@ -118,13 +126,13 @@ namespace Kostic017.Pigeon
             if (!scope.TryLookup(node.IdentifierToken.Value, out var variable))
             {
                 errorBag.Report(CodeErrorType.NAME_NOT_DEFINED, node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
-                throw new NotImplementedException();
+                return new TypedErrorStatement();
             }
             
             if (variable.ReadOnly)
             {
                 errorBag.Report(CodeErrorType.MODIFYING_READ_ONLY_VARIABLE, node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
-                throw new NotImplementedException();
+                return new TypedErrorStatement();
             }
             
             var value = AnalyzeExpression(node.Value);
@@ -132,7 +140,7 @@ namespace Kostic017.Pigeon
             if (!TypedAssignmentOperator.TryBind(node.Op.Type, variable.Type, value.Type, out var typedOperator))
             {
                 errorBag.Report(CodeErrorType.INVALID_TYPE_ASSIGNMENT, node.Op.TextSpan, variable.Name, variable.Type.ToString(), value.Type.ToString());
-                throw new NotImplementedException();
+                return new TypedErrorStatement();
             }
        
             return new TypedVariableAssignment(variable, typedOperator, value);

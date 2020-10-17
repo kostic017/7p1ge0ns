@@ -38,7 +38,7 @@ namespace Kostic017.Pigeon.TAST
         {
             typedOperator = null;
             if (combinations.TryGetValue(op, out var typedOperators))
-                typedOperator = typedOperators.FirstOrDefault(t => t.Supports(variableType, valueType);
+                typedOperator = typedOperators.FirstOrDefault(t => t.Supports(variableType, valueType));
             return typedOperator != null;
         }
 

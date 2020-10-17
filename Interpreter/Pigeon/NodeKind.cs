@@ -17,5 +17,6 @@
         ForStatement,
         DoWhileStatement,
         ErrorExpression,
+        ErrorStatement,
     }
 }
