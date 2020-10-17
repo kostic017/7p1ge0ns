@@ -171,8 +171,11 @@ namespace Kostic017.Pigeon
                     return AnalyzeBinaryExpression((BinaryExpression) node);
                 case NodeKind.ParenthesizedExpression:
                     return AnalyzeParenthesizedExpression((ParenthesizedExpression) node);
+                case NodeKind.ErrorExpression:
+                    return new TypedErrorExpression();
+                default:
+                    throw new InternalErrorException($"Unsupported expression '{node.Kind}'");
             }
-            throw new NotImplementedException();
         }
 
         private TypedExpression AnalyzeVariableExpression(VariableExpression node)

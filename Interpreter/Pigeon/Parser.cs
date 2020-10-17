@@ -213,7 +213,7 @@ namespace Kostic017.Pigeon
 
                 default:
                     ErrorBag.Report(CodeErrorType.INVALID_EXPRESSION_TERM, Current.TextSpan, Current.Type.GetDescription());
-                    return new LiteralExpression(FabricateToken(SyntaxTokenType.Illegal), "");
+                    return new ErrorExpression();
             }
         }
 
