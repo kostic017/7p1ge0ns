@@ -278,7 +278,7 @@ namespace Kostic017.Pigeon
             if (types.Any(t => t == token.Type))
                 return token;
             ErrorBag.Report(CodeErrorType.MISSING_EXPECTED_TOKEN, token.TextSpan, string.Join(", ", types.Select(t => t.GetDescription())));
-            return FabricateToken(types[0]);
+            return new DummyToken(types[0]);
         }
 
         private SyntaxToken NextToken()
@@ -286,14 +286,6 @@ namespace Kostic017.Pigeon
             var current = Current;
             index = Math.Min(index + 1, tokens.Length - 1);
             return current;
-        }
-
-        /// <summary>
-        /// We report error, but continue as if nothing happened.
-        /// </summary>
-        private SyntaxToken FabricateToken(SyntaxTokenType type)
-        {
-            return new SyntaxToken(type, new TextSpan(-1, -1, -1, -1));
         }
     }
 }

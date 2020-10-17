@@ -16,7 +16,5 @@ namespace Kostic017.Pigeon.Errors
         {
             errors.Add(new CodeError(errorType, textSpan, data));
         }
-
-        
     }
 }
