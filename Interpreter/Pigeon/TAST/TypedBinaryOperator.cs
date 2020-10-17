@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Kostic017.Pigeon.Symbols;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,12 +20,12 @@ namespace Kostic017.Pigeon.TAST
 
     class TypedBinaryOperator
     {
-        readonly Type leftType;
-        readonly Type rightType;
-        internal Type ResultType { get; }
+        readonly TypeSymbol leftType;
+        readonly TypeSymbol rightType;
+        internal TypeSymbol ResultType { get; }
         internal BinaryOperator Op { get; }
 
-        private TypedBinaryOperator(BinaryOperator op, Type left, Type right, Type result)
+        private TypedBinaryOperator(BinaryOperator op, TypeSymbol left, TypeSymbol right, TypeSymbol result)
         {
             Op = op;
             ResultType = result;
@@ -33,12 +33,12 @@ namespace Kostic017.Pigeon.TAST
             rightType = right;
         }
 
-        private bool Supports(Type left, Type right)
+        private bool Supports(TypeSymbol left, TypeSymbol right)
         {
             return leftType == left && rightType == right;
         }
 
-        internal static TypedBinaryOperator Bind(SyntaxTokenType op, Type leftType, Type rightType)
+        internal static TypedBinaryOperator Bind(SyntaxTokenType op, TypeSymbol leftType, TypeSymbol rightType)
         {
             if (combinations.TryGetValue(op, out var typedOperators))
                 return typedOperators.FirstOrDefault(t => t.Supports(leftType, rightType));
@@ -52,102 +52,102 @@ namespace Kostic017.Pigeon.TAST
                     SyntaxTokenType.Plus,
                     new[]
                     {
-                        new TypedBinaryOperator(BinaryOperator.Plus, typeof(int), typeof(int), typeof(int)),
-                        new TypedBinaryOperator(BinaryOperator.Plus, typeof(int), typeof(float), typeof(float)),
-                        new TypedBinaryOperator(BinaryOperator.Plus, typeof(float), typeof(int), typeof(float)),
-                        new TypedBinaryOperator(BinaryOperator.Plus, typeof(float), typeof(float), typeof(float)),
-                        new TypedBinaryOperator(BinaryOperator.Plus, typeof(int), typeof(string), typeof(string)),
-                        new TypedBinaryOperator(BinaryOperator.Plus, typeof(string), typeof(int), typeof(string)),
-                        new TypedBinaryOperator(BinaryOperator.Plus, typeof(float), typeof(string), typeof(string)),
-                        new TypedBinaryOperator(BinaryOperator.Plus, typeof(string), typeof(float), typeof(string)),
-                        new TypedBinaryOperator(BinaryOperator.Plus, typeof(bool), typeof(string), typeof(string)),
-                        new TypedBinaryOperator(BinaryOperator.Plus, typeof(string), typeof(bool), typeof(string)),
-                        new TypedBinaryOperator(BinaryOperator.Plus, typeof(string), typeof(string), typeof(string)),
+                        new TypedBinaryOperator(BinaryOperator.Plus, TypeSymbol.Int, TypeSymbol.Int, TypeSymbol.Int),
+                        new TypedBinaryOperator(BinaryOperator.Plus, TypeSymbol.Int, TypeSymbol.Float, TypeSymbol.Float),
+                        new TypedBinaryOperator(BinaryOperator.Plus, TypeSymbol.Float, TypeSymbol.Int, TypeSymbol.Float),
+                        new TypedBinaryOperator(BinaryOperator.Plus, TypeSymbol.Float, TypeSymbol.Float, TypeSymbol.Float),
+                        new TypedBinaryOperator(BinaryOperator.Plus, TypeSymbol.Int, TypeSymbol.String, TypeSymbol.String),
+                        new TypedBinaryOperator(BinaryOperator.Plus, TypeSymbol.String, TypeSymbol.Int, TypeSymbol.String),
+                        new TypedBinaryOperator(BinaryOperator.Plus, TypeSymbol.Float, TypeSymbol.String, TypeSymbol.String),
+                        new TypedBinaryOperator(BinaryOperator.Plus, TypeSymbol.String, TypeSymbol.Float, TypeSymbol.String),
+                        new TypedBinaryOperator(BinaryOperator.Plus, TypeSymbol.Bool, TypeSymbol.String, TypeSymbol.String),
+                        new TypedBinaryOperator(BinaryOperator.Plus, TypeSymbol.String, TypeSymbol.Bool, TypeSymbol.String),
+                        new TypedBinaryOperator(BinaryOperator.Plus, TypeSymbol.String, TypeSymbol.String, TypeSymbol.String),
                     }
                 },
                 {
                     SyntaxTokenType.Minus,
                     new[]
                     {
-                        new TypedBinaryOperator(BinaryOperator.Minus, typeof(int), typeof(int), typeof(int)),
-                        new TypedBinaryOperator(BinaryOperator.Minus, typeof(int), typeof(float), typeof(float)),
-                        new TypedBinaryOperator(BinaryOperator.Minus, typeof(float), typeof(int), typeof(float)),
-                        new TypedBinaryOperator(BinaryOperator.Minus, typeof(float), typeof(float), typeof(float)),
+                        new TypedBinaryOperator(BinaryOperator.Minus, TypeSymbol.Int, TypeSymbol.Int, TypeSymbol.Int),
+                        new TypedBinaryOperator(BinaryOperator.Minus, TypeSymbol.Int, TypeSymbol.Float, TypeSymbol.Float),
+                        new TypedBinaryOperator(BinaryOperator.Minus, TypeSymbol.Float, TypeSymbol.Int, TypeSymbol.Float),
+                        new TypedBinaryOperator(BinaryOperator.Minus, TypeSymbol.Float, TypeSymbol.Float, TypeSymbol.Float),
                     }
                 },
                 {
                     SyntaxTokenType.Mul,
                     new[]
                     {
-                        new TypedBinaryOperator(BinaryOperator.Mul, typeof(int), typeof(int), typeof(int)),
-                        new TypedBinaryOperator(BinaryOperator.Mul, typeof(int), typeof(float), typeof(float)),
-                        new TypedBinaryOperator(BinaryOperator.Mul, typeof(float), typeof(int), typeof(float)),
-                        new TypedBinaryOperator(BinaryOperator.Mul, typeof(float), typeof(float), typeof(float)),
+                        new TypedBinaryOperator(BinaryOperator.Mul, TypeSymbol.Int, TypeSymbol.Int, TypeSymbol.Int),
+                        new TypedBinaryOperator(BinaryOperator.Mul, TypeSymbol.Int, TypeSymbol.Float, TypeSymbol.Float),
+                        new TypedBinaryOperator(BinaryOperator.Mul, TypeSymbol.Float, TypeSymbol.Int, TypeSymbol.Float),
+                        new TypedBinaryOperator(BinaryOperator.Mul, TypeSymbol.Float, TypeSymbol.Float, TypeSymbol.Float),
                     }
                 },
                 {
                     SyntaxTokenType.Div,
                     new []
                     {
-                        new TypedBinaryOperator(BinaryOperator.Div, typeof(int), typeof(int), typeof(int)),
-                        new TypedBinaryOperator(BinaryOperator.Div, typeof(int), typeof(float), typeof(float)),
-                        new TypedBinaryOperator(BinaryOperator.Div, typeof(float), typeof(int), typeof(float)),
-                        new TypedBinaryOperator(BinaryOperator.Div, typeof(float), typeof(float), typeof(float)),
+                        new TypedBinaryOperator(BinaryOperator.Div, TypeSymbol.Int, TypeSymbol.Int, TypeSymbol.Int),
+                        new TypedBinaryOperator(BinaryOperator.Div, TypeSymbol.Int, TypeSymbol.Float, TypeSymbol.Float),
+                        new TypedBinaryOperator(BinaryOperator.Div, TypeSymbol.Float, TypeSymbol.Int, TypeSymbol.Float),
+                        new TypedBinaryOperator(BinaryOperator.Div, TypeSymbol.Float, TypeSymbol.Float, TypeSymbol.Float),
                     }
                 },
                 {
                     SyntaxTokenType.Mod,
                     new []
                     {
-                        new TypedBinaryOperator(BinaryOperator.Div, typeof(int), typeof(int), typeof(int)),
+                        new TypedBinaryOperator(BinaryOperator.Div, TypeSymbol.Int, TypeSymbol.Int, TypeSymbol.Int),
                     }
                 },
                 {
                     SyntaxTokenType.Power,
                     new []
                     {
-                        new TypedBinaryOperator(BinaryOperator.Div, typeof(int), typeof(int), typeof(int)),
-                        new TypedBinaryOperator(BinaryOperator.Div, typeof(int), typeof(float), typeof(float)),
-                        new TypedBinaryOperator(BinaryOperator.Div, typeof(float), typeof(int), typeof(float)),
-                        new TypedBinaryOperator(BinaryOperator.Div, typeof(float), typeof(float), typeof(float)),
+                        new TypedBinaryOperator(BinaryOperator.Div, TypeSymbol.Int, TypeSymbol.Int, TypeSymbol.Int),
+                        new TypedBinaryOperator(BinaryOperator.Div, TypeSymbol.Int, TypeSymbol.Float, TypeSymbol.Float),
+                        new TypedBinaryOperator(BinaryOperator.Div, TypeSymbol.Float, TypeSymbol.Int, TypeSymbol.Float),
+                        new TypedBinaryOperator(BinaryOperator.Div, TypeSymbol.Float, TypeSymbol.Float, TypeSymbol.Float),
                     }
                 },
                 {
                     SyntaxTokenType.And,
                     new []
                     {
-                        new TypedBinaryOperator(BinaryOperator.And, typeof(bool), typeof(bool), typeof(bool)),
+                        new TypedBinaryOperator(BinaryOperator.And, TypeSymbol.Bool, TypeSymbol.Bool, TypeSymbol.Bool),
                     }
                 },
                 {
                     SyntaxTokenType.Or,
                     new []
                     {
-                        new TypedBinaryOperator(BinaryOperator.Or, typeof(bool), typeof(bool), typeof(bool)),
+                        new TypedBinaryOperator(BinaryOperator.Or, TypeSymbol.Bool, TypeSymbol.Bool, TypeSymbol.Bool),
                     }
                 },
                 {
                     SyntaxTokenType.EqEq,
                     new []
                     {
-                        new TypedBinaryOperator(BinaryOperator.Eq, typeof(int), typeof(int), typeof(bool)),
-                        new TypedBinaryOperator(BinaryOperator.Eq, typeof(int), typeof(float), typeof(bool)),
-                        new TypedBinaryOperator(BinaryOperator.Eq, typeof(float), typeof(int), typeof(bool)),
-                        new TypedBinaryOperator(BinaryOperator.Eq, typeof(float), typeof(float), typeof(bool)),
-                        new TypedBinaryOperator(BinaryOperator.Eq, typeof(bool), typeof(bool), typeof(bool)),
-                        new TypedBinaryOperator(BinaryOperator.Eq, typeof(string), typeof(string), typeof(bool)),
+                        new TypedBinaryOperator(BinaryOperator.Eq, TypeSymbol.Int, TypeSymbol.Int, TypeSymbol.Bool),
+                        new TypedBinaryOperator(BinaryOperator.Eq, TypeSymbol.Int, TypeSymbol.Float, TypeSymbol.Bool),
+                        new TypedBinaryOperator(BinaryOperator.Eq, TypeSymbol.Float, TypeSymbol.Int, TypeSymbol.Bool),
+                        new TypedBinaryOperator(BinaryOperator.Eq, TypeSymbol.Float, TypeSymbol.Float, TypeSymbol.Bool),
+                        new TypedBinaryOperator(BinaryOperator.Eq, TypeSymbol.Bool, TypeSymbol.Bool, TypeSymbol.Bool),
+                        new TypedBinaryOperator(BinaryOperator.Eq, TypeSymbol.String, TypeSymbol.String, TypeSymbol.Bool),
                     }
                 },
                 {
                     SyntaxTokenType.Neq,
                     new []
                     {
-                        new TypedBinaryOperator(BinaryOperator.Neq, typeof(int), typeof(int), typeof(bool)),
-                        new TypedBinaryOperator(BinaryOperator.Neq, typeof(int), typeof(float), typeof(bool)),
-                        new TypedBinaryOperator(BinaryOperator.Neq, typeof(float), typeof(int), typeof(bool)),
-                        new TypedBinaryOperator(BinaryOperator.Neq, typeof(float), typeof(float), typeof(bool)),
-                        new TypedBinaryOperator(BinaryOperator.Neq, typeof(bool), typeof(bool), typeof(bool)),
-                        new TypedBinaryOperator(BinaryOperator.Neq, typeof(string), typeof(string), typeof(bool)),
+                        new TypedBinaryOperator(BinaryOperator.Neq, TypeSymbol.Int, TypeSymbol.Int, TypeSymbol.Bool),
+                        new TypedBinaryOperator(BinaryOperator.Neq, TypeSymbol.Int, TypeSymbol.Float, TypeSymbol.Bool),
+                        new TypedBinaryOperator(BinaryOperator.Neq, TypeSymbol.Float, TypeSymbol.Int, TypeSymbol.Bool),
+                        new TypedBinaryOperator(BinaryOperator.Neq, TypeSymbol.Float, TypeSymbol.Float, TypeSymbol.Bool),
+                        new TypedBinaryOperator(BinaryOperator.Neq, TypeSymbol.Bool, TypeSymbol.Bool, TypeSymbol.Bool),
+                        new TypedBinaryOperator(BinaryOperator.Neq, TypeSymbol.String, TypeSymbol.String, TypeSymbol.Bool),
                     }
                 },
             };

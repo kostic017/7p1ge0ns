@@ -1,7 +1,7 @@
 ﻿using Kostic017.Pigeon.AST;
-using Kostic017.Pigeon.Error;
+using Kostic017.Pigeon.Errors;
 using Kostic017.Pigeon.TAST;
-using Kostic017.Pigeon.Variable;
+using Kostic017.Pigeon.Symbols;
 using System;
 using System.Linq;
 
@@ -55,7 +55,7 @@ namespace Kostic017.Pigeon
 
         private TypedStatement AnalyzeIfStatement(IfStatement node)
         {
-            var condition = AnalyzeExpression(node.Condition, typeof(bool));
+            var condition = AnalyzeExpression(node.Condition, TypeSymbol.Bool);
             var thenBlock = AnalyzeStatementBlock(node.ThenBlock);
             var elseBlock = node.ElseBlock != null ? AnalyzeStatementBlock(node.ElseBlock) : null ;
             return new TypedIfStatement(condition, thenBlock, elseBlock);
@@ -65,12 +65,12 @@ namespace Kostic017.Pigeon
         {
             if (!scope.TryLookup(node.IdentifierToken.Value, out var variable))
                 errorBag.Report(CodeErrorType.NAME_NOT_DEFINED, node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
-            if (variable.Type != typeof(int))
-                errorBag.Report(CodeErrorType.UNEXPECTED_TYPE, node.IdentifierToken.TextSpan, typeof(int).ToString(), variable.Type.ToString());
+            if (variable.Type != TypeSymbol.Int)
+                errorBag.Report(CodeErrorType.UNEXPECTED_TYPE, node.IdentifierToken.TextSpan, TypeSymbol.Int.ToString(), variable.Type.ToString());
                 
-            var startValue = AnalyzeExpression(node.StartValue, typeof(int));
-            var targetValue = AnalyzeExpression(node.TargetValue, typeof(int));
-            var stepValue = node.StepValue != null ? AnalyzeExpression(node.StepValue, typeof(int)) : null;
+            var startValue = AnalyzeExpression(node.StartValue, TypeSymbol.Int);
+            var targetValue = AnalyzeExpression(node.TargetValue, TypeSymbol.Int);
+            var stepValue = node.StepValue != null ? AnalyzeExpression(node.StepValue, TypeSymbol.Int) : null;
             var direction = node.DirectionToken.Type == SyntaxTokenType.To ? LoopDirection.To : LoopDirection.Downto;
             var body = AnalyzeStatementBlock(node.Body);
 
@@ -79,7 +79,7 @@ namespace Kostic017.Pigeon
 
         private TypedStatement AnalyzeWhileStatement(WhileStatement node)
         {
-            var condition = AnalyzeExpression(node.Condition, typeof(bool));
+            var condition = AnalyzeExpression(node.Condition, TypeSymbol.Bool);
             var body = AnalyzeStatementBlock(node.Body);
             return new TypedWhileStatement(condition, body);
         }
@@ -87,7 +87,7 @@ namespace Kostic017.Pigeon
         private TypedStatement AnalyzeDoWhileStatement(DoWhileStatement node)
         {
             var body = AnalyzeStatementBlock(node.Body);
-            var condition = AnalyzeExpression(node.Condition, typeof(bool));
+            var condition = AnalyzeExpression(node.Condition, TypeSymbol.Bool);
             return new TypedDoWhileStatement(body, condition);
         }
 
@@ -130,7 +130,7 @@ namespace Kostic017.Pigeon
             return new TypedVariableAssignment(variable, typedOperator, value);
         }
 
-        private TypedExpression AnalyzeExpression(Expression node, Type expectedType)
+        private TypedExpression AnalyzeExpression(Expression node, TypeSymbol expectedType)
         {
             var expression = AnalyzeExpression(node);
             if (expression.Type != expectedType)

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kostic017.Pigeon.Error
+namespace Kostic017.Pigeon.Errors
 {
     class InternalErrorException : Exception
     {

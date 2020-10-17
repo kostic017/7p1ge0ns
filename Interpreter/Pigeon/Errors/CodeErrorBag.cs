@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace Kostic017.Pigeon.Error
+namespace Kostic017.Pigeon.Errors
 {
     public class CodeErrorBag
     {
         readonly List<CodeError> errors;
+        public CodeError[] Errors => errors.ToArray();
 
         internal CodeErrorBag()
         {
@@ -16,6 +17,6 @@ namespace Kostic017.Pigeon.Error
             errors.Add(new CodeError(errorType, textSpan, data));
         }
 
-        public CodeError[] Errors => errors.ToArray();
+        
     }
 }

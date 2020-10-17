@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Kostic017.Pigeon.Symbols;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,20 +14,20 @@ namespace Kostic017.Pigeon.TAST
     class TypedUnaryOperator
     {
         internal UnaryOperator Op { get; }
-        internal Type Type { get; }
+        internal TypeSymbol Type { get; }
 
-        private TypedUnaryOperator(UnaryOperator op, Type type)
+        private TypedUnaryOperator(UnaryOperator op, TypeSymbol type)
         {
             Op = op;
             Type = type;
         }
 
-        private bool Supports(Type type)
+        private bool Supports(TypeSymbol type)
         {
             return Type == type;
         }
 
-        internal static TypedUnaryOperator Bind(SyntaxTokenType op, Type operandType)
+        internal static TypedUnaryOperator Bind(SyntaxTokenType op, TypeSymbol operandType)
         {
             if (combinations.TryGetValue(op, out var typedOperators))
                 return (typedOperators.FirstOrDefault(t => t.Supports(operandType)));
@@ -41,23 +41,23 @@ namespace Kostic017.Pigeon.TAST
                     SyntaxTokenType.Plus,
                     new[]
                     {
-                        new TypedUnaryOperator(UnaryOperator.Plus, typeof(int)),
-                        new TypedUnaryOperator(UnaryOperator.Plus, typeof(float)),
+                        new TypedUnaryOperator(UnaryOperator.Plus, TypeSymbol.Int),
+                        new TypedUnaryOperator(UnaryOperator.Plus, TypeSymbol.Float),
                     }
                 },
                 {
                     SyntaxTokenType.Minus,
                     new[]
                     {
-                        new TypedUnaryOperator(UnaryOperator.Minus, typeof(int)),
-                        new TypedUnaryOperator(UnaryOperator.Minus, typeof(float))
+                        new TypedUnaryOperator(UnaryOperator.Minus, TypeSymbol.Int),
+                        new TypedUnaryOperator(UnaryOperator.Minus, TypeSymbol.Float)
                     }
                 },
                 {
                     SyntaxTokenType.Not,
                     new[]
                     {
-                        new TypedUnaryOperator(UnaryOperator.Not, typeof(bool))
+                        new TypedUnaryOperator(UnaryOperator.Not, TypeSymbol.Bool)
                     }
                 }
             };

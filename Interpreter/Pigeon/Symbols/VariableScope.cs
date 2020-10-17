@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Kostic017.Pigeon.Variable
+namespace Kostic017.Pigeon.Symbols
 {
     class VariableScope
     {

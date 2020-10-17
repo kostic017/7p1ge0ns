@@ -1,4 +1,4 @@
-﻿using Kostic017.Pigeon.Error;
+﻿using Kostic017.Pigeon.Errors;
 using System.Collections.Generic;
 
 namespace Kostic017.Pigeon

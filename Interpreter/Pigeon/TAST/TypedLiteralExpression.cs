@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kostic017.Pigeon.Errors;
+using Kostic017.Pigeon.Symbols;
 
 namespace Kostic017.Pigeon.TAST
 {
@@ -9,9 +10,19 @@ namespace Kostic017.Pigeon.TAST
         internal TypedLiteralExpression(object value)
         {
             Value = value;
+            if (value is bool)
+                Type = TypeSymbol.Bool;
+            else if (value is int)
+                Type = TypeSymbol.Int;
+            else if (value is float)
+                Type = TypeSymbol.Float;
+            else if (value is string)
+                Type = TypeSymbol.String;
+            else
+                throw new InternalErrorException($"Unexpected literal '{value}' of type '{value.GetType()}'");
         }
 
-        internal override Type Type => Value.GetType();
+        internal override TypeSymbol Type { get; }
         internal override NodeKind Kind => NodeKind.LiteralExpression;
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Kostic017.Pigeon.Error
+namespace Kostic017.Pigeon.Errors
 {
     public enum CodeErrorType
     {

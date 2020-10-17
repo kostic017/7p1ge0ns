@@ -1,5 +1,5 @@
 ﻿using Kostic017.Pigeon.TAST;
-using Kostic017.Pigeon.Variable;
+using Kostic017.Pigeon.Symbols;
 
 namespace Kostic017.Pigeon
 {

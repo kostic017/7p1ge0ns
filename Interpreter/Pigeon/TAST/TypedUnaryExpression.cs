@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Kostic017.Pigeon.Symbols;
 
 namespace Kostic017.Pigeon.TAST
 {
@@ -12,7 +12,7 @@ namespace Kostic017.Pigeon.TAST
             Operand = operand;
         }
 
-        internal override Type Type => Op.Type;
+        internal override TypeSymbol Type => Op.Type;
         internal override NodeKind Kind => NodeKind.UnaryExpression;
     }
 }

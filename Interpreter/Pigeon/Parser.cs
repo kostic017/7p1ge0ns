@@ -1,5 +1,5 @@
 ﻿using Kostic017.Pigeon.AST;
-using Kostic017.Pigeon.Error;
+using Kostic017.Pigeon.Errors;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

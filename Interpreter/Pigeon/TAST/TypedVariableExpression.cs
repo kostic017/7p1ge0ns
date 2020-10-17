@@ -1,5 +1,4 @@
-﻿using Kostic017.Pigeon.Variable;
-using System;
+﻿using Kostic017.Pigeon.Symbols;
 
 namespace Kostic017.Pigeon.TAST
 {
@@ -12,7 +11,7 @@ namespace Kostic017.Pigeon.TAST
             Variable = variable;
         }
 
-        internal override Type Type => Variable.Type;
+        internal override TypeSymbol Type => Variable.Type;
         internal override NodeKind Kind => NodeKind.VariableExpression;
     }
 }
