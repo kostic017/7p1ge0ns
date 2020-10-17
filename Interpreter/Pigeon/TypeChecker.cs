@@ -4,6 +4,7 @@ using Kostic017.Pigeon.TAST;
 using Kostic017.Pigeon.Symbols;
 using System;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace Kostic017.Pigeon
 {
@@ -54,35 +55,35 @@ namespace Kostic017.Pigeon
             }
         }
 
+        private TypedStatement AnalyzeStatementBlock(StatementBlock node, VariableScope variableScope = null)
+        {
+            scope = variableScope ?? new VariableScope(scope);
+            var statements = node.Statements.Select(statement => AnalyzeStatement(statement)).ToArray();
+            scope = scope.Parent;
+            return new TypedStatementBlock(statements);
+        }
+
         private TypedStatement AnalyzeIfStatement(IfStatement node)
         {
             var condition = AnalyzeExpression(node.Condition, TypeSymbol.Bool);
             var thenBlock = AnalyzeStatementBlock(node.ThenBlock);
-            var elseBlock = node.ElseBlock != null ? AnalyzeStatementBlock(node.ElseBlock) : null ;
+            var elseBlock = node.ElseBlock != null ? AnalyzeStatementBlock(node.ElseBlock) : null;
             return new TypedIfStatement(condition, thenBlock, elseBlock);
         }
 
         private TypedStatement AnalyzeForStatement(ForStatement node)
-        {
-            if (!scope.TryLookup(node.IdentifierToken.Value, out var variable))
-            {
-                errorBag.Report(CodeErrorType.NAME_NOT_DEFINED, node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
-                return new TypedErrorStatement();
-            }
+        {            
+            var variableScope = new VariableScope(scope);
+            var counterVariable = new VariableSymbol(node.IdentifierToken.Value, TypeSymbol.Int, false);
+            variableScope.TryDeclare(counterVariable);
 
-            if (variable.Type != TypeSymbol.Int)
-            {
-                errorBag.Report(CodeErrorType.UNEXPECTED_TYPE, node.IdentifierToken.TextSpan, TypeSymbol.Int.ToString(), variable.Type.ToString());
-                return new TypedErrorStatement();
-            }
-                
             var startValue = AnalyzeExpression(node.StartValue, TypeSymbol.Int);
             var targetValue = AnalyzeExpression(node.TargetValue, TypeSymbol.Int);
             var stepValue = node.StepValue != null ? AnalyzeExpression(node.StepValue, TypeSymbol.Int) : null;
             var direction = node.DirectionToken.Type == SyntaxTokenType.To ? LoopDirection.To : LoopDirection.Downto;
-            var body = AnalyzeStatementBlock(node.Body);
+            var body = AnalyzeStatementBlock(node.Body, variableScope);
 
-            return new TypedForStatement(variable, startValue, targetValue, stepValue, direction, body);
+            return new TypedForStatement(counterVariable, startValue, targetValue, stepValue, direction, body);
         }
 
         private TypedStatement AnalyzeWhileStatement(WhileStatement node)
@@ -97,14 +98,6 @@ namespace Kostic017.Pigeon
             var body = AnalyzeStatementBlock(node.Body);
             var condition = AnalyzeExpression(node.Condition, TypeSymbol.Bool);
             return new TypedDoWhileStatement(body, condition);
-        }
-
-        private TypedStatement AnalyzeStatementBlock(StatementBlock node)
-        {
-            scope = new VariableScope(scope);
-            var statements = node.Statements.Select(statement => AnalyzeStatement(statement)).ToArray();
-            scope = scope.Parent;
-            return new TypedStatementBlock(statements);
         }
 
         private TypedStatement AnalyzeVariableDeclaration(VariableDeclaration node)
