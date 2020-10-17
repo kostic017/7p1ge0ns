@@ -202,12 +202,14 @@ namespace Kostic017.Pigeon.Tests
                 e.AssertNode(NodeKind.StatementBlock);
                     e.AssertNode(NodeKind.IfStatement); // if 1
                         e.AssertNode(NodeKind.ParenthesizedExpression);
+                            e.AssertToken(SyntaxTokenType.LPar);
                             e.AssertNode(NodeKind.BinaryExpression);
                                 e.AssertNode(NodeKind.VariableExpression);
                                     e.AssertToken(SyntaxTokenType.ID, "a");
                                 e.AssertToken(SyntaxTokenType.Gt);
                                 e.AssertNode(NodeKind.VariableExpression);
                                     e.AssertToken(SyntaxTokenType.ID, "b");
+                            e.AssertToken(SyntaxTokenType.RPar);
                         e.AssertNode(NodeKind.StatementBlock); // then 1
                             e.AssertNode(NodeKind.VariableAssignment);
                                 e.AssertToken(SyntaxTokenType.ID, "j");
