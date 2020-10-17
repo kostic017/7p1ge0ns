@@ -2,9 +2,7 @@
 using Kostic017.Pigeon.Errors;
 using Kostic017.Pigeon.TAST;
 using Kostic017.Pigeon.Symbols;
-using System;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace Kostic017.Pigeon
 {

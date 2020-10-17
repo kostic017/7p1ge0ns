@@ -189,7 +189,7 @@ namespace Kostic017.Pigeon
             switch (Current.Type)
             {
                 case SyntaxTokenType.ID:
-                    return ParsVarableExpression();
+                    return ParseVarableExpression();
 
                 case SyntaxTokenType.IntLiteral:
                     return ParseIntLiteralExpression();
@@ -217,7 +217,7 @@ namespace Kostic017.Pigeon
             }
         }
 
-        private Expression ParsVarableExpression()
+        private Expression ParseVarableExpression()
         {
             var token = Match(SyntaxTokenType.ID);
             return new VariableExpression(token);
@@ -230,7 +230,7 @@ namespace Kostic017.Pigeon
             if (int.TryParse(token.Value, out int i))
                 return new LiteralExpression(token, i);
             
-            ErrorBag.Report(CodeErrorType.ILLEGAL_NUMBER, token.TextSpan, token.Value);
+            ErrorBag.Report(CodeErrorType.NOT_A_VALID_NUMBER, token.TextSpan, token.Value);
             return new LiteralExpression(token, token.Value);
         }
 
@@ -241,7 +241,7 @@ namespace Kostic017.Pigeon
             if (float.TryParse(token.Value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float f))
                 return new LiteralExpression(token, f);
      
-            ErrorBag.Report(CodeErrorType.ILLEGAL_NUMBER, token.TextSpan, token.Value);
+            ErrorBag.Report(CodeErrorType.NOT_A_VALID_NUMBER, token.TextSpan, token.Value);
             return new LiteralExpression(token, token.Value);
         }
 

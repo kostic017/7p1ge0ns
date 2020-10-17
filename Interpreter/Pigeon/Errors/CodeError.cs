@@ -4,7 +4,7 @@ namespace Kostic017.Pigeon.Errors
 {
     public enum CodeErrorType
     {
-        ILLEGAL_NUMBER,
+        NOT_A_VALID_NUMBER,
         UNTERMINATED_STRING,
         INVALID_ESCAPE_CHAR,
         UNEXPECTED_CHARACTER,
@@ -49,7 +49,7 @@ namespace Kostic017.Pigeon.Errors
         private static readonly Dictionary<CodeErrorType, string> messages =
             new Dictionary<CodeErrorType, string>
             {
-                { CodeErrorType.ILLEGAL_NUMBER, "Illegal number {0}" },
+                { CodeErrorType.NOT_A_VALID_NUMBER, "Illegal number {0}" },
                 { CodeErrorType.UNTERMINATED_STRING, "Unterminated string" },
                 { CodeErrorType.INVALID_ESCAPE_CHAR, "Invalid escape char {0}" },
                 { CodeErrorType.UNEXPECTED_CHARACTER, "Unexpected character {0}" },
