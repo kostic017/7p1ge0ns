@@ -111,20 +111,24 @@ namespace Kostic017.Pigeon
         // for id = <expression> (to|downto) <expression> [step <expression>] <statement_block>
         private Statement ParseForStatement()
         {
-            Expression step = null;
+            StatementBlock body;
             Match(SyntaxTokenType.For);
-            var id = Match(SyntaxTokenType.ID);
+            var identifierToken = Match(SyntaxTokenType.ID);
             Match(SyntaxTokenType.Eq);
-            var from = ParseExpression();
-            var dir = Match(SyntaxTokenType.To, SyntaxTokenType.Downto);
-            var to = ParseExpression();
+            var startValue = ParseExpression();
+            var directionToken = Match(SyntaxTokenType.To, SyntaxTokenType.Downto);
+            var targetValue = ParseExpression();
+            
             if (Current.Type == SyntaxTokenType.Step)
             {
                 Match(SyntaxTokenType.Step);
-                step = ParseExpression();
+                var stepValue = ParseExpression();
+                body = ParseStatementBlock();
+                return new ForStatement(identifierToken, startValue, directionToken, targetValue, stepValue, body);
             }
-            var body = ParseStatementBlock();
-            return new ForStatement(id, from, dir, to, step, body);
+
+            body = ParseStatementBlock();
+            return new ForStatement(identifierToken, startValue, directionToken, targetValue, body);
         }
 
         // while <expression> <statement_block>
@@ -209,7 +213,7 @@ namespace Kostic017.Pigeon
 
                 default:
                     ErrorBag.Report(CodeErrorType.INVALID_EXPRESSION_TERM, Current.TextSpan, Current.Type.GetDescription());
-                    return new LiteralExpression(DummyToken(SyntaxTokenType.Illegal), "");
+                    return new LiteralExpression(FabricateToken(SyntaxTokenType.Illegal), "");
             }
         }
 
@@ -255,10 +259,10 @@ namespace Kostic017.Pigeon
 
         private Expression ParseParenthesizedExpression()
         {
-            Match(SyntaxTokenType.LPar);
+            var leftParen = Match(SyntaxTokenType.LPar);
             var expression = ParseExpression();
-            Match(SyntaxTokenType.RPar);
-            return new ParenthesizedExpression(expression);
+            var rightParen = Match(SyntaxTokenType.RPar);
+            return new ParenthesizedExpression(leftParen, expression, rightParen);
         }
 
         private Expression ParseUnaryExpression()
@@ -274,7 +278,7 @@ namespace Kostic017.Pigeon
             if (types.Any(t => t == token.Type))
                 return token;
             ErrorBag.Report(CodeErrorType.MISSING_EXPECTED_TOKEN, token.TextSpan, string.Join(", ", types.Select(t => t.GetDescription())));
-            return DummyToken(types[0]);
+            return FabricateToken(types[0]);
         }
 
         private SyntaxToken NextToken()
@@ -285,9 +289,9 @@ namespace Kostic017.Pigeon
         }
 
         /// <summary>
-        /// Fabricates tokens so we can avoid null checks later on.
+        /// We report error, but continue as if nothing happened.
         /// </summary>
-        private SyntaxToken DummyToken(SyntaxTokenType type)
+        private SyntaxToken FabricateToken(SyntaxTokenType type)
         {
             return new SyntaxToken(type, new TextSpan(-1, -1, -1, -1));
         }

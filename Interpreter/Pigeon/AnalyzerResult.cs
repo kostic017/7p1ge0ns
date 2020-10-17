@@ -3,12 +3,12 @@ using Kostic017.Pigeon.TAST;
 
 namespace Kostic017.Pigeon
 {
-    public class GlobalScope
+    public class AnalyzerResult
     {
         internal TypedProgram Root { get; }
         public CodeError[] Errors { get; }
 
-        internal GlobalScope(TypedProgram root, CodeError[] errors)
+        internal AnalyzerResult(TypedProgram root, CodeError[] errors)
         {
             Root = root;
             Errors = errors;

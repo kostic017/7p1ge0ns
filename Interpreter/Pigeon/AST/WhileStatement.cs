@@ -7,7 +7,7 @@ namespace Kostic017.Pigeon.AST
         internal Expression Condition { get; }
         internal StatementBlock Body { get; }
 
-        public WhileStatement(Expression condition, StatementBlock body)
+        internal WhileStatement(Expression condition, StatementBlock body)
         {
             Condition = condition;
             Body = body;

@@ -20,6 +20,7 @@ namespace Kostic017.Pigeon.Error
         INVALID_TYPE_UNARY_OPERAND,
         INVALID_TYPE_BINARY_OPERAND,
         MODIFYING_READ_ONLY_VARIABLE,
+        UNEXPECTED_TYPE,
     }
 
     public class CodeError
@@ -57,13 +58,14 @@ namespace Kostic017.Pigeon.Error
                 { CodeErrorType.UNTERMINATED_COMMENT_BLOCK, "Unterminated comment block" },
                 { CodeErrorType.UNTERMINATED_STATEMENT_BLOCK, "Unterminated statement block" },
                 { CodeErrorType.LEFTOVER_TOKENS_FOUND, "Some tokens left unparsed" },
-                { CodeErrorType.UNEXPECTED_TOKEN, "Token {0} was not expected here" },
+                { CodeErrorType.UNEXPECTED_TOKEN, "Token '{0}' was not expected here" },
                 { CodeErrorType.NAME_NOT_DEFINED, "The name '{0}' does not exist in the current contex" },
                 { CodeErrorType.NAME_ALREADY_DEFINED, "The name '{0}' is already defined in the current scope" },
                 { CodeErrorType.INVALID_TYPE_UNARY_OPERAND, "Operator {0} is not defined for type {1}" },
                 { CodeErrorType.INVALID_TYPE_BINARY_OPERAND, "Operator {0} is not defined for types {1} and {2}" },
                 { CodeErrorType.INVALID_TYPE_ASSIGNMENT, "Variable '{0}' of type {1} cannot have value of type {2}" },
-                { CodeErrorType.MODIFYING_READ_ONLY_VARIABLE, "Variable '{0}' is read-only" }
+                { CodeErrorType.MODIFYING_READ_ONLY_VARIABLE, "Variable '{0}' is read-only" },
+                { CodeErrorType.UNEXPECTED_TYPE, "Expected value of type {0}, not value of type {1}"}
             };
     }
 }

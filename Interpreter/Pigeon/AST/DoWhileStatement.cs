@@ -2,12 +2,12 @@
 
 namespace Kostic017.Pigeon.AST
 {
-    internal class DoWhileStatement : Statement
+    class DoWhileStatement : Statement
     {
         internal StatementBlock Body { get; }
         internal Expression Condition { get; }
 
-        public DoWhileStatement(StatementBlock body, Expression condition)
+        internal DoWhileStatement(StatementBlock body, Expression condition)
         {
             Body = body;
             Condition = condition;

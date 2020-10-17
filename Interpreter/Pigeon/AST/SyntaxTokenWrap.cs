@@ -12,6 +12,14 @@ namespace Kostic017.Pigeon.AST
             Token = token;
         }
 
+        internal override TextSpan TextSpan
+        {
+            get
+            {
+                return Token.TextSpan;
+            }
+        }
+
         internal override NodeKind Kind => NodeKind.SyntaxTokenWrap;
         internal override IEnumerable<AstNode> GetChildren() => Enumerable.Empty<AstNode>();
     }

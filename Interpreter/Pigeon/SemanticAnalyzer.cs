@@ -18,12 +18,12 @@ namespace Kostic017.Pigeon
             errorBag = new CodeErrorBag();
         }
 
-        public static GlobalScope Anaylize(SyntaxTree syntaxTree)
+        public static AnalyzerResult Anaylize(SyntaxTree syntaxTree)
         {
             var analyzer = new SemanticAnalyzer();
             var statementBlock = (TypedStatementBlock) analyzer.AnalyzeStatement(syntaxTree.Root.StatementBlock);
             var program = new TypedProgram(statementBlock);
-            return new GlobalScope(program, analyzer.errorBag.Errors);
+            return new AnalyzerResult(program, analyzer.errorBag.Errors);
         }
 
         private TypedStatement AnalyzeStatement(Statement node)
@@ -32,12 +32,58 @@ namespace Kostic017.Pigeon
             {
                 case NodeKind.StatementBlock:
                     return AnalyzeStatementBlock((StatementBlock) node);
+                case NodeKind.IfStatement:
+                    return AnalyzeIfStatement((IfStatement) node);
+                case NodeKind.ForStatement:
+                    return AnalyzeForStatement((ForStatement) node);
+                case NodeKind.WhileStatement:
+                    return AnalyzeWhileStatement((WhileStatement) node);
+                case NodeKind.DoWhileStatement:
+                    return AnalyzeDoWhileStatement((DoWhileStatement) node);
                 case NodeKind.VariableDeclaration:
                     return AnalyzeVariableDeclaration((VariableDeclaration) node);
                 case NodeKind.VariableAssignment:
                     return AnalyzeVariableAssignment((VariableAssignment) node);
             }
             throw new NotImplementedException();
+        }
+
+        private TypedStatement AnalyzeIfStatement(IfStatement node)
+        {
+            var condition = AnalyzeExpression(node.Condition, typeof(bool));
+            var thenBlock = AnalyzeStatementBlock(node.ThenBlock);
+            var elseBlock = node.ElseBlock != null ? AnalyzeStatementBlock(node.ElseBlock) : null ;
+            return new TypedIfStatement(condition, thenBlock, elseBlock);
+        }
+
+        private TypedStatement AnalyzeForStatement(ForStatement node)
+        {
+            if (!scope.TryLookup(node.IdentifierToken.Value, out var variable))
+                errorBag.Report(CodeErrorType.NAME_NOT_DEFINED, node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
+            if (variable.Type != typeof(int))
+                errorBag.Report(CodeErrorType.UNEXPECTED_TYPE, node.IdentifierToken.TextSpan, typeof(int).ToString(), variable.Type.ToString());
+                
+            var startValue = AnalyzeExpression(node.StartValue, typeof(int));
+            var targetValue = AnalyzeExpression(node.TargetValue, typeof(int));
+            var stepValue = node.StepValue != null ? AnalyzeExpression(node.StepValue, typeof(int)) : null;
+            var direction = node.DirectionToken.Type == SyntaxTokenType.To ? LoopDirection.To : LoopDirection.Downto;
+            var body = AnalyzeStatementBlock(node.Body);
+
+            return new TypedForStatement(variable, startValue, targetValue, stepValue, direction, body);
+        }
+
+        private TypedStatement AnalyzeWhileStatement(WhileStatement node)
+        {
+            var condition = AnalyzeExpression(node.Condition, typeof(bool));
+            var body = AnalyzeStatementBlock(node.Body);
+            return new TypedWhileStatement(condition, body);
+        }
+
+        private TypedStatement AnalyzeDoWhileStatement(DoWhileStatement node)
+        {
+            var body = AnalyzeStatementBlock(node.Body);
+            var condition = AnalyzeExpression(node.Condition, typeof(bool));
+            return new TypedDoWhileStatement(body, condition);
         }
 
         private TypedStatement AnalyzeStatementBlock(StatementBlock node)
@@ -77,6 +123,14 @@ namespace Kostic017.Pigeon
                 errorBag.Report(CodeErrorType.INVALID_TYPE_ASSIGNMENT, node.Op.TextSpan, variable.Name, variable.Type.ToString(), value.Type.ToString());
         
             return new TypedVariableAssignment(variable, typedOperator, value);
+        }
+
+        private TypedExpression AnalyzeExpression(Expression node, Type expectedType)
+        {
+            var expression = AnalyzeExpression(node);
+            if (expression.Type != expectedType)
+                errorBag.Report(CodeErrorType.UNEXPECTED_TYPE, node.TextSpan, expectedType.ToString(), expression.Type.ToString());
+            return expression;
         }
 
         private TypedExpression AnalyzeExpression(Expression node)
