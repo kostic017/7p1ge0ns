@@ -145,14 +145,6 @@ namespace Kostic017.Pigeon
                         }
                         return Token(SyntaxTokenType.Mod);
 
-                    case '^':
-                        if (TryEatCurrentChar('='))
-                        {
-                            EatCurrentChar();
-                            return Token(SyntaxTokenType.PowerEq);
-                        }
-                        return Token(SyntaxTokenType.Power);
-
                     case '<':
                         if (TryEatCurrentChar('='))
                         {

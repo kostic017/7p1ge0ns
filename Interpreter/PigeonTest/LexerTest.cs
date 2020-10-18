@@ -56,7 +56,6 @@ namespace Kostic017.Pigeon.Tests
             ("else", E(SyntaxTokenType.Else)),
             ("for", E(SyntaxTokenType.For)),
             ("to", E(SyntaxTokenType.To)),
-            ("step", E(SyntaxTokenType.Step)),
             ("do", E(SyntaxTokenType.Do)),
             ("while", E(SyntaxTokenType.While)),
             ("break", E(SyntaxTokenType.Break)),

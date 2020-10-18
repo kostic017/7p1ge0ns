@@ -18,13 +18,13 @@ namespace Kostic017.Pigeon.TAST
 
     class TypedAssignmentOperator
     {
-        internal AssigmentOperator Op { get; }
+        internal AssigmentOperator Kind { get; }
         internal TypeSymbol VariableType { get; }
         internal TypeSymbol ValueType { get; }
 
         internal TypedAssignmentOperator(AssigmentOperator op, TypeSymbol variableType, TypeSymbol valueType)
         {
-            Op = op;
+            Kind = op;
             VariableType = variableType;
             ValueType = valueType;
         }
@@ -65,6 +65,9 @@ namespace Kostic017.Pigeon.TAST
                         new TypedAssignmentOperator(AssigmentOperator.PlusEq, TypeSymbol.Int, TypeSymbol.Float),
                         new TypedAssignmentOperator(AssigmentOperator.PlusEq, TypeSymbol.Float, TypeSymbol.Int),
                         new TypedAssignmentOperator(AssigmentOperator.PlusEq, TypeSymbol.Float, TypeSymbol.Float),
+                        new TypedAssignmentOperator(AssigmentOperator.PlusEq, TypeSymbol.String, TypeSymbol.Int),
+                        new TypedAssignmentOperator(AssigmentOperator.PlusEq, TypeSymbol.String, TypeSymbol.Float),
+                        new TypedAssignmentOperator(AssigmentOperator.PlusEq, TypeSymbol.String, TypeSymbol.Bool),
                         new TypedAssignmentOperator(AssigmentOperator.PlusEq, TypeSymbol.String, TypeSymbol.String),
                     }
                 },
@@ -103,16 +106,6 @@ namespace Kostic017.Pigeon.TAST
                     new[]
                     {
                         new TypedAssignmentOperator(AssigmentOperator.ModEq, TypeSymbol.Int, TypeSymbol.Int),
-                    }
-                },
-                {
-                    SyntaxTokenType.PowerEq,
-                    new[]
-                    {
-                        new TypedAssignmentOperator(AssigmentOperator.PowerEq, TypeSymbol.Int, TypeSymbol.Int),
-                        new TypedAssignmentOperator(AssigmentOperator.PowerEq, TypeSymbol.Int, TypeSymbol.Float),
-                        new TypedAssignmentOperator(AssigmentOperator.PowerEq, TypeSymbol.Float, TypeSymbol.Int),
-                        new TypedAssignmentOperator(AssigmentOperator.PowerEq, TypeSymbol.Float, TypeSymbol.Float),
                     }
                 },
 

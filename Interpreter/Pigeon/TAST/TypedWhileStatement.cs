@@ -5,9 +5,9 @@ namespace Kostic017.Pigeon
     class TypedWhileStatement : TypedStatement
     {
         internal TypedExpression Condition { get; }
-        internal TypedStatement Body { get; }
+        internal TypedStatementBlock Body { get; }
 
-        internal TypedWhileStatement(TypedExpression condition, TypedStatement body)
+        internal TypedWhileStatement(TypedExpression condition, TypedStatementBlock body)
         {
             Condition = condition;
             Body = body;

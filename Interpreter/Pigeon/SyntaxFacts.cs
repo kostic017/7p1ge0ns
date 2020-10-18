@@ -12,7 +12,6 @@ namespace Kostic017.Pigeon
             { "for", SyntaxTokenType.For },
             { "to", SyntaxTokenType.To },
             { "downto", SyntaxTokenType.Downto },
-            { "step", SyntaxTokenType.Step },
             { "do", SyntaxTokenType.Do },
             { "while", SyntaxTokenType.While },
             { "break", SyntaxTokenType.Break },
@@ -49,7 +48,6 @@ namespace Kostic017.Pigeon
             SyntaxTokenType.MulEq,
             SyntaxTokenType.DivEq,
             SyntaxTokenType.ModEq,
-            SyntaxTokenType.PowerEq,
         };
 
         internal static readonly Dictionary<SyntaxTokenType, int> BinOpPrec
@@ -68,18 +66,6 @@ namespace Kostic017.Pigeon
             { SyntaxTokenType.Mul, 4 },
             { SyntaxTokenType.Div, 4 },
             { SyntaxTokenType.Mod, 4 },
-            { SyntaxTokenType.Power, 5 },
         };
-
-        internal enum Associativity
-        {
-            Right,
-            Left
-        }
-
-        internal static Associativity BinOpAssoc(SyntaxTokenType op)
-        {
-            return op != SyntaxTokenType.Power ? Associativity.Left : Associativity.Right;
-        }
     }
 }

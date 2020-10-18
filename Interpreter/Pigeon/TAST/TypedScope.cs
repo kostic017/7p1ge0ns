@@ -2,13 +2,13 @@
 
 namespace Kostic017.Pigeon.Symbols
 {
-    class VariableScope
+    class TypedScope
     {
         readonly Dictionary<string, VariableSymbol> variables = new Dictionary<string, VariableSymbol>();
 
-        internal VariableScope Parent { get; }
+        internal TypedScope Parent { get; }
 
-        internal VariableScope(VariableScope parent)
+        internal TypedScope(TypedScope parent)
         {
             Parent = parent;
         }

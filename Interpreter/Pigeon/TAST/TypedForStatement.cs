@@ -8,19 +8,19 @@ namespace Kostic017.Pigeon.TAST
         Downto
     }
 
-    internal class TypedForStatement : TypedStatement
+    class TypedForStatement : TypedStatement
     {
-        internal VariableSymbol Variable { get; }
+        internal VariableSymbol CounterVariable { get; }
         internal TypedExpression StartValue { get; }
         internal TypedExpression TargetValue { get; }
         internal TypedExpression StepValue { get; }
         internal LoopDirection Direction { get; }
-        internal TypedStatement Body { get; }
+        internal TypedStatementBlock Body { get; }
 
-        public TypedForStatement(VariableSymbol variable, TypedExpression startValue, TypedExpression targetValue,
-                                 TypedExpression stepValue, LoopDirection direction, TypedStatement body)
+        public TypedForStatement(VariableSymbol counterVariable, TypedExpression startValue, TypedExpression targetValue,
+                                 TypedExpression stepValue, LoopDirection direction, TypedStatementBlock body)
         {
-            Variable = variable;
+            CounterVariable = counterVariable;
             StartValue = startValue;
             TargetValue = targetValue;
             StepValue = stepValue;

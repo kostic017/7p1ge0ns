@@ -77,41 +77,6 @@ namespace Kostic017.Pigeon.Tests
         }
 
         [Fact]
-        public void ParseForStatement_DowntoWithStep()
-        {
-            var text = @"
-                for i = 1 downto 10 step 2
-                    j = i + 1
-            ";
-            var syntaxTree = SyntaxTree.Parse(text);
-            Assert.Empty(syntaxTree.ParserErrors);
-
-            using var e = new AssertingEnumerator(syntaxTree.Root);
-
-            e.AssertNode(NodeKind.Program);
-                e.AssertNode(NodeKind.StatementBlock);
-                    e.AssertNode(NodeKind.ForStatement);
-                        e.AssertToken(SyntaxTokenType.ID, "i");
-                        e.AssertNode(NodeKind.LiteralExpression);
-                            e.AssertToken(SyntaxTokenType.IntLiteral, "1");
-                        e.AssertToken(SyntaxTokenType.Downto);
-                        e.AssertNode(NodeKind.LiteralExpression);
-                            e.AssertToken(SyntaxTokenType.IntLiteral, "10");
-                        e.AssertNode(NodeKind.LiteralExpression);
-                            e.AssertToken(SyntaxTokenType.IntLiteral, "2");
-                        e.AssertNode(NodeKind.StatementBlock);
-                            e.AssertNode(NodeKind.VariableAssignment);
-                                e.AssertToken(SyntaxTokenType.ID, "j");
-                                e.AssertToken(SyntaxTokenType.Eq);
-                                e.AssertNode(NodeKind.BinaryExpression);
-                                    e.AssertNode(NodeKind.VariableExpression);
-                                        e.AssertToken(SyntaxTokenType.ID, "i");
-                                    e.AssertToken(SyntaxTokenType.Plus);
-                                    e.AssertNode(NodeKind.LiteralExpression);
-                                        e.AssertToken(SyntaxTokenType.IntLiteral, "1");
-        }
-
-        [Fact]
         public void ParseWhileStatement()
         {
             var text = @"

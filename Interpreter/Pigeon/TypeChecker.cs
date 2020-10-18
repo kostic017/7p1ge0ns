@@ -8,12 +8,12 @@ namespace Kostic017.Pigeon
 {
     public class TypeChecker
     {
-        private VariableScope scope;
+        private TypedScope scope;
         private readonly CodeErrorBag errorBag;
 
         internal TypeChecker()
         {
-            scope = new VariableScope(null);
+            scope = new TypedScope(null);
             errorBag = new CodeErrorBag();
         }
 
@@ -53,9 +53,9 @@ namespace Kostic017.Pigeon
             }
         }
 
-        private TypedStatement AnalyzeStatementBlock(StatementBlock node, VariableScope variableScope = null)
+        private TypedStatement AnalyzeStatementBlock(StatementBlock node, TypedScope predefinedScope = null)
         {
-            scope = variableScope ?? new VariableScope(scope);
+            scope = predefinedScope ?? new TypedScope(scope);
             var statements = node.Statements.Select(statement => AnalyzeStatement(statement)).ToArray();
             scope = scope.Parent;
             return new TypedStatementBlock(statements);
@@ -64,14 +64,14 @@ namespace Kostic017.Pigeon
         private TypedStatement AnalyzeIfStatement(IfStatement node)
         {
             var condition = AnalyzeExpression(node.Condition, TypeSymbol.Bool);
-            var thenBlock = AnalyzeStatementBlock(node.ThenBlock);
-            var elseBlock = node.ElseBlock != null ? AnalyzeStatementBlock(node.ElseBlock) : null;
+            var thenBlock = (TypedStatementBlock) AnalyzeStatementBlock(node.ThenBlock);
+            var elseBlock = (TypedStatementBlock) (node.ElseBlock != null ? AnalyzeStatementBlock(node.ElseBlock) : null);
             return new TypedIfStatement(condition, thenBlock, elseBlock);
         }
 
         private TypedStatement AnalyzeForStatement(ForStatement node)
         {            
-            var variableScope = new VariableScope(scope);
+            var variableScope = new TypedScope(scope);
             var counterVariable = new VariableSymbol(node.IdentifierToken.Value, TypeSymbol.Int, false);
             variableScope.TryDeclare(counterVariable);
 
@@ -79,7 +79,7 @@ namespace Kostic017.Pigeon
             var targetValue = AnalyzeExpression(node.TargetValue, TypeSymbol.Int);
             var stepValue = node.StepValue != null ? AnalyzeExpression(node.StepValue, TypeSymbol.Int) : null;
             var direction = node.DirectionToken.Type == SyntaxTokenType.To ? LoopDirection.To : LoopDirection.Downto;
-            var body = AnalyzeStatementBlock(node.Body, variableScope);
+            var body = (TypedStatementBlock) AnalyzeStatementBlock(node.Body, variableScope);
 
             return new TypedForStatement(counterVariable, startValue, targetValue, stepValue, direction, body);
         }
@@ -87,13 +87,13 @@ namespace Kostic017.Pigeon
         private TypedStatement AnalyzeWhileStatement(WhileStatement node)
         {
             var condition = AnalyzeExpression(node.Condition, TypeSymbol.Bool);
-            var body = AnalyzeStatementBlock(node.Body);
+            var body = (TypedStatementBlock) AnalyzeStatementBlock(node.Body);
             return new TypedWhileStatement(condition, body);
         }
 
         private TypedStatement AnalyzeDoWhileStatement(DoWhileStatement node)
         {
-            var body = AnalyzeStatementBlock(node.Body);
+            var body = (TypedStatementBlock) AnalyzeStatementBlock(node.Body);
             var condition = AnalyzeExpression(node.Condition, TypeSymbol.Bool);
             return new TypedDoWhileStatement(body, condition);
         }

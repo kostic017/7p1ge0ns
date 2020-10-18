@@ -13,18 +13,11 @@ namespace Kostic017.Pigeon.AST
 
         internal ForStatement(SyntaxToken identifierToken, Expression startValue, SyntaxToken directionToken,
                               Expression targetValue, StatementBlock body)
-            : this(identifierToken, startValue, directionToken, targetValue, null, body)
-        {
-        }
-
-        internal ForStatement(SyntaxToken identifierToken, Expression startValue, SyntaxToken directionToken,
-                              Expression targetValue, Expression stepValue, StatementBlock body)
         {
             IdentifierToken = identifierToken;
             StartValue = startValue;
             DirectionToken = directionToken;
             TargetValue = targetValue;
-            StepValue = stepValue;
             Body = body;
         }
 
@@ -36,10 +29,6 @@ namespace Kostic017.Pigeon.AST
             yield return StartValue;
             yield return new SyntaxTokenWrap(DirectionToken);
             yield return TargetValue;
-            if (StepValue != null)
-            {
-                yield return StepValue;
-            }
             yield return Body;
         }
     }

@@ -3,10 +3,10 @@
     class TypedIfStatement : TypedStatement
     {
         internal TypedExpression Condition { get; }
-        internal TypedStatement ThenBlock { get; }
-        internal TypedStatement ElseBlock { get; }
+        internal TypedStatementBlock ThenBlock { get; }
+        internal TypedStatementBlock ElseBlock { get; }
 
-        internal TypedIfStatement(TypedExpression condition, TypedStatement thenBlock, TypedStatement elseBlock)
+        internal TypedIfStatement(TypedExpression condition, TypedStatementBlock thenBlock, TypedStatementBlock elseBlock)
         {
             Condition = condition;
             ThenBlock = thenBlock;

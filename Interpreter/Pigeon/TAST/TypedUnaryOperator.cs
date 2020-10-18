@@ -8,23 +8,23 @@ namespace Kostic017.Pigeon.TAST
     {
         Plus,
         Minus,
-        Not,
+        Negation,
     }
 
     class TypedUnaryOperator
     {
-        internal UnaryOperator Op { get; }
-        internal TypeSymbol Type { get; }
+        internal UnaryOperator Kind { get; }
+        internal TypeSymbol ResultType { get; }
 
         private TypedUnaryOperator(UnaryOperator op, TypeSymbol type)
         {
-            Op = op;
-            Type = type;
+            Kind = op;
+            ResultType = type;
         }
 
         private bool Supports(TypeSymbol type)
         {
-            return Type == type;
+            return ResultType == type;
         }
 
         internal static bool TryBind(SyntaxTokenType op, TypeSymbol operandType, out TypedUnaryOperator typedOperator)
@@ -58,7 +58,7 @@ namespace Kostic017.Pigeon.TAST
                     SyntaxTokenType.Not,
                     new[]
                     {
-                        new TypedUnaryOperator(UnaryOperator.Not, TypeSymbol.Bool)
+                        new TypedUnaryOperator(UnaryOperator.Negation, TypeSymbol.Bool)
                     }
                 }
             };

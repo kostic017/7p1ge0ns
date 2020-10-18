@@ -2,10 +2,10 @@
 {
     class TypedDoWhileStatement : TypedStatement
     {
-        internal TypedStatement Body { get; }
+        internal TypedStatementBlock Body { get; }
         internal TypedExpression Condition { get; }
 
-        internal TypedDoWhileStatement(TypedStatement body, TypedExpression condition)
+        internal TypedDoWhileStatement(TypedStatementBlock body, TypedExpression condition)
         {
             Body = body;
             Condition = condition;

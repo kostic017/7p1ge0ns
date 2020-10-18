@@ -118,15 +118,6 @@ namespace Kostic017.Pigeon
             var startValue = ParseExpression();
             var directionToken = Match(SyntaxTokenType.To, SyntaxTokenType.Downto);
             var targetValue = ParseExpression();
-            
-            if (Current.Type == SyntaxTokenType.Step)
-            {
-                Match(SyntaxTokenType.Step);
-                var stepValue = ParseExpression();
-                body = ParseStatementBlock();
-                return new ForStatement(identifierToken, startValue, directionToken, targetValue, stepValue, body);
-            }
-
             body = ParseStatementBlock();
             return new ForStatement(identifierToken, startValue, directionToken, targetValue, body);
         }
@@ -177,7 +168,7 @@ namespace Kostic017.Pigeon
             while (SyntaxFacts.BinOpPrec.ContainsKey(Current.Type) && SyntaxFacts.BinOpPrec[Current.Type] >= precedence)
             {
                 var op = NextToken();
-                var right = ParseExpression(SyntaxFacts.BinOpPrec[op.Type] + (int)SyntaxFacts.BinOpAssoc(op.Type));
+                var right = ParseExpression(SyntaxFacts.BinOpPrec[op.Type] + 1);
                 left = new BinaryExpression(left, op, right);
             }
 

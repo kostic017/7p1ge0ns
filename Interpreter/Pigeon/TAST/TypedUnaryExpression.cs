@@ -12,7 +12,7 @@ namespace Kostic017.Pigeon.TAST
             Operand = operand;
         }
 
-        internal override TypeSymbol Type => Op.Type;
+        internal override TypeSymbol Type => Op.ResultType;
         internal override NodeKind Kind => NodeKind.UnaryExpression;
     }
 }
