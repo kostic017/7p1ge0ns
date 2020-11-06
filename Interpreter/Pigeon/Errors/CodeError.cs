@@ -15,12 +15,15 @@ namespace Kostic017.Pigeon.Errors
         LEFTOVER_TOKENS_FOUND,
         UNEXPECTED_TOKEN,
         NAME_NOT_DEFINED,
+        FUNCTION_NOT_DEFINED,
         NAME_ALREADY_DEFINED,
         INVALID_TYPE_ASSIGNMENT,
         INVALID_TYPE_UNARY_OPERAND,
         INVALID_TYPE_BINARY_OPERAND,
         MODIFYING_READ_ONLY_VARIABLE,
         UNEXPECTED_TYPE,
+        INVALID_NUMBER_OF_PARAMETERS,
+        INVALID_PARAMETER_TYPE,
     }
 
     public class CodeError
@@ -60,12 +63,15 @@ namespace Kostic017.Pigeon.Errors
                 { CodeErrorType.LEFTOVER_TOKENS_FOUND, "Some tokens left unparsed" },
                 { CodeErrorType.UNEXPECTED_TOKEN, "Token '{0}' was not expected here" },
                 { CodeErrorType.NAME_NOT_DEFINED, "The name '{0}' does not exist in the current contex" },
+                { CodeErrorType.FUNCTION_NOT_DEFINED, "The name '{0}' does not exist in the current contex" },
                 { CodeErrorType.NAME_ALREADY_DEFINED, "The name '{0}' is already defined in the current scope" },
                 { CodeErrorType.INVALID_TYPE_UNARY_OPERAND, "Operator {0} is not defined for type {1}" },
                 { CodeErrorType.INVALID_TYPE_BINARY_OPERAND, "Operator {0} is not defined for types {1} and {2}" },
                 { CodeErrorType.INVALID_TYPE_ASSIGNMENT, "Variable '{0}' of type {1} cannot have value of type {2}" },
                 { CodeErrorType.MODIFYING_READ_ONLY_VARIABLE, "Variable '{0}' is read-only" },
-                { CodeErrorType.UNEXPECTED_TYPE, "Expected value of type {0}, not value of type {1}"}
+                { CodeErrorType.UNEXPECTED_TYPE, "Expected value of type {0}, not value of type {1}"},
+                { CodeErrorType.INVALID_NUMBER_OF_PARAMETERS, "Expected {0} parameters"},
+                { CodeErrorType.INVALID_PARAMETER_TYPE, "Argument {0} should be of type {1}"},
             };
     }
 }

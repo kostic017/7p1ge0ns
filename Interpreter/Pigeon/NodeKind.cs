@@ -19,5 +19,8 @@
         ErrorExpression,
         ErrorStatement,
         PowerExpression,
+        ExpressionStatement,
+        FunctionCallExpression,
+        FunctionDeclaration,
     }
 }

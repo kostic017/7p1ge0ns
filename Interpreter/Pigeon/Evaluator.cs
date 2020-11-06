@@ -1,12 +1,11 @@
 ﻿using Kostic017.Pigeon.Errors;
 using Kostic017.Pigeon.Symbols;
 using Kostic017.Pigeon.TAST;
-using System;
 using System.Collections.Generic;
 
 namespace Kostic017.Pigeon
 {
-    class Evaluator
+    public class Evaluator
     {
         private readonly Stack<Scope> scopes;
 
@@ -15,10 +14,10 @@ namespace Kostic017.Pigeon
             scopes = new Stack<Scope>();
         }
 
-        public static void Evaluate(TypedProgram program)
+        public static void Evaluate(AnalysisResult analysisResult)
         {
             var evaluator = new Evaluator();
-            evaluator.EvaluateStatement(program.StatementBlock);
+            evaluator.EvaluateStatement(analysisResult.Program.StatementBlock);
         }
 
         private void AssignValue(VariableSymbol variable, object value)
@@ -56,9 +55,17 @@ namespace Kostic017.Pigeon
                 case NodeKind.VariableAssignment:
                     EvaluateVariableAssignment((TypedVariableAssignment) node);
                     break;
+                case NodeKind.ExpressionStatement:
+                    EvaluateExpressionStatement((TypedExpressionStatement) node);
+                    break;
                 default:
                     throw new InternalErrorException($"Unsupported node '{node.Kind}'");
             }
+        }
+
+        private void EvaluateExpressionStatement(TypedExpressionStatement node)
+        {
+            EvaluateExpression(node.Expression);
         }
 
         private void EvaluateStatementBlock(TypedStatementBlock node, Scope predefinedScope = null)
@@ -170,9 +177,22 @@ namespace Kostic017.Pigeon
                     return EvaluateBinaryExpression((TypedBinaryExpression) node);
                 case NodeKind.VariableExpression:
                     return EvaluateVariableExpression((TypedVariableExpression) node);
+                case NodeKind.FunctionCallExpression:
+                    return EvaluateFunctionCallExpression((TypedFunctionCallExpression) node);
                 default:
                     throw new InternalErrorException($"Unsupported expression kind {node.Kind.GetDescription()}");
             }
+        }
+
+        private object EvaluateFunctionCallExpression(TypedFunctionCallExpression node)
+        {
+            BuiltinFunctions.TryLookup(node.Function.Name, out var builtinFunction);
+            var argumentValues = new List<object>();
+            foreach (var argument in node.Arguments)
+            {
+                argumentValues.Add(EvaluateExpression(argument));
+            }
+            return builtinFunction.Action(argumentValues.ToArray());
         }
 
         private object EvaluateUnaryExpression(TypedUnaryExpression node)

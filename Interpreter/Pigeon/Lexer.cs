@@ -5,20 +5,20 @@ namespace Kostic017.Pigeon
 {
     class Lexer
     {
-        int line;
-        int column;
-        int index;
-
-        int tokenStartLine;
-        int tokenStartColumn;
-        int tokenStartIndex;
-
-        readonly int tabSize;
-        readonly string code;
+        private int line;
+        private int column;
+        private int index;
         
-        char PrevChar => index - 1 >= 0 ? code[index - 1] : '\0';
-        char CurrentChar => index < code.Length ? code[index] : '\0';
-        char NextChar => index + 1 < code.Length ? code[index + 1] : '\0';
+        private int tokenStartLine;
+        private int tokenStartColumn;
+        private int tokenStartIndex;
+        
+        private readonly int tabSize;
+        private readonly string code;
+        
+        private char PrevChar => index - 1 >= 0 ? code[index - 1] : '\0';
+        private char CurrentChar => index < code.Length ? code[index] : '\0';
+        private char NextChar => index + 1 < code.Length ? code[index + 1] : '\0';
 
         internal CodeErrorBag ErrorBag { get; }
 

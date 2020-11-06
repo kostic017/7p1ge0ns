@@ -9,12 +9,12 @@ namespace Kostic017.Pigeon
 {
     class Parser
     {
-        int index;
-
-        readonly SyntaxToken[] tokens;
-
-        SyntaxToken Current => index < tokens.Length ? tokens[index] : tokens[tokens.Length - 1];
-        SyntaxToken Peek => index + 1 < tokens.Length ? tokens[index + 1] : tokens[tokens.Length - 1];
+        private int index;
+        
+        private readonly SyntaxToken[] tokens;
+        
+        private SyntaxToken Current => index < tokens.Length ? tokens[index] : tokens[tokens.Length - 1];
+        private SyntaxToken Peek => index + 1 < tokens.Length ? tokens[index + 1] : tokens[tokens.Length - 1];
 
         internal CodeErrorBag ErrorBag { get; }
 
@@ -83,6 +83,8 @@ namespace Kostic017.Pigeon
                 case SyntaxTokenType.LBrace:
                     return ParseStatementBlock();
                 case SyntaxTokenType.ID:
+                    if (Peek.Type == SyntaxTokenType.LPar)
+                        return new ExpressionStatement(ParseFunctionCallExpression());
                     if (SyntaxFacts.AssignmentOperators.Contains(Peek.Type))
                         return ParseVariableAssignment();
                     break;
@@ -108,17 +110,16 @@ namespace Kostic017.Pigeon
             return new IfStatement(conditon, thenBlock);
         }
 
-        // for id = <expression> (to|downto) <expression> [step <expression>] <statement_block>
+        // for id = <expression> (to|downto) <expression> <statement_block>
         private Statement ParseForStatement()
         {
-            StatementBlock body;
             Match(SyntaxTokenType.For);
             var identifierToken = Match(SyntaxTokenType.ID);
             Match(SyntaxTokenType.Eq);
             var startValue = ParseExpression();
             var directionToken = Match(SyntaxTokenType.To, SyntaxTokenType.Downto);
             var targetValue = ParseExpression();
-            body = ParseStatementBlock();
+            var body = ParseStatementBlock();
             return new ForStatement(identifierToken, startValue, directionToken, targetValue, body);
         }
 
@@ -180,6 +181,8 @@ namespace Kostic017.Pigeon
             switch (Current.Type)
             {
                 case SyntaxTokenType.ID:
+                    if (Peek.Type == SyntaxTokenType.LPar)
+                        return ParseFunctionCallExpression();
                     return ParseVarableExpression();
 
                 case SyntaxTokenType.IntLiteral:
@@ -206,6 +209,33 @@ namespace Kostic017.Pigeon
                     ErrorBag.Report(CodeErrorType.INVALID_EXPRESSION_TERM, Current.TextSpan, Current.Type.GetDescription());
                     return new ErrorExpression();
             }
+        }
+
+        private Expression ParseFunctionCallExpression()
+        {
+            var id = Match(SyntaxTokenType.ID);
+            var parameters = new List<Argument>();
+            
+            var lPar = Match(SyntaxTokenType.LPar);
+
+            while (Current.Type != SyntaxTokenType.RPar && Current.Type != SyntaxTokenType.EOF)
+            {
+                var value = ParseExpression();
+                
+                if (Current.Type == SyntaxTokenType.Comma)
+                {
+                    var comma = Match(SyntaxTokenType.Comma);
+                    parameters.Add(new Argument(value, comma));
+                }
+                else
+                {
+                    parameters.Add(new Argument(value));
+                }
+            }
+
+            var rPar = Match(SyntaxTokenType.RPar);
+
+            return new FunctionCallExpression(id, lPar, parameters.ToArray(), rPar);
         }
 
         private Expression ParseVarableExpression()

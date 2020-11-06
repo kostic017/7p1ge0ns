@@ -3,6 +3,8 @@ using Kostic017.Pigeon.Errors;
 using Kostic017.Pigeon.TAST;
 using Kostic017.Pigeon.Symbols;
 using System.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace Kostic017.Pigeon
 {
@@ -48,9 +50,17 @@ namespace Kostic017.Pigeon
                     return AnalyzeVariableDeclaration((VariableDeclaration) node);
                 case NodeKind.VariableAssignment:
                     return AnalyzeVariableAssignment((VariableAssignment) node);
+                case NodeKind.ExpressionStatement:
+                    return AnalyzeExpressionStatement((ExpressionStatement) node);
                 default:
                     throw new InternalErrorException($"Unsupported statement '{node.Kind}'");
             }
+        }
+
+        private TypedStatement AnalyzeExpressionStatement(ExpressionStatement node)
+        {
+            var expression = AnalyzeExpression(node.Expression);
+            return new TypedExpressionStatement(expression);
         }
 
         private TypedStatement AnalyzeStatementBlock(StatementBlock node, TypedScope predefinedScope = null)
@@ -162,11 +172,40 @@ namespace Kostic017.Pigeon
                     return AnalyzeBinaryExpression((BinaryExpression) node);
                 case NodeKind.ParenthesizedExpression:
                     return AnalyzeParenthesizedExpression((ParenthesizedExpression) node);
+                case NodeKind.FunctionCallExpression:
+                    return AnaylizeFunctionCallExpression((FunctionCallExpression) node);
                 case NodeKind.ErrorExpression:
                     return new TypedErrorExpression();
                 default:
                     throw new InternalErrorException($"Unsupported expression '{node.Kind}'");
             }
+        }
+
+        private TypedExpression AnaylizeFunctionCallExpression(FunctionCallExpression node)
+        {
+            if (!BuiltinFunctions.TryLookup(node.NameToken.Value, out var function))
+            {
+                errorBag.Report(CodeErrorType.FUNCTION_NOT_DEFINED, node.NameToken.TextSpan, node.NameToken.Value);
+                return new TypedErrorExpression();
+            }
+            if (function.Symbol.Parameters.Length != node.Arguments.Length)
+            {
+                errorBag.Report(CodeErrorType.INVALID_NUMBER_OF_PARAMETERS, node.TextSpan, function.Symbol.Parameters.Length.ToString());
+                return new TypedErrorExpression();
+            }
+            var arguments = new List<TypedExpression>();
+            for (var i = 0; i < node.Arguments.Length; ++i)
+            {
+                var expectedType = function.Symbol.Parameters[i].Type;
+                var argument = AnalyzeExpression(node.Arguments[i].Value);
+                if (argument.Type != expectedType)
+                {
+                    errorBag.Report(CodeErrorType.INVALID_PARAMETER_TYPE, node.TextSpan, $"{i + 1}", expectedType.Name);
+                    return new TypedErrorExpression();
+                }
+                arguments.Add(argument);
+            }
+            return new TypedFunctionCallExpression(function.Symbol, arguments.ToArray());
         }
 
         private TypedExpression AnalyzeVariableExpression(VariableExpression node)

@@ -13,4 +13,9 @@
             Value = value;
         }
     }
+
+    class DummyToken : SyntaxToken
+    {
+        internal DummyToken(SyntaxTokenType type) : base(type, new TextSpan(-1, -1, -1, -1)) { }
+    }
 }

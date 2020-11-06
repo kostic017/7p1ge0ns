@@ -4,5 +4,6 @@
     {
         Type,
         Variable,
+        Function,
     }
 }
