@@ -193,7 +193,7 @@ namespace Kostic017.Pigeon
                             return LexWord();
                         }
 
-                        ReportError(CodeErrorType.UNEXPECTED_CHARACTER, 1, $"{ch}");
+                        ErrorBag.ReportUnexpectedCharacter(GetTextSpan(1), $"{ch}");
                         return Token(SyntaxTokenType.Illegal);
                 }
             }
@@ -213,7 +213,7 @@ namespace Kostic017.Pigeon
                     case '\0':
                     case '\n':
                         done = true;
-                        ReportError(CodeErrorType.UNTERMINATED_STRING, 1);
+                        ErrorBag.ReportUnterminatedString(GetTextSpan(1));
                         break;
                     
                     case '\\':
@@ -223,7 +223,7 @@ namespace Kostic017.Pigeon
                         }
                         else
                         {
-                            ReportError(CodeErrorType.INVALID_ESCAPE_CHAR, 2, $"\\{NextChar}");
+                            ErrorBag.ReportInvalidEscapeChar(GetTextSpan(2), $"\\{NextChar}");
                         }
                         EatCurrentChar();
                         break;
@@ -267,7 +267,7 @@ namespace Kostic017.Pigeon
 
                 if (CurrentChar == '\0')
                 {
-                    ReportError(CodeErrorType.UNTERMINATED_COMMENT_BLOCK, 2);
+                    ErrorBag.ReportUnterminatedCommentBlock(GetTextSpan(2));
                     break;
                 }
 
@@ -366,10 +366,9 @@ namespace Kostic017.Pigeon
             return new SyntaxToken(type, textSpan, lexeme);
         }
 
-        private void ReportError(CodeErrorType type, int length, params string[] data)
+        private TextSpan GetTextSpan(int length)
         {
-            var textSpan = new TextSpan(tokenStartLine, tokenStartColumn, tokenStartIndex, tokenStartIndex + length);
-            ErrorBag.Report(type, textSpan, data);
+            return new TextSpan(tokenStartLine, tokenStartColumn, tokenStartIndex, tokenStartIndex + length);
         }
     }
 }

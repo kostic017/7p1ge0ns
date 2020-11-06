@@ -4,7 +4,7 @@ namespace Kostic017.Pigeon.Errors
 {
     public enum CodeErrorType
     {
-        NOT_A_VALID_NUMBER,
+        UNPARSEABLE_NUMBER,
         UNTERMINATED_STRING,
         INVALID_ESCAPE_CHAR,
         UNEXPECTED_CHARACTER,
@@ -14,9 +14,9 @@ namespace Kostic017.Pigeon.Errors
         UNTERMINATED_STATEMENT_BLOCK,
         LEFTOVER_TOKENS_FOUND,
         UNEXPECTED_TOKEN,
-        NAME_NOT_DEFINED,
+        VARIABLE_NOT_DEFINED,
         FUNCTION_NOT_DEFINED,
-        NAME_ALREADY_DEFINED,
+        VARIABLE_ALREADY_DEFINED,
         INVALID_TYPE_ASSIGNMENT,
         INVALID_TYPE_UNARY_OPERAND,
         INVALID_TYPE_BINARY_OPERAND,
@@ -52,19 +52,19 @@ namespace Kostic017.Pigeon.Errors
         private static readonly Dictionary<CodeErrorType, string> messages =
             new Dictionary<CodeErrorType, string>
             {
-                { CodeErrorType.NOT_A_VALID_NUMBER, "Illegal number {0}" },
+                { CodeErrorType.UNPARSEABLE_NUMBER, "Cannot parse number {0}" },
                 { CodeErrorType.UNTERMINATED_STRING, "Unterminated string" },
                 { CodeErrorType.INVALID_ESCAPE_CHAR, "Invalid escape char {0}" },
                 { CodeErrorType.UNEXPECTED_CHARACTER, "Unexpected character {0}" },
-                { CodeErrorType.MISSING_EXPECTED_TOKEN, "Expected token(s): {0}" },
+                { CodeErrorType.MISSING_EXPECTED_TOKEN, "Token(s) {0} expected here" },
+                { CodeErrorType.UNEXPECTED_TOKEN, "Token '{0}' was not expected here" },
                 { CodeErrorType.INVALID_EXPRESSION_TERM, "Invalid expression term {0}" },
                 { CodeErrorType.UNTERMINATED_COMMENT_BLOCK, "Unterminated comment block" },
                 { CodeErrorType.UNTERMINATED_STATEMENT_BLOCK, "Unterminated statement block" },
                 { CodeErrorType.LEFTOVER_TOKENS_FOUND, "Some tokens left unparsed" },
-                { CodeErrorType.UNEXPECTED_TOKEN, "Token '{0}' was not expected here" },
-                { CodeErrorType.NAME_NOT_DEFINED, "The name '{0}' does not exist in the current contex" },
-                { CodeErrorType.FUNCTION_NOT_DEFINED, "The name '{0}' does not exist in the current contex" },
-                { CodeErrorType.NAME_ALREADY_DEFINED, "The name '{0}' is already defined in the current scope" },
+                { CodeErrorType.VARIABLE_NOT_DEFINED, "The variable '{0}' does not exist in the current contex" },
+                { CodeErrorType.FUNCTION_NOT_DEFINED, "The function '{0}' does not exist in the current contex" },
+                { CodeErrorType.VARIABLE_ALREADY_DEFINED, "The variable '{0}' is already defined in the current scope" },
                 { CodeErrorType.INVALID_TYPE_UNARY_OPERAND, "Operator {0} is not defined for type {1}" },
                 { CodeErrorType.INVALID_TYPE_BINARY_OPERAND, "Operator {0} is not defined for types {1} and {2}" },
                 { CodeErrorType.INVALID_TYPE_ASSIGNMENT, "Variable '{0}' of type {1} cannot have value of type {2}" },

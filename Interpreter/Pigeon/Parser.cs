@@ -30,7 +30,7 @@ namespace Kostic017.Pigeon
             var stmtBlock = ParseStatementBlock();
             
             if (Current.Type != SyntaxTokenType.EOF)
-                ErrorBag.Report(CodeErrorType.LEFTOVER_TOKENS_FOUND, Current.TextSpan);
+                ErrorBag.ReportLeftoverTokensFound(Current.TextSpan);
             
             return new Program(stmtBlock);
         }
@@ -51,7 +51,7 @@ namespace Kostic017.Pigeon
                 }   
 
                 if (Current.Type == SyntaxTokenType.EOF)
-                    ErrorBag.Report(CodeErrorType.UNTERMINATED_STATEMENT_BLOCK, Current.TextSpan);
+                    ErrorBag.ReportUnterminatedStatementBlock(Current.TextSpan);
 
                 Match(SyntaxTokenType.RBrace);
             }
@@ -89,7 +89,8 @@ namespace Kostic017.Pigeon
                         return ParseVariableAssignment();
                     break;
             }
-            ErrorBag.Report(CodeErrorType.UNEXPECTED_TOKEN, Current.TextSpan, Current.Type.GetDescription());
+            if (Current.Type != SyntaxTokenType.Illegal)
+                ErrorBag.ReportUnexpectedToken(Current.TextSpan, Current.Type);
             return null;
         }
 
@@ -206,7 +207,7 @@ namespace Kostic017.Pigeon
                     return ParseUnaryExpression();
 
                 default:
-                    ErrorBag.Report(CodeErrorType.INVALID_EXPRESSION_TERM, Current.TextSpan, Current.Type.GetDescription());
+                    ErrorBag.ReportInvalidExpressionTerm(Current.TextSpan, Current.Type);
                     return new ErrorExpression();
             }
         }
@@ -247,22 +248,18 @@ namespace Kostic017.Pigeon
         private Expression ParseIntLiteralExpression()
         {
             var token = Match(SyntaxTokenType.IntLiteral);
-            
             if (int.TryParse(token.Value, out int i))
                 return new LiteralExpression(token, i);
-            
-            ErrorBag.Report(CodeErrorType.NOT_A_VALID_NUMBER, token.TextSpan, token.Value);
+            ErrorBag.ReportUnparseableNumber(token.TextSpan, token.Value);
             return new LiteralExpression(token, token.Value);
         }
 
         private Expression ParseFloatLiteralExpression()
         {
             var token = Match(SyntaxTokenType.FloatLiteral);
-            
             if (float.TryParse(token.Value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float f))
                 return new LiteralExpression(token, f);
-     
-            ErrorBag.Report(CodeErrorType.NOT_A_VALID_NUMBER, token.TextSpan, token.Value);
+            ErrorBag.ReportUnparseableNumber(token.TextSpan, token.Value);
             return new LiteralExpression(token, token.Value);
         }
 
@@ -298,7 +295,7 @@ namespace Kostic017.Pigeon
             var token = NextToken();
             if (types.Any(t => t == token.Type))
                 return token;
-            ErrorBag.Report(CodeErrorType.MISSING_EXPECTED_TOKEN, token.TextSpan, string.Join(", ", types.Select(t => t.GetDescription())));
+            ErrorBag.ReportMissingExpectedToken(token.TextSpan, types);
             return new DummyToken(types[0]);
         }
 

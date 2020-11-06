@@ -12,6 +12,8 @@ namespace TestProject
             BuiltinFunctions.Register("int add(int, int)", Add);
             BuiltinFunctions.Register("void print(int)", Print);
 
+            bool showTree = false;
+
             while (true)
             {
                 Console.Write("> ");
@@ -23,6 +25,9 @@ namespace TestProject
                 {
                     case "#quit":
                         return;
+                    case "#showTree":
+                        showTree = !showTree;
+                        break;
                     case "#cls":
                         Console.Clear();
                         continue;
@@ -36,13 +41,19 @@ namespace TestProject
                 }
 
                 var syntaxTree = SyntaxTree.Parse(sb.ToString());
-                syntaxTree.PrintTree(Console.Out);
+                
+                if (showTree)
+                    syntaxTree.PrintTree(Console.Out);
+                
                 var analysisResult = TypeChecker.Anaylize(syntaxTree);
 
-                foreach (var error in syntaxTree.Errors.Concat(analysisResult.Errors))
+                var errors = syntaxTree.Errors.Concat(analysisResult.Errors);
+
+                foreach (var error in errors)
                     Console.WriteLine(error);
 
-                Evaluator.Evaluate(analysisResult);
+                if (errors.Count() == 0)
+                    Evaluator.Evaluate(analysisResult);
 
                 Console.WriteLine();
 

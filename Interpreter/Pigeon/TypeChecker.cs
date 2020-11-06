@@ -115,7 +115,7 @@ namespace Kostic017.Pigeon
             
             if (!scope.TryDeclare(variable))
             {
-                errorBag.Report(CodeErrorType.NAME_ALREADY_DEFINED, node.IdentifierToken.TextSpan, variable.Name);
+                errorBag.ReportVariableAlreadyDefined(node.IdentifierToken.TextSpan, variable.Name);
                 return new TypedErrorStatement();
             }
           
@@ -126,13 +126,13 @@ namespace Kostic017.Pigeon
         {
             if (!scope.TryLookup(node.IdentifierToken.Value, out var variable))
             {
-                errorBag.Report(CodeErrorType.NAME_NOT_DEFINED, node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
+                errorBag.ReportVariableNotDefined(node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
                 return new TypedErrorStatement();
             }
             
             if (variable.ReadOnly)
             {
-                errorBag.Report(CodeErrorType.MODIFYING_READ_ONLY_VARIABLE, node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
+                errorBag.ReportModifyingReadOnlyVariable(node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
                 return new TypedErrorStatement();
             }
             
@@ -140,7 +140,7 @@ namespace Kostic017.Pigeon
 
             if (!TypedAssignmentOperator.TryBind(node.Op.Type, variable.Type, value.Type, out var typedOperator))
             {
-                errorBag.Report(CodeErrorType.INVALID_TYPE_ASSIGNMENT, node.Op.TextSpan, variable.Name, variable.Type.ToString(), value.Type.ToString());
+                errorBag.ReportInvalidTypeAssignment(node.Op.TextSpan, variable.Name, variable.Type, value.Type);
                 return new TypedErrorStatement();
             }
        
@@ -152,7 +152,7 @@ namespace Kostic017.Pigeon
             var expression = AnalyzeExpression(node);
             if (expression.Type != expectedType)
             {
-                errorBag.Report(CodeErrorType.UNEXPECTED_TYPE, node.TextSpan, expectedType.ToString(), expression.Type.ToString());
+                errorBag.ReportUnexpectedType(node.TextSpan, expectedType, expression.Type);
                 return new TypedErrorExpression();
             }
             return expression;
@@ -185,12 +185,12 @@ namespace Kostic017.Pigeon
         {
             if (!BuiltinFunctions.TryLookup(node.NameToken.Value, out var function))
             {
-                errorBag.Report(CodeErrorType.FUNCTION_NOT_DEFINED, node.NameToken.TextSpan, node.NameToken.Value);
+                errorBag.ReportFunctionNotDefined(node.NameToken.TextSpan, node.NameToken.Value);
                 return new TypedErrorExpression();
             }
             if (function.Symbol.Parameters.Length != node.Arguments.Length)
             {
-                errorBag.Report(CodeErrorType.INVALID_NUMBER_OF_PARAMETERS, node.TextSpan, function.Symbol.Parameters.Length.ToString());
+                errorBag.ReportInvalidNumberOfParameters(node.TextSpan, function.Symbol.Parameters.Length);
                 return new TypedErrorExpression();
             }
             var arguments = new List<TypedExpression>();
@@ -200,7 +200,7 @@ namespace Kostic017.Pigeon
                 var argument = AnalyzeExpression(node.Arguments[i].Value);
                 if (argument.Type != expectedType)
                 {
-                    errorBag.Report(CodeErrorType.INVALID_PARAMETER_TYPE, node.TextSpan, $"{i + 1}", expectedType.Name);
+                    errorBag.ReportInvalidParameterType(node.TextSpan, i + 1, expectedType);
                     return new TypedErrorExpression();
                 }
                 arguments.Add(argument);
@@ -212,7 +212,7 @@ namespace Kostic017.Pigeon
         {
             if (!scope.TryLookup(node.IdentifierToken.Value, out var variable))
             {
-                errorBag.Report(CodeErrorType.NAME_NOT_DEFINED, node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
+                errorBag.ReportVariableNotDefined(node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
                 return new TypedErrorExpression();
             }
             return new TypedVariableExpression(variable);
@@ -232,7 +232,7 @@ namespace Kostic017.Pigeon
 
             if (!TypedUnaryOperator.TryBind(node.Op.Type, operand.Type, out var typedOperator))
             {
-                errorBag.Report(CodeErrorType.INVALID_TYPE_UNARY_OPERAND, node.Op.TextSpan, node.Op.Type.GetDescription(), operand.Type.ToString());
+                errorBag.ReportInvalidTypeUnaryOperand(node.Op.TextSpan, node.Op.Type, operand.Type);
                 return new TypedErrorExpression();
             }
             
@@ -249,7 +249,7 @@ namespace Kostic017.Pigeon
             
             if (!TypedBinaryOperator.TryBind(node.Op.Type, left.Type, right.Type, out var typedOperator))
             {
-                errorBag.Report(CodeErrorType.INVALID_TYPE_BINARY_OPERAND, node.Op.TextSpan, node.Op.Type.GetDescription(), left.Type.ToString(), right.Type.ToString());
+                errorBag.ReportInvalidTypeBinaryOperand(node.Op.TextSpan, node.Op.Type, left.Type, right.Type);
                 return new TypedErrorExpression();
             }
 
