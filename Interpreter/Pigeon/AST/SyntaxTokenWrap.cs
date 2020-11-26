@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Kostic017.Pigeon.AST
 {
-    class SyntaxTokenWrap : AstNode
+    class SyntaxTokenWrap : SyntaxNode
     {
         internal SyntaxToken Token { get; }
 
@@ -21,6 +21,6 @@ namespace Kostic017.Pigeon.AST
         }
 
         internal override NodeKind Kind => NodeKind.SyntaxTokenWrap;
-        internal override IEnumerable<AstNode> GetChildren() => Enumerable.Empty<AstNode>();
+        internal override IEnumerable<SyntaxNode> GetChildren() => Enumerable.Empty<SyntaxNode>();
     }
 }

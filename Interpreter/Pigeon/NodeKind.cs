@@ -2,7 +2,7 @@
 {
     enum NodeKind
     {
-        Program,
+        AstRoot,
         StatementBlock,
         BinaryExpression,
         VariableExpression,

@@ -39,24 +39,19 @@ namespace TestProject
                     Console.Write("| ");
                     line = Console.ReadLine();
                 }
-
-                var syntaxTree = SyntaxTree.Parse(sb.ToString());
                 
+                var analysisResult = Interpreter.Analyze(sb.ToString());
+
                 if (showTree)
-                    syntaxTree.PrintTree(Console.Out);
+                    analysisResult.PrintTree(Console.Out);
                 
-                var analysisResult = TypeChecker.Anaylize(syntaxTree);
-
-                var errors = syntaxTree.Errors.Concat(analysisResult.Errors);
-
-                foreach (var error in errors)
+                foreach (var error in analysisResult.Errors.AllErrors)
                     Console.WriteLine(error);
 
-                if (errors.Count() == 0)
-                    Evaluator.Evaluate(analysisResult);
+                if (analysisResult.Errors.AllErrors.Count() == 0)
+                    Interpreter.Evaluate(analysisResult);
 
                 Console.WriteLine();
-
             }
         }
 

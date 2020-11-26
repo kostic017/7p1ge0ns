@@ -2,12 +2,12 @@
 {
     public class TextSpan
     {
-        internal int Line { get; }
-        internal int Column { get; }
-        internal int StartIndex { get; }
-        internal int EndIndex { get; }
+        public int Line { get; }
+        public int Column { get; }
+        public int StartIndex { get; }
+        public int EndIndex { get; }
  
-        public TextSpan(int startLine, int startColumn, int startIndex, int endIndex)
+        internal TextSpan(int startLine, int startColumn, int startIndex, int endIndex)
         {
             Line = startLine;
             Column = startColumn;

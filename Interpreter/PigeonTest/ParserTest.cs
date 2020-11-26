@@ -10,12 +10,12 @@ namespace Kostic017.Pigeon.Tests
         {
             var text = "let a = 4";
 
-            var syntaxTree = SyntaxTree.Parse(text);
-            Assert.Empty(syntaxTree.ParserErrors);
+            var analysisResult = Interpreter.Analyze(text);
+            Assert.Empty(analysisResult.Errors.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Root);
+            using var e = new AssertingEnumerator(analysisResult.AstRoot);
 
-            e.AssertNode(NodeKind.Program);
+            e.AssertNode(NodeKind.AstRoot);
                 e.AssertNode(NodeKind.StatementBlock);
                     e.AssertNode(NodeKind.VariableDeclaration);
                         e.AssertToken(SyntaxTokenType.Let);
@@ -29,12 +29,12 @@ namespace Kostic017.Pigeon.Tests
         {
             var text = "a += 4";
 
-            var syntaxTree = SyntaxTree.Parse(text);
-            Assert.Empty(syntaxTree.ParserErrors);
+            var analysisResult = Interpreter.Analyze(text);
+            Assert.Empty(analysisResult.Errors.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Root);
+            using var e = new AssertingEnumerator(analysisResult.AstRoot);
 
-            e.AssertNode(NodeKind.Program);
+            e.AssertNode(NodeKind.AstRoot);
                 e.AssertNode(NodeKind.StatementBlock);
                     e.AssertNode(NodeKind.VariableAssignment);
                         e.AssertToken(SyntaxTokenType.ID, "a");
@@ -50,12 +50,12 @@ namespace Kostic017.Pigeon.Tests
                 for i = 1 to 10
                     j = i + 1
             ";
-            var syntaxTree = SyntaxTree.Parse(text);
-            Assert.Empty(syntaxTree.ParserErrors);
+            var analysisResult = Interpreter.Analyze(text);
+            Assert.Empty(analysisResult.Errors.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Root);
+            using var e = new AssertingEnumerator(analysisResult.AstRoot);
 
-            e.AssertNode(NodeKind.Program);
+            e.AssertNode(NodeKind.AstRoot);
                 e.AssertNode(NodeKind.StatementBlock);
                     e.AssertNode(NodeKind.ForStatement);
                         e.AssertToken(SyntaxTokenType.ID, "i");
@@ -83,12 +83,12 @@ namespace Kostic017.Pigeon.Tests
                 while i > 4
                     i = i + 1
             ";
-            var syntaxTree = SyntaxTree.Parse(text);
-            Assert.Empty(syntaxTree.ParserErrors);
+            var analysisResult = Interpreter.Analyze(text);
+            Assert.Empty(analysisResult.Errors.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Root);
+            using var e = new AssertingEnumerator(analysisResult.AstRoot);
 
-            e.AssertNode(NodeKind.Program);
+            e.AssertNode(NodeKind.AstRoot);
                 e.AssertNode(NodeKind.StatementBlock);
                     e.AssertNode(NodeKind.WhileStatement);
                         e.AssertNode(NodeKind.BinaryExpression);
@@ -117,12 +117,12 @@ namespace Kostic017.Pigeon.Tests
                     i = i + 1
                 while i > 4
             ";
-            var syntaxTree = SyntaxTree.Parse(text);
-            Assert.Empty(syntaxTree.ParserErrors);
+            var analysisResult = Interpreter.Analyze(text);
+            Assert.Empty(analysisResult.Errors.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Root);
+            using var e = new AssertingEnumerator(analysisResult.AstRoot);
 
-            e.AssertNode(NodeKind.Program);
+            e.AssertNode(NodeKind.AstRoot);
                 e.AssertNode(NodeKind.StatementBlock);
                     e.AssertNode(NodeKind.DoWhileStatement);
                         e.AssertNode(NodeKind.StatementBlock);
@@ -158,12 +158,12 @@ namespace Kostic017.Pigeon.Tests
                 }
             ";
 
-            var syntaxTree = SyntaxTree.Parse(text);
-            Assert.Empty(syntaxTree.ParserErrors);
+            var analysisResult = Interpreter.Analyze(text);
+            Assert.Empty(analysisResult.Errors.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Root);
+            using var e = new AssertingEnumerator(analysisResult.AstRoot);
 
-            e.AssertNode(NodeKind.Program);
+            e.AssertNode(NodeKind.AstRoot);
                 e.AssertNode(NodeKind.StatementBlock);
                     e.AssertNode(NodeKind.IfStatement); // if 1
                         e.AssertNode(NodeKind.ParenthesizedExpression);
@@ -228,12 +228,12 @@ namespace Kostic017.Pigeon.Tests
         [InlineData("!(true == true)", "(!(true == true))")]
         public void ParseExpression(string text, string expected)
         {
-            var syntaxTree = SyntaxTree.Parse("i = " + text);
-            Assert.Empty(syntaxTree.Errors);
+            var analysisResult = Interpreter.Analyze(text);
+            Assert.Empty(analysisResult.Errors.ParserErrors);
 
-            using var e = new AssertingEnumerator(syntaxTree.Root, false);
+            using var e = new AssertingEnumerator(analysisResult.AstRoot);
 
-            e.AssertNode(NodeKind.Program);
+            e.AssertNode(NodeKind.AstRoot);
             e.AssertNode(NodeKind.StatementBlock);
             e.AssertNode(NodeKind.VariableAssignment);
                 e.AssertToken(SyntaxTokenType.ID, "i");

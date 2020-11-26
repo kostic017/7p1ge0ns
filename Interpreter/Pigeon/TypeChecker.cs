@@ -3,7 +3,6 @@ using Kostic017.Pigeon.Errors;
 using Kostic017.Pigeon.TAST;
 using Kostic017.Pigeon.Symbols;
 using System.Linq;
-using System;
 using System.Collections.Generic;
 
 namespace Kostic017.Pigeon
@@ -11,25 +10,21 @@ namespace Kostic017.Pigeon
     public class TypeChecker
     {
         private TypedScope scope;
-        private readonly CodeErrorBag errorBag;
+        private readonly AstRoot astRoot;
+     
+        internal CodeErrorBag ErrorBag { get; }
 
-        internal TypeChecker()
+        internal TypeChecker(AstRoot astRoot)
         {
+            this.astRoot = astRoot;
             scope = new TypedScope(null);
-            errorBag = new CodeErrorBag();
+            ErrorBag = new CodeErrorBag();
         }
 
-        public static AnalysisResult Anaylize(SyntaxTree syntaxTree)
+        internal TypedAstRoot Anaylize()
         {
-            var analyzer = new TypeChecker();
-            var program = analyzer.AnalyzeProgram(syntaxTree.Root);
-            return new AnalysisResult(program, analyzer.errorBag.Errors);
-        }
-
-        private TypedProgram AnalyzeProgram(Program program)
-        {
-            var statementBlock = (TypedStatementBlock) AnalyzeStatement(program.StatementBlock);
-            return new TypedProgram(statementBlock);
+            var statementBlock = (TypedStatementBlock) AnalyzeStatement(astRoot.StatementBlock);
+            return new TypedAstRoot(statementBlock);
         }
 
         private TypedStatement AnalyzeStatement(Statement node)
@@ -115,7 +110,7 @@ namespace Kostic017.Pigeon
             
             if (!scope.TryDeclare(variable))
             {
-                errorBag.ReportVariableAlreadyDefined(node.IdentifierToken.TextSpan, variable.Name);
+                ErrorBag.ReportVariableAlreadyDefined(node.IdentifierToken.TextSpan, variable.Name);
                 return new TypedErrorStatement();
             }
           
@@ -126,13 +121,13 @@ namespace Kostic017.Pigeon
         {
             if (!scope.TryLookup(node.IdentifierToken.Value, out var variable))
             {
-                errorBag.ReportVariableNotDefined(node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
+                ErrorBag.ReportVariableNotDefined(node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
                 return new TypedErrorStatement();
             }
             
             if (variable.ReadOnly)
             {
-                errorBag.ReportModifyingReadOnlyVariable(node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
+                ErrorBag.ReportModifyingReadOnlyVariable(node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
                 return new TypedErrorStatement();
             }
             
@@ -140,7 +135,7 @@ namespace Kostic017.Pigeon
 
             if (!TypedAssignmentOperator.TryBind(node.Op.Type, variable.Type, value.Type, out var typedOperator))
             {
-                errorBag.ReportInvalidTypeAssignment(node.Op.TextSpan, variable.Name, variable.Type, value.Type);
+                ErrorBag.ReportInvalidTypeAssignment(node.Op.TextSpan, variable.Name, variable.Type, value.Type);
                 return new TypedErrorStatement();
             }
        
@@ -152,7 +147,7 @@ namespace Kostic017.Pigeon
             var expression = AnalyzeExpression(node);
             if (expression.Type != expectedType)
             {
-                errorBag.ReportUnexpectedType(node.TextSpan, expectedType, expression.Type);
+                ErrorBag.ReportUnexpectedType(node.TextSpan, expectedType, expression.Type);
                 return new TypedErrorExpression();
             }
             return expression;
@@ -185,12 +180,12 @@ namespace Kostic017.Pigeon
         {
             if (!BuiltinFunctions.TryLookup(node.NameToken.Value, out var function))
             {
-                errorBag.ReportFunctionNotDefined(node.NameToken.TextSpan, node.NameToken.Value);
+                ErrorBag.ReportFunctionNotDefined(node.NameToken.TextSpan, node.NameToken.Value);
                 return new TypedErrorExpression();
             }
             if (function.Symbol.Parameters.Length != node.Arguments.Length)
             {
-                errorBag.ReportInvalidNumberOfParameters(node.TextSpan, function.Symbol.Parameters.Length);
+                ErrorBag.ReportInvalidNumberOfParameters(node.TextSpan, function.Symbol.Parameters.Length);
                 return new TypedErrorExpression();
             }
             var arguments = new List<TypedExpression>();
@@ -200,7 +195,7 @@ namespace Kostic017.Pigeon
                 var argument = AnalyzeExpression(node.Arguments[i].Value);
                 if (argument.Type != expectedType)
                 {
-                    errorBag.ReportInvalidParameterType(node.TextSpan, i + 1, expectedType);
+                    ErrorBag.ReportInvalidParameterType(node.TextSpan, i + 1, expectedType);
                     return new TypedErrorExpression();
                 }
                 arguments.Add(argument);
@@ -212,7 +207,7 @@ namespace Kostic017.Pigeon
         {
             if (!scope.TryLookup(node.IdentifierToken.Value, out var variable))
             {
-                errorBag.ReportVariableNotDefined(node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
+                ErrorBag.ReportVariableNotDefined(node.IdentifierToken.TextSpan, node.IdentifierToken.Value);
                 return new TypedErrorExpression();
             }
             return new TypedVariableExpression(variable);
@@ -232,7 +227,7 @@ namespace Kostic017.Pigeon
 
             if (!TypedUnaryOperator.TryBind(node.Op.Type, operand.Type, out var typedOperator))
             {
-                errorBag.ReportInvalidTypeUnaryOperand(node.Op.TextSpan, node.Op.Type, operand.Type);
+                ErrorBag.ReportInvalidTypeUnaryOperand(node.Op.TextSpan, node.Op.Type, operand.Type);
                 return new TypedErrorExpression();
             }
             
@@ -249,7 +244,7 @@ namespace Kostic017.Pigeon
             
             if (!TypedBinaryOperator.TryBind(node.Op.Type, left.Type, right.Type, out var typedOperator))
             {
-                errorBag.ReportInvalidTypeBinaryOperand(node.Op.TextSpan, node.Op.Type, left.Type, right.Type);
+                ErrorBag.ReportInvalidTypeBinaryOperand(node.Op.TextSpan, node.Op.Type, left.Type, right.Type);
                 return new TypedErrorExpression();
             }
 

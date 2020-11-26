@@ -1,14 +1,14 @@
 ﻿namespace Kostic017.Pigeon.TAST
 {
-    class TypedProgram : TypedAstNode
+    class TypedAstRoot : TypedAstNode
     {
         internal TypedStatementBlock StatementBlock { get; }
 
-        internal TypedProgram(TypedStatementBlock statementBlock)
+        internal TypedAstRoot(TypedStatementBlock statementBlock)
         {
             StatementBlock = statementBlock;
         }
         
-        internal override NodeKind Kind => NodeKind.Program;
+        internal override NodeKind Kind => NodeKind.AstRoot;
     }
 }

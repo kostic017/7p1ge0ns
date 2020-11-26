@@ -2,7 +2,7 @@
 
 namespace Kostic017.Pigeon.AST
 {
-    internal abstract class Expression : AstNode
+    internal abstract class Expression : SyntaxNode
     {
         public override string ToString()
         {
@@ -11,7 +11,7 @@ namespace Kostic017.Pigeon.AST
             return writer.ToString();
         }
 
-        private static void Print(AstNode node, TextWriter writer)
+        private static void Print(SyntaxNode node, TextWriter writer)
         {
             switch (node.Kind)
             {

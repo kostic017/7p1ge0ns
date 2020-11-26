@@ -31,7 +31,7 @@ namespace Kostic017.Pigeon.AST
 
         internal override NodeKind Kind => NodeKind.FunctionCallExpression;
 
-        internal override IEnumerable<AstNode> GetChildren()
+        internal override IEnumerable<SyntaxNode> GetChildren()
         {
             yield return new SyntaxTokenWrap(NameToken);
             yield return new SyntaxTokenWrap(LParToken);

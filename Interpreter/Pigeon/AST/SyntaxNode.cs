@@ -3,12 +3,11 @@ using System.Linq;
 
 namespace Kostic017.Pigeon.AST
 {
-    abstract class AstNode
+    abstract class SyntaxNode
     {
         /// <summary>
         /// Returns text span information about a node. It's most useful with expressions.
-        /// Other nodes are "abstract" and don't contain all related tokens as children,
-        /// so text span would not cover the entire node.
+        /// Other nodes are "abstract" so text span would not cover the entire node.
         /// </summary>
         internal virtual TextSpan TextSpan
         {
@@ -21,6 +20,6 @@ namespace Kostic017.Pigeon.AST
         }
 
         internal abstract NodeKind Kind { get; }
-        internal abstract IEnumerable<AstNode> GetChildren();
+        internal abstract IEnumerable<SyntaxNode> GetChildren();
     }
 }

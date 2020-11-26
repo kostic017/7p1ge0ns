@@ -14,7 +14,7 @@ namespace Kostic017.Pigeon.AST
         }
     }
 
-    class FunctionDeclarationNode : AstNode
+    class FunctionDeclarationNode : SyntaxNode
     {
         internal SyntaxToken Type { get; }
         internal SyntaxToken Name { get; }
@@ -29,7 +29,7 @@ namespace Kostic017.Pigeon.AST
 
         internal override NodeKind Kind => NodeKind.FunctionDeclaration;
 
-        internal override IEnumerable<AstNode> GetChildren()
+        internal override IEnumerable<SyntaxNode> GetChildren()
         {
             yield return new SyntaxTokenWrap(Type);
             yield return new SyntaxTokenWrap(Name);

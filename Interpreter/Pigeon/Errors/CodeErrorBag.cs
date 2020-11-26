@@ -4,10 +4,11 @@ using System.Linq;
 
 namespace Kostic017.Pigeon.Errors
 {
-    public class CodeErrorBag
+    internal class CodeErrorBag
     {
-        readonly List<CodeError> errors;
-        public CodeError[] Errors => errors.ToArray();
+        private readonly List<CodeError> errors;
+
+        internal CodeError[] Errors => errors.ToArray();
 
         internal CodeErrorBag()
         {

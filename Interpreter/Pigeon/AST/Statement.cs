@@ -1,6 +1,6 @@
 ﻿namespace Kostic017.Pigeon.AST
 {
-    abstract class Statement : AstNode
+    abstract class Statement : SyntaxNode
     {
     }
 }

@@ -17,7 +17,7 @@ namespace Kostic017.Pigeon.AST
 
         internal override NodeKind Kind => NodeKind.ParenthesizedExpression;
 
-        internal override IEnumerable<AstNode> GetChildren()
+        internal override IEnumerable<SyntaxNode> GetChildren()
         {
             yield return new SyntaxTokenWrap(LeftParen);
             yield return Expression;

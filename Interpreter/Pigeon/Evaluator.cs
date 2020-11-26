@@ -5,19 +5,20 @@ using System.Collections.Generic;
 
 namespace Kostic017.Pigeon
 {
-    public class Evaluator
+    class Evaluator
     {
         private readonly Stack<Scope> scopes;
+        private readonly TypedAstRoot typedAstRoot;
 
-        public Evaluator()
+        internal Evaluator(TypedAstRoot typedAstRoot)
         {
             scopes = new Stack<Scope>();
+            this.typedAstRoot = typedAstRoot;
         }
 
-        public static void Evaluate(AnalysisResult analysisResult)
+        internal void Evaluate()
         {
-            var evaluator = new Evaluator();
-            evaluator.EvaluateStatement(analysisResult.Program.StatementBlock);
+            EvaluateStatement(typedAstRoot.StatementBlock);
         }
 
         private void AssignValue(VariableSymbol variable, object value)

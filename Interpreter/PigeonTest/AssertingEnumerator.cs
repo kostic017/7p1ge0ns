@@ -10,9 +10,9 @@ namespace Kostic017.Pigeon.Tests
     {
         bool assertEmpty;
 
-        readonly IEnumerator<AstNode> enumerator;
+        readonly IEnumerator<SyntaxNode> enumerator;
 
-        internal AssertingEnumerator(AstNode root, bool assertEmpty = true)
+        internal AssertingEnumerator(SyntaxNode root, bool assertEmpty = true)
         {
             this.assertEmpty = assertEmpty;
             enumerator = Flatten(root).GetEnumerator();
@@ -44,7 +44,7 @@ namespace Kostic017.Pigeon.Tests
             }
         }
 
-        internal AstNode GetNext()
+        internal SyntaxNode GetNext()
         {
             Assert.True(enumerator.MoveNext());
             return enumerator.Current;
@@ -65,9 +65,9 @@ namespace Kostic017.Pigeon.Tests
             enumerator.Dispose();
         }
 
-        static IEnumerable<AstNode> Flatten(AstNode root)
+        static IEnumerable<SyntaxNode> Flatten(SyntaxNode root)
         {
-            var stack = new Stack<AstNode>();
+            var stack = new Stack<SyntaxNode>();
             stack.Push(root);
             while (stack.Count > 0)
             {

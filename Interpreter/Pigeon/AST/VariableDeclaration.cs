@@ -23,7 +23,7 @@ namespace Kostic017.Pigeon.AST
 
         internal override NodeKind Kind => NodeKind.VariableDeclaration;
 
-        internal override IEnumerable<AstNode> GetChildren()
+        internal override IEnumerable<SyntaxNode> GetChildren()
         {
             yield return new SyntaxTokenWrap(Keyword);
             yield return new SyntaxTokenWrap(IdentifierToken);

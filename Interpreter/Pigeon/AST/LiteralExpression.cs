@@ -15,7 +15,7 @@ namespace Kostic017.Pigeon.AST
 
         internal override NodeKind Kind => NodeKind.LiteralExpression;
 
-        internal override IEnumerable<AstNode> GetChildren()
+        internal override IEnumerable<SyntaxNode> GetChildren()
         {
             yield return new SyntaxTokenWrap(LiteralToken);
         }

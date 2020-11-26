@@ -10,18 +10,18 @@ namespace Kostic017.Pigeon.Tests
         [MemberData(nameof(GetTestData))]
         public void Lex(string text, Expected expected)
         {
-            var syntaxTree = SyntaxTree.Parse(text);
+            var analysisResult = Interpreter.Analyze(text);
             
             if (expected.TokenType != SyntaxTokenType.Illegal)
             {
-                Assert.Empty(syntaxTree.LexerErrors);
+                Assert.Empty(analysisResult.Errors.LexerErrors);
             }
             else
             {
-                Assert.Equal(CodeErrorType.UNEXPECTED_CHARACTER, syntaxTree.LexerErrors[0].Type);
+                Assert.Equal(CodeErrorType.UNEXPECTED_CHARACTER, analysisResult.Errors.LexerErrors[0].Type);
             }
     
-            var tokens = syntaxTree.Tokens;
+            var tokens = analysisResult.Tokens;
 
             Assert.True(tokens.Length > 0 && tokens.Length <= 2);
 

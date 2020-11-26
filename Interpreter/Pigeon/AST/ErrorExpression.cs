@@ -6,6 +6,6 @@ namespace Kostic017.Pigeon.AST
     class ErrorExpression : Expression
     {
         internal override NodeKind Kind => NodeKind.ErrorExpression;
-        internal override IEnumerable<AstNode> GetChildren() => Enumerable.Empty<AstNode>();
+        internal override IEnumerable<SyntaxNode> GetChildren() => Enumerable.Empty<SyntaxNode>();
     }
 }
