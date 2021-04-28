@@ -32,7 +32,14 @@ namespace Kostic017.Pigeon
 
         public static void Register(string prototype, BuiltinFunc action)
         {
-            var parts = prototype.TrimEnd(')').Split('(');
+            /*
+            "          int         add          (               int         ,       int                )            "
+            
+            "int         add          "
+            "               int         ,       int                "
+            */
+
+            var parts = prototype.Trim().TrimEnd(')').Split('(');
             var leftPart = parts[0].Split(' ');
 
             var returnTypeName = leftPart[0].Trim();
