@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Kostic017.Pigeon
 {
-    class Lexer
+    class MyLexer
     {
         private int line;
         private int column;
@@ -22,7 +22,7 @@ namespace Kostic017.Pigeon
 
         internal CodeErrorBag ErrorBag { get; }
 
-        internal Lexer(string code, int tabSize)
+        internal MyLexer(string code, int tabSize)
         {
             line = 1;
             index = 0;

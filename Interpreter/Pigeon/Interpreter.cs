@@ -6,9 +6,9 @@ namespace Kostic017.Pigeon
     {
         public static AnalysisResult Analyze(string code, int tabSize = 4)
         {
-            var lexer = new Lexer(code, tabSize);
+            var lexer = new MyLexer(code, tabSize);
             var tokens = lexer.Lex();
-            var parser = new Parser(tokens);
+            var parser = new MyParser(tokens);
             var ast = parser.Parse();
             var typeChecker = new TypeChecker(ast);
             var typedAst = typeChecker.Anaylize();

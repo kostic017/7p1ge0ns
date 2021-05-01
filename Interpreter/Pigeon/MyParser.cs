@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Kostic017.Pigeon
 {
-    class Parser
+    class MyParser
     {
         private int index;
         
@@ -18,7 +18,7 @@ namespace Kostic017.Pigeon
 
         internal CodeErrorBag ErrorBag { get; }
 
-        internal Parser(SyntaxToken[] syntaxTokens)
+        internal MyParser(SyntaxToken[] syntaxTokens)
         {
             index = 0;
             tokens = syntaxTokens.Where(token => token.Type != SyntaxTokenType.Comment && token.Type != SyntaxTokenType.BlockComment).ToArray();
