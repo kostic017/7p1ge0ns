@@ -1,4 +1,5 @@
-﻿using Kostic017.Pigeon;
+﻿using Antlr4.Runtime;
+using Kostic017.Pigeon;
 using System;
 using System.Linq;
 using System.Text;
@@ -40,18 +41,12 @@ namespace TestProject
                     line = Console.ReadLine();
                 }
                 
-                var analysisResult = Interpreter.Analyze(sb.ToString());
-
-                if (showTree)
-                    analysisResult.PrintTree(Console.Out);
-                
-                foreach (var error in analysisResult.Errors.AllErrors)
-                    Console.WriteLine(error);
-
-                if (analysisResult.Errors.AllErrors.Count() == 0)
-                    Interpreter.Evaluate(analysisResult);
-
-                Console.WriteLine();
+                var inputStream = new AntlrInputStream(sb.ToString());
+                var lexer = new PigeonLexer(inputStream);
+                var commonTokenStream = new CommonTokenStream(lexer);
+                var parser = new PigeonParser(commonTokenStream);
+                var tree = parser.program();
+                Console.WriteLine(tree.ToStringTree(parser));
             }
         }
 
