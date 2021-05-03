@@ -11,26 +11,31 @@ varDecl
     ;
 
 varAssign
-    : expr '=' expr ';'
-    | expr '+=' expr ';'
-    | expr '-=' expr ';'
-    | expr '*=' expr ';'
-    | expr '/=' expr ';'
-    | expr '%=' expr ';'
-    | expr '^=' expr ';'
+    : variable op='=' expr ';'
+    | variable op='+=' expr ';'
+    | variable op='-=' expr ';'
+    | variable op='*=' expr ';'
+    | variable op='/=' expr ';'
+    | variable op='%=' expr ';'
+    | variable op='^=' expr ';'
+    ;
+
+variable
+    : ID
+    | ID '[' expr ']'
     ;
 
 stmt
-    : varDecl                                             # variableDeclaration
-    | varAssign                                           # variableAsignment
-    | functionCall ';'                                     # functionCallStatement
-    | 'return' expr ';'                                    # returnStatement
-    | 'break' ';'                                          # breakStatement
-    | 'continue' ';'                                       # continueStatement
-    | 'while' expr stmtBlock                               # whileStatement
-    | 'do' stmtBlock 'while' expr                          # doWhileStatement
-    | 'if' expr stmtBlock ('else' stmtBlock)?              # ifStatement
-    | 'for' ID '=' expr ('to'|'downto') expr stmtBlock     # forStatement
+    : varDecl                                          # variableDeclaration
+    | varAssign                                        # variableAsignment
+    | functionCall ';'                                 # functionCallStatement
+    | 'return' expr ';'                                # returnStatement
+    | 'break' ';'                                      # breakStatement
+    | 'continue' ';'                                   # continueStatement
+    | 'while' expr stmtBlock                           # whileStatement
+    | 'do' stmtBlock 'while' expr                      # doWhileStatement
+    | 'if' expr stmtBlock ('else' stmtBlock)?          # ifStatement
+    | 'for' ID '=' expr ('to'|'downto') expr stmtBlock # forStatement
     ;
 
 stmtBlock
@@ -40,34 +45,37 @@ stmtBlock
     ;
 
 expr
-    : ID                                      # variableReference
-    | BOOL                                    # boolLiteral
-    | NUMBER                                  # numberLiteral
-    | STRING                                  # stringLiteral
-    | '(' expr ')'                            # parenthesizedExpression
-    | ID '[' expr ']'                         # arrayReference
-    | functionCall                            # functionCallExpression
-    | op='-' expr                             # unaryExpression
-    | op='+' expr                             # unaryExpression
-    | op='!' expr                             # unaryExpression
-    |<assoc=right> expr '^' expr              # binaryExpression
-    | expr op='%' expr                        # binaryExpression
-    | expr op='/' expr                        # binaryExpression
-    | expr op='*' expr                        # binaryExpression
-    | expr op='+' expr                        # binaryExpression
-    | expr op='-' expr                        # binaryExpression
-    | expr op='<=' expr                       # binaryExpression
-    | expr op='>=' expr                       # binaryExpression
-    | expr op='<' expr                        # binaryExpression
-    | expr op='>' expr                        # binaryExpression
-    | expr op='==' expr                       # binaryExpression
-    | expr op='!=' expr                       # binaryExpression
-    | expr op='&&' expr                       # binaryExpression
-    | expr op='||' expr                       # binaryExpression
-    | expr '?' expr ':' expr                  # ternaryExpression
+    : BOOL                                # boolLiteral
+    | NUMBER                              # numberLiteral
+    | STRING                              # stringLiteral
+    | variable                            # variableExpression
+    | '(' expr ')'                        # parenthesizedExpression
+    | functionCall                        # functionCallExpression
+    | op='-' expr                         # unaryExpression
+    | op='+' expr                         # unaryExpression
+    | op='!' expr                         # unaryExpression
+    |<assoc=right> expr '^' expr          # binaryExpression
+    | expr op='%' expr                    # binaryExpression
+    | expr op='/' expr                    # binaryExpression
+    | expr op='*' expr                    # binaryExpression
+    | expr op='+' expr                    # binaryExpression
+    | expr op='-' expr                    # binaryExpression
+    | expr op='<=' expr                   # binaryExpression
+    | expr op='>=' expr                   # binaryExpression
+    | expr op='<' expr                    # binaryExpression
+    | expr op='>' expr                    # binaryExpression
+    | expr op='==' expr                   # binaryExpression
+    | expr op='!=' expr                   # binaryExpression
+    | expr op='&&' expr                   # binaryExpression
+    | expr op='||' expr                   # binaryExpression
+    |<assoc=right> expr '?' expr ':' expr # ternaryExpression
     ;
 
 exprList : expr (',' expr)* ;
+
+COMMENT : ('//' .*? '\r'? '\n' | '/*' .*? '*/') -> channel(HIDDEN) ;
+
+STRING : '"' (ESCAPE|.)*? '"' ;
 
 BOOL
     : 'true'
@@ -81,8 +89,6 @@ TYPE
     | 'bool'
     | 'void'
     ;
-
-STRING : '"' ('\\"'|.)*? '"' ;
 
 NUMBER
     : DIGIT+
@@ -98,3 +104,11 @@ DIGIT : [0-9] ;
 
 fragment
 LETTER : [a-zA-Z] ;
+
+fragment
+ESCAPE
+    : '\\"'
+    | '\\n'
+    | '\\t'
+    | '\\\\'
+    ;

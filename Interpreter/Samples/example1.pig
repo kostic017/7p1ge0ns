@@ -1,3 +1,9 @@
+// example text
+
+/*
+ * lorem ipsum dolor
+ */
+
 const int N_1 = 4;
 const int N_2 = 5;
 
