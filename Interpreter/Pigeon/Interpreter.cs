@@ -1,9 +1,8 @@
-﻿using Kostic017.Pigeon.Errors;
-
-namespace Kostic017.Pigeon
+﻿namespace Kostic017.Pigeon
 {
     public static class Interpreter
     {
+/*
         public static AnalysisResult Analyze(string code, int tabSize = 4)
         {
             var lexer = new MyLexer(code, tabSize);
@@ -23,5 +22,6 @@ namespace Kostic017.Pigeon
             var evaluator = new Evaluator(analysisResult.TypedAstRoot);
             evaluator.Evaluate();
         }
+*/
     }
 }

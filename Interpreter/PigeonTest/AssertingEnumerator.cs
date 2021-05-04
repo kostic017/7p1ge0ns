@@ -1,13 +1,8 @@
-﻿using Kostic017.Pigeon.AST;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Xunit;
-
-namespace Kostic017.Pigeon.Tests
+﻿namespace Kostic017.Pigeon.Tests
 {
-    class AssertingEnumerator : IDisposable
+    class AssertingEnumerator// : IDisposable
     {
+/*
         bool assertEmpty;
 
         readonly IEnumerator<SyntaxNode> enumerator;
@@ -79,5 +74,6 @@ namespace Kostic017.Pigeon.Tests
                 }
             }
         }
+*/
     }
 }

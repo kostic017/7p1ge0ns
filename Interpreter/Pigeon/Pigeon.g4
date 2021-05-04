@@ -6,8 +6,8 @@ functionParams : TYPE ID (',' TYPE ID)* ;
 functionCall : ID '(' exprList? ')' ;
 
 varDecl
-    : TYPE ID ('=' expr)? ';'
-    | 'const' TYPE ID '=' expr ';'
+    : 'let' ID '=' expr ';'
+    | 'const' ID '=' expr ';'
     ;
 
 varAssign

@@ -18,7 +18,7 @@ namespace Kostic017.Pigeon
         }
     }
 
-    public static class BuiltinFunctions
+    public static class PigeonBuiltins
     {
         private static readonly Dictionary<string, BuiltinFunctionDeclaration> functions
             = new Dictionary<string, BuiltinFunctionDeclaration>();
@@ -30,7 +30,7 @@ namespace Kostic017.Pigeon
             return false;
         }
 
-        public static void Register(string prototype, BuiltinFunc action)
+        public static void RegisterFunction(string prototype, BuiltinFunc action)
         {
             /*
             "          int         add          (               int         ,       int                )            "

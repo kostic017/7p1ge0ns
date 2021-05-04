@@ -1,7 +1,7 @@
 ﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Misc;
 using Kostic017.Pigeon;
 using System;
-using System.Linq;
 using System.Text;
 
 namespace TestProject
@@ -10,10 +10,8 @@ namespace TestProject
     {
         static void Main()
         {
-            BuiltinFunctions.Register("int add(int, int)", Add);
-            BuiltinFunctions.Register("void print(int)", Print);
-
-            bool showTree = false;
+            PigeonBuiltins.RegisterFunction("int add(int, int)", Add);
+            PigeonBuiltins.RegisterFunction("void print(int)", Print);
 
             while (true)
             {
@@ -22,16 +20,10 @@ namespace TestProject
 
                 string line = Console.ReadLine();
 
-                switch (line)
+                if (line == "#cls")
                 {
-                    case "#quit":
-                        return;
-                    case "#showTree":
-                        showTree = !showTree;
-                        break;
-                    case "#cls":
-                        Console.Clear();
-                        continue;
+                    Console.Clear();
+                    continue;
                 }
 
                 while (!string.IsNullOrWhiteSpace(line))
@@ -40,13 +32,15 @@ namespace TestProject
                     Console.Write("| ");
                     line = Console.ReadLine();
                 }
-                
+
+                Console.WriteLine();
                 var inputStream = new AntlrInputStream(sb.ToString());
                 var lexer = new PigeonLexer(inputStream);
-                var commonTokenStream = new CommonTokenStream(lexer);
-                var parser = new PigeonParser(commonTokenStream);
-                var tree = parser.program();
-                Console.WriteLine(tree.ToStringTree(parser));
+                var tokenStream = new CommonTokenStream(lexer);
+                var parser = new PigeonParser(tokenStream);
+                parser.AddErrorListener(ConsoleErrorListener.Instance);
+                parser.program().PrintTree(Console.Out, parser.RuleNames);
+                Console.WriteLine();
             }
         }
 
@@ -59,6 +53,16 @@ namespace TestProject
         private static object Add(object[] arg)
         {
             return (int)arg[0] + (int)arg[1];
+        }
+    }
+    
+    // TODO this class should be part of the ANTLR4 runtime??
+    class ConsoleErrorListener : BaseErrorListener
+    {
+        public static readonly ConsoleErrorListener Instance = new ConsoleErrorListener();
+        public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
+        {
+            Console.WriteLine("line " + line + ":" + charPositionInLine + " " + msg);
         }
     }
 }

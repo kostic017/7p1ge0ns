@@ -1,14 +1,8 @@
-﻿using Kostic017.Pigeon.AST;
-using Kostic017.Pigeon.Errors;
-using Kostic017.Pigeon.TAST;
-using Kostic017.Pigeon.Symbols;
-using System.Linq;
-using System.Collections.Generic;
-
-namespace Kostic017.Pigeon
+﻿namespace Kostic017.Pigeon
 {
     public class TypeChecker
     {
+/*
         private TypedScope scope;
         private readonly AstRoot astRoot;
      
@@ -255,5 +249,6 @@ namespace Kostic017.Pigeon
         {
             return AnalyzeExpression(node.Expression);
         }
+*/
     }
 }

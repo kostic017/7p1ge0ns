@@ -1,12 +1,8 @@
-﻿using Kostic017.Pigeon.Errors;
-using Kostic017.Pigeon.Symbols;
-using Kostic017.Pigeon.TAST;
-using System.Collections.Generic;
-
-namespace Kostic017.Pigeon
+﻿namespace Kostic017.Pigeon
 {
     class Evaluator
     {
+/*
         private readonly Stack<Scope> scopes;
         private readonly TypedAstRoot typedAstRoot;
 
@@ -319,5 +315,6 @@ namespace Kostic017.Pigeon
             }
 
         }
+*/
     }
 }
