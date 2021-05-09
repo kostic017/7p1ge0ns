@@ -2,10 +2,10 @@
 {
     class FunctionSymbol : Symbol
     {
-        internal TypeSymbol ReturnType { get; }
-        internal VariableSymbol[] Parameters { get; }
+        internal PigeonType ReturnType { get; }
+        internal Variable[] Parameters { get; }
 
-        internal FunctionSymbol(TypeSymbol returnType, string name, VariableSymbol[] parameters) : base(name)
+        internal FunctionSymbol(PigeonType returnType, string name, Variable[] parameters) : base(name)
         {
             ReturnType = returnType;
             Parameters = parameters;

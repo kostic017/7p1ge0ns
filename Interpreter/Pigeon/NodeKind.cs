@@ -2,7 +2,7 @@
 {
     enum NodeKind
     {
-        AstRoot,
+        Error,
         StatementBlock,
         BinaryExpression,
         VariableExpression,
@@ -16,11 +16,10 @@
         WhileStatement,
         ForStatement,
         DoWhileStatement,
-        ErrorExpression,
-        ErrorStatement,
         PowerExpression,
         ExpressionStatement,
         FunctionCallExpression,
         FunctionDeclaration,
+        ContinueStatement,
     }
 }

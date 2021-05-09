@@ -5,21 +5,31 @@ namespace Kostic017.Pigeon
 {
     class Scope
     {
-        readonly Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
+        internal Scope Parent { get; }
+        
+        readonly Dictionary<string, Variable> variables = new Dictionary<string, Variable>();
 
-        internal void Declare(VariableSymbol variable, object value)
+        internal Scope(Scope parent)
         {
-            variables.Add(variable, value);
+            Parent = parent;
         }
 
-        internal void Assign(VariableSymbol variable, object value)
+        internal void Declare(PigeonType type, string name, bool readOnly)
         {
-            variables[variable] = value;
+            variables.Add(name, new Variable(type, name, readOnly));
         }
 
-        internal object Evaluate(VariableSymbol variable)
+        internal bool TryLookup(string name, out Variable variable)
         {
-            return variables[variable];
+            variable = null;
+            var scope = this;
+            while (scope != null)
+            {
+                if (scope.variables.TryGetValue(name, out variable))
+                    return true;
+                scope = scope.Parent;
+            }
+            return false;
         }
     }
 }

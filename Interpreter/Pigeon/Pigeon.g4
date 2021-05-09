@@ -3,11 +3,12 @@ grammar Pigeon;
 program : (varDecl | functionDecl)+ EOF ;
 functionDecl : TYPE ID '(' functionParams? ')' stmtBlock ;
 functionParams : TYPE ID (',' TYPE ID)* ;
-functionCall : ID '(' exprList? ')' ;
+functionCall : ID '(' functionArgs? ')' ;
+functionArgs : expr (',' expr)* ;
 
 varDecl
-    : 'let' ID '=' expr ';'
-    | 'const' ID '=' expr ';'
+    : accessType='let' ID '=' expr ';'
+    | accessType='const' ID '=' expr ';'
     ;
 
 varAssign
@@ -71,11 +72,9 @@ expr
     |<assoc=right> expr '?' expr ':' expr # ternaryExpression
     ;
 
-exprList : expr (',' expr)* ;
+STRING : '"' (ESCAPE|.)*? '"' ;
 
 COMMENT : ('//' .*? '\r'? '\n' | '/*' .*? '*/') -> channel(HIDDEN) ;
-
-STRING : '"' (ESCAPE|.)*? '"' ;
 
 BOOL
     : 'true'

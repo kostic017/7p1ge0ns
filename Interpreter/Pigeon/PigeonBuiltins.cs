@@ -45,18 +45,18 @@ namespace Kostic017.Pigeon
             var returnTypeName = leftPart[0].Trim();
             var functionName = leftPart[1].Trim();
 
-            var returnType = TypeSymbol.FromName(returnTypeName);
-            if (returnType == TypeSymbol.Error)
+            var returnType = PigeonType.FromName(returnTypeName);
+            if (returnType == PigeonType.Error)
                 throw new IllegalUsageException($"Unsupported return type {returnTypeName}");
 
-            var parameters = new List<VariableSymbol>();
+            var parameters = new List<Variable>();
             foreach (var parameter in parts[1].Split(','))
             {
                 var parameterTypeName = parameter.Trim();
-                var parameterType = TypeSymbol.FromName(parameterTypeName);
-                if (parameterType == TypeSymbol.Error)
+                var parameterType = PigeonType.FromName(parameterTypeName);
+                if (parameterType == PigeonType.Error)
                     throw new IllegalUsageException($"Unsupported parameter type {parameterTypeName}");
-                parameters.Add(new VariableSymbol("", parameterType, true));
+                parameters.Add(new Variable("", parameterType, true));
             }
 
             var functionSymbol = new FunctionSymbol(returnType, functionName, parameters.ToArray());

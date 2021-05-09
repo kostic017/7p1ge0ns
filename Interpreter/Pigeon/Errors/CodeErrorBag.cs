@@ -1,123 +1,82 @@
 ﻿using Kostic017.Pigeon.Symbols;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Kostic017.Pigeon.Errors
 {
     internal class CodeErrorBag
     {
-        //private readonly List<CodeError> errors;
+        readonly List<CodeError> errors;
 
-        //internal CodeError[] Errors => errors.ToArray();
+        internal CodeError[] Errors => errors.ToArray();
 
-        //internal CodeErrorBag()
-        //{
-        //    errors = new List<CodeError>();
-        //}
+        internal CodeErrorBag()
+        {
+            errors = new List<CodeError>();
+        }
 
-        //private void Report(CodeErrorType errorType, TextSpan textSpan, params string[] data)
-        //{
-        //    errors.Add(new CodeError(errorType, textSpan, data));
-        //}
+        void Report(string message, TextSpan textSpan)
+        {
+            errors.Add(new CodeError(message, textSpan));
+        }
 
-        //internal void ReportUnparseableNumber(TextSpan textSpan, string number)
-        //{
-        //    Report(CodeErrorType.UNPARSEABLE_NUMBER, textSpan, number);
-        //}
+        internal void ReportUndeclaredVariable(TextSpan textSpan, string name)
+        {
+            Report($"The variable '{name}' does not exist in the current contex", textSpan);
+        }
 
-        //internal void ReportUnterminatedString(TextSpan textSpan)
-        //{
-        //    Report(CodeErrorType.UNTERMINATED_STRING, textSpan);
-        //}
+        internal void ReportUndeclaredFunction(TextSpan textSpan, string name)
+        {
+            Report($"The function '{name}' does not exist in the current contex", textSpan);
+        }
 
-        //internal void ReportInvalidEscapeChar(TextSpan textSpan, string character)
-        //{
-        //    Report(CodeErrorType.INVALID_ESCAPE_CHAR, textSpan, character);
-        //}
+        internal void ReportVariableRedeclaration(TextSpan textSpan, string name)
+        {
+            Report($"The variable '{name}' is already defined in the current scope", textSpan);
+        }
 
-        //internal void ReportUnexpectedCharacter(TextSpan textSpan, string character)
-        //{
-        //    Report(CodeErrorType.UNEXPECTED_CHARACTER, textSpan, character);
-        //}
+        internal void ReportInvalidTypeAssignment(TextSpan textSpan, string variableName, PigeonType variableType, PigeonType valueType)
+        {
+            Report($"Variable '{variableName}' of type {variableType} cannot have value of type {valueType.Name}", textSpan);
+        }
 
-        //internal void ReportMissingExpectedToken(TextSpan textSpan, SyntaxTokenType[] tokenTypes)
-        //{
-        //    Report(CodeErrorType.MISSING_EXPECTED_TOKEN, textSpan, string.Join(", ", tokenTypes.Select(t => $"'{t.GetDescription()}'")));
-        //}
+        internal void ReportInvalidTypeUnaryOperator(TextSpan textSpan, string op, PigeonType type)
+        {
+            Report($"Operator {op} is not defined for type {type}", textSpan);
+        }
 
-        //internal void ReportInvalidExpressionTerm(TextSpan textSpan, SyntaxTokenType tokenType)
-        //{
-        //    Report(CodeErrorType.INVALID_EXPRESSION_TERM, textSpan, tokenType.GetDescription());
-        //}
+        internal void ReportInvalidTypeBinaryOperator(TextSpan textSpan, string op, PigeonType type1, PigeonType type2)
+        {
+            Report($"Operator {op} is not defined for types {type1} and {type2}", textSpan);
+        }
 
-        //internal void ReportUnterminatedCommentBlock(TextSpan textSpan)
-        //{
-        //    Report(CodeErrorType.UNTERMINATED_COMMENT_BLOCK, textSpan);
-        //}
+        internal void ReportInvalidTypeTernaryOperator(TextSpan textSpan, PigeonType type1, PigeonType type2)
+        {
+            Report($"Types {type1} and {type2} are not compatible", textSpan);
+        }
 
-        //internal void ReportUnterminatedStatementBlock(TextSpan textSpan)
-        //{
-        //    Report(CodeErrorType.UNTERMINATED_STATEMENT_BLOCK, textSpan);
-        //}
+        internal void ReportRedefiningReadOnlyVariable(TextSpan textSpan, string name)
+        {
+            Report($"Variable '{name}' is read-only", textSpan);
+        }
 
-        //internal void ReportLeftoverTokensFound(TextSpan textSpan)
-        //{
-        //    Report(CodeErrorType.LEFTOVER_TOKENS_FOUND, textSpan);
-        //}
+        internal void ReportUnexpectedType(TextSpan textSpan, PigeonType actualType, PigeonType expectedType)
+        {
+            Report($"Got value of type {actualType} instead of {expectedType}", textSpan);
+        }
 
-        //internal void ReportUnexpectedToken(TextSpan textSpan, SyntaxTokenType tokenType)
-        //{
-        //    Report(CodeErrorType.UNEXPECTED_TOKEN, textSpan, tokenType.GetDescription());
-        //}
+        internal void ReportInvalidNumberOfParameters(TextSpan textSpan, int numOfParm)
+        {
+            Report($"Expected {numOfParm} parameters", textSpan);
+        }
 
-        //internal void ReportVariableNotDefined(TextSpan textSpan, string name)
-        //{
-        //    Report(CodeErrorType.VARIABLE_NOT_DEFINED, textSpan, name);
-        //}
+        internal void ReportInvalidParameterType(TextSpan textSpan, int argCnt, PigeonType expectedType)
+        {
+            Report($"Argument {argCnt} should be of type {expectedType}", textSpan);
+        }
 
-        //internal void ReportVariableAlreadyDefined(TextSpan textSpan, string name)
-        //{
-        //    Report(CodeErrorType.VARIABLE_ALREADY_DEFINED, textSpan, name);
-        //}
-
-        //internal void ReportFunctionNotDefined(TextSpan textSpan, string name)
-        //{
-        //    Report(CodeErrorType.FUNCTION_NOT_DEFINED, textSpan, name);
-        //}
-
-        //internal void ReportInvalidTypeAssignment(TextSpan textSpan, string variableName, TypeSymbol variableType, TypeSymbol valueType)
-        //{
-        //    Report(CodeErrorType.INVALID_TYPE_ASSIGNMENT, textSpan, variableName, variableType.ToString(), valueType.ToString());
-        //}
-
-        //internal void ReportInvalidTypeUnaryOperand(TextSpan textSpan, SyntaxTokenType op, TypeSymbol type)
-        //{
-        //    Report(CodeErrorType.INVALID_TYPE_UNARY_OPERAND, textSpan, op.GetDescription(), type.ToString());
-        //}
-
-        //internal void ReportInvalidTypeBinaryOperand(TextSpan textSpan, SyntaxTokenType op, TypeSymbol type1, TypeSymbol type2)
-        //{
-        //    Report(CodeErrorType.INVALID_TYPE_BINARY_OPERAND, textSpan, op.GetDescription(), type1.ToString(), type2.ToString());
-        //}
-
-        //internal void ReportModifyingReadOnlyVariable(TextSpan textSpan, string name)
-        //{
-        //    Report(CodeErrorType.MODIFYING_READ_ONLY_VARIABLE, textSpan, name);
-        //}
-
-        //internal void ReportUnexpectedType(TextSpan textSpan, TypeSymbol expectedType, TypeSymbol actualType)
-        //{
-        //    Report(CodeErrorType.UNEXPECTED_TYPE, textSpan, expectedType.ToString(), actualType.ToString());
-        //}
-
-        //internal void ReportInvalidNumberOfParameters(TextSpan textSpan, int numOfParm)
-        //{
-        //    Report(CodeErrorType.INVALID_NUMBER_OF_PARAMETERS, textSpan, $"{numOfParm}");
-        //}
-
-        //internal void ReportInvalidParameterType(TextSpan textSpan, int argCnt, TypeSymbol expectedType)
-        //{
-        //    Report(CodeErrorType.INVALID_PARAMETER_TYPE, textSpan, $"{argCnt}", expectedType.Name);
-        //}
+        internal void ReportStatementNotInLoop(TextSpan textSpan, string statement)
+        {
+            Report($"{statement} should be in a loop", textSpan);
+        }
     }
 }
