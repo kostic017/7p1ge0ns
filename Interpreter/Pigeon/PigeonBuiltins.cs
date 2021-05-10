@@ -8,10 +8,10 @@ namespace Kostic017.Pigeon
 
     class BuiltinFunctionDeclaration
     {
-        internal FunctionSymbol Symbol { get; }
+        internal Function Symbol { get; }
         internal BuiltinFunc Action { get; }
 
-        internal BuiltinFunctionDeclaration(FunctionSymbol function, BuiltinFunc action)
+        internal BuiltinFunctionDeclaration(Function function, BuiltinFunc action)
         {
             Symbol = function;
             Action = action;
@@ -56,10 +56,10 @@ namespace Kostic017.Pigeon
                 var parameterType = PigeonType.FromName(parameterTypeName);
                 if (parameterType == PigeonType.Error)
                     throw new IllegalUsageException($"Unsupported parameter type {parameterTypeName}");
-                parameters.Add(new Variable("", parameterType, true));
+                parameters.Add(new Variable(parameterType, "", true));
             }
 
-            var functionSymbol = new FunctionSymbol(returnType, functionName, parameters.ToArray());
+            var functionSymbol = new Function(returnType, functionName, parameters.ToArray());
             functions.Add(functionName, new BuiltinFunctionDeclaration(functionSymbol, action));
         }
     }

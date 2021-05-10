@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 using Kostic017.Pigeon;
 using System;
 using System.Text;
@@ -39,7 +40,15 @@ namespace TestProject
                 var tokenStream = new CommonTokenStream(lexer);
                 var parser = new PigeonParser(tokenStream);
                 parser.AddErrorListener(ConsoleErrorListener.Instance);
-                parser.program().PrintTree(Console.Out, parser.RuleNames);
+                var tree = parser.program();
+                tree.PrintTree(Console.Out, parser.RuleNames);
+                var walker = new ParseTreeWalker();
+                var analyzer = new SemanticAnalyser();
+                walker.Walk(analyzer, tree);
+                
+                foreach (var error in analyzer.Errors)
+                    Console.WriteLine(error.ToString());
+                
                 Console.WriteLine();
             }
         }

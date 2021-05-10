@@ -5,7 +5,7 @@
         public string Message { get; }
         public TextSpan TextSpan { get; }
 
-        public CodeError(string message, TextSpan textSpan)
+        internal CodeError(string message, TextSpan textSpan)
         {
             Message = message;
             TextSpan = textSpan;

@@ -1,16 +1,16 @@
 ﻿namespace Kostic017.Pigeon.Symbols
 {
-    class FunctionSymbol : Symbol
+    class Function
     {
+        internal string Name { get; }
         internal PigeonType ReturnType { get; }
         internal Variable[] Parameters { get; }
 
-        internal FunctionSymbol(PigeonType returnType, string name, Variable[] parameters) : base(name)
+        internal Function(PigeonType returnType, string name, Variable[] parameters)
         {
+            Name = name;
             ReturnType = returnType;
             Parameters = parameters;
         }
-
-        internal override SymbolKind Kind => SymbolKind.Function;
     }
 }
