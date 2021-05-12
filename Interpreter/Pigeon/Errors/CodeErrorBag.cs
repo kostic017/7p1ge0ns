@@ -1,20 +1,14 @@
 ﻿using Kostic017.Pigeon.Symbols;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Kostic017.Pigeon.Errors
 {
-    internal class CodeErrorBag
+    internal class CodeErrorBag : IEnumerable<CodeError>
     {
-        readonly List<CodeError> errors;
+        private readonly List<CodeError> errors = new List<CodeError>();
 
-        internal CodeError[] Errors => errors.ToArray();
-
-        internal CodeErrorBag()
-        {
-            errors = new List<CodeError>();
-        }
-
-        void Report(string message, TextSpan textSpan)
+        internal void Report(string message, TextSpan textSpan)
         {
             errors.Add(new CodeError(message, textSpan));
         }
@@ -77,6 +71,16 @@ namespace Kostic017.Pigeon.Errors
         internal void ReportStatementNotInLoop(TextSpan textSpan, string statement)
         {
             Report($"{statement} should be in a loop", textSpan);
+        }
+
+        public IEnumerator<CodeError> GetEnumerator()
+        {
+            return errors.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

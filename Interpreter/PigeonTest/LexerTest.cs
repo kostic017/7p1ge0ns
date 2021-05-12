@@ -2,12 +2,16 @@
 {
     public class LexerTest
     {
+        
+        
+        
+        
         //[Theory]
         //[MemberData(nameof(GetTestData))]
         //public void Lex(string text, Expected expected)
         //{
         //    var analysisResult = Interpreter.Analyze(text);
-            
+
         //    if (expected.TokenType != SyntaxTokenType.Illegal)
         //    {
         //        Assert.Empty(analysisResult.Errors.LexerErrors);
@@ -16,7 +20,7 @@
         //    {
         //        Assert.Equal(CodeErrorType.UNEXPECTED_CHARACTER, analysisResult.Errors.LexerErrors[0].Type);
         //    }
-    
+
         //    var tokens = analysisResult.Tokens;
 
         //    Assert.True(tokens.Length > 0 && tokens.Length <= 2);
@@ -125,6 +129,6 @@
         //        Column = column;
         //    }
         //}
- 
+
     }
 }

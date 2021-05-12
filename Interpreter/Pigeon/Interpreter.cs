@@ -1,27 +1,64 @@
-﻿namespace Kostic017.Pigeon
+﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
+using Kostic017.Pigeon.Errors;
+using System.IO;
+
+namespace Kostic017.Pigeon
 {
-    public static class Interpreter
+    public class Interpreter
     {
-/*
-        public static AnalysisResult Analyze(string code, int tabSize = 4)
+        private readonly IParseTree tree;
+        private readonly PigeonParser parser;
+        private readonly CodeErrorBag errorBag;
+
+        public Interpreter(string code)
         {
-            var lexer = new MyLexer(code, tabSize);
-            var tokens = lexer.Lex();
-            var parser = new MyParser(tokens);
-            var ast = parser.Parse();
-            var typeChecker = new TypeChecker(ast);
-            var typedAst = typeChecker.Anaylize();
-            var errorBag = new SyntaxErrorBag(lexer.ErrorBag, parser.ErrorBag, typeChecker.ErrorBag);
-            return new AnalysisResult(tokens, ast, typedAst, errorBag);
+            errorBag = new CodeErrorBag();
+            var inputStream = new AntlrInputStream(code);
+            var lexer = new PigeonLexer(inputStream);
+            var tokenStream = new CommonTokenStream(lexer);
+            parser = new PigeonParser(tokenStream);
+            var errorListener = new CodeErrorListener(errorBag);
+            parser.AddErrorListener(errorListener);
+            tree = parser.program();
+            var walker = new ParseTreeWalker();
+            var analyzer = new SemanticAnalyser(errorBag);
+            walker.Walk(analyzer, tree);
         }
 
-        public static void Evaluate(AnalysisResult analysisResult)
+        public void PrintTree(TextWriter writer)
         {
-            if (analysisResult.Errors.AllErrors.Length > 0)
-                throw new IllegalUsageException("There were errors in this analysis result");
-            var evaluator = new Evaluator(analysisResult.TypedAstRoot);
-            evaluator.Evaluate();
+            tree.PrintTree(writer, parser.RuleNames);
         }
-*/
+
+        public void PrintErrors(TextWriter writer)
+        {
+            foreach (var error in errorBag)
+                writer.WriteLine(error.ToString());
+        }
+
+        //public static void Evaluate(AnalysisResult analysisResult)
+        //{
+        //    if (analysisResult.Errors.AllErrors.Length > 0)
+        //        throw new IllegalUsageException("There were errors in this analysis result");
+        //    var evaluator = new Evaluator(analysisResult.TypedAstRoot);
+        //    evaluator.Evaluate();
+        //}
+    }
+
+    class CodeErrorListener : BaseErrorListener
+    {
+        private readonly CodeErrorBag errorBag;
+
+        public CodeErrorListener(CodeErrorBag errorBag)
+        {
+            this.errorBag = errorBag;
+        }
+
+        public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
+        {
+            errorBag.Report(msg, new TextSpan(offendingSymbol.Line, offendingSymbol.Column, offendingSymbol.StartIndex, offendingSymbol.StopIndex));
+        }
     }
 }

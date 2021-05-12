@@ -9,10 +9,10 @@ namespace Kostic017.Pigeon
         public int StartIndex { get; }
         public int EndIndex { get; }
  
-        internal TextSpan(int startLine, int startColumn, int startIndex, int endIndex)
+        internal TextSpan(int line, int column, int startIndex, int endIndex)
         {
-            Line = startLine;
-            Column = startColumn;
+            Line = line;
+            Column = column;
             StartIndex = startIndex;
             EndIndex = endIndex;
         }

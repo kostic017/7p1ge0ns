@@ -1,7 +1,4 @@
-﻿using Antlr4.Runtime;
-using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
-using Kostic017.Pigeon;
+﻿using Kostic017.Pigeon;
 using System;
 using System.Text;
 
@@ -35,20 +32,9 @@ namespace TestProject
                 }
 
                 Console.WriteLine();
-                var inputStream = new AntlrInputStream(sb.ToString());
-                var lexer = new PigeonLexer(inputStream);
-                var tokenStream = new CommonTokenStream(lexer);
-                var parser = new PigeonParser(tokenStream);
-                parser.AddErrorListener(ConsoleErrorListener.Instance);
-                var tree = parser.program();
-                tree.PrintTree(Console.Out, parser.RuleNames);
-                var walker = new ParseTreeWalker();
-                var analyzer = new SemanticAnalyser();
-                walker.Walk(analyzer, tree);
-                
-                foreach (var error in analyzer.Errors)
-                    Console.WriteLine(error.ToString());
-                
+                var interpreter = new Interpreter(sb.ToString());
+                interpreter.PrintTree(Console.Out);
+                interpreter.PrintErrors(Console.Out);
                 Console.WriteLine();
             }
         }
@@ -62,16 +48,6 @@ namespace TestProject
         private static object Add(object[] arg)
         {
             return (int)arg[0] + (int)arg[1];
-        }
-    }
-    
-    // TODO this class should be part of the ANTLR4 runtime??
-    class ConsoleErrorListener : BaseErrorListener
-    {
-        public static readonly ConsoleErrorListener Instance = new ConsoleErrorListener();
-        public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
-        {
-            Console.WriteLine("line " + line + ":" + charPositionInLine + " " + msg);
         }
     }
 }

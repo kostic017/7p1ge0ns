@@ -1,29 +1,24 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 using Kostic017.Pigeon.Errors;
 using Kostic017.Pigeon.Symbols;
-using Antlr4.Runtime.Tree;
 using Kostic017.Pigeon.Operators;
 using System.Collections.Generic;
 
 namespace Kostic017.Pigeon
 {
-    public class SemanticAnalyser : PigeonBaseListener
+    class SemanticAnalyser : PigeonBaseListener
     {
-        internal CodeErrorBag ErrorBag { get; } = new CodeErrorBag();
+        private Scope scope;
+        private readonly CodeErrorBag errorBag;
+        private readonly Scope globalScope = new Scope(null);
+        private readonly ParseTreeProperty<PigeonType> types = new ParseTreeProperty<PigeonType>();
 
-        public CodeError[] Errors
+        internal SemanticAnalyser(CodeErrorBag errorBag)
         {
-            get
-            {
-                return ErrorBag.Errors;
-            }
+            this.errorBag = errorBag;
         }
-
-        Scope scope;
-        readonly Scope globalScope = new Scope(null);
-
-        readonly ParseTreeProperty<PigeonType> types = new ParseTreeProperty<PigeonType>();
 
         public override void EnterProgram([NotNull] PigeonParser.ProgramContext context)
         {
@@ -35,8 +30,8 @@ namespace Kostic017.Pigeon
             scope = new Scope(scope);
 
             var parameters = new List<Variable>();
-            var parameterCount = context.functionParams().ID().Length;
             var returnType = PigeonType.FromName(context.TYPE().GetText());
+            var parameterCount = context.functionParams() != null ? context.functionParams().ID().Length : 0;
 
             for (var i = 0; i < parameterCount; ++i)
             {
@@ -45,7 +40,7 @@ namespace Kostic017.Pigeon
                 var parameter = scope.DeclareVariable(parameterType, parameterName, false);
                 parameters.Add(parameter);
             }
-
+            
             globalScope.DeclareFunction(returnType, context.ID().GetText(), parameters.ToArray());
         }
 
@@ -59,13 +54,13 @@ namespace Kostic017.Pigeon
             var functionName = context.ID().GetText();
             if (!globalScope.TryLookupFunction(functionName, out var function))
             {
-                ErrorBag.ReportUndeclaredFunction(context.GetTextSpan(), functionName);
+                errorBag.ReportUndeclaredFunction(context.GetTextSpan(), functionName);
                 return;
             }
-            var argumentCount = context.functionArgs().expr().Length;
+            var argumentCount = context.functionArgs() != null ? context.functionArgs().expr().Length : 0;
             if (argumentCount != function.Parameters.Length)
             {
-                ErrorBag.ReportInvalidNumberOfArguments(context.GetTextSpan(), functionName, argumentCount);
+                errorBag.ReportInvalidNumberOfArguments(context.GetTextSpan(), functionName, argumentCount);
                 return;
             }
             for (var i = 0; i < argumentCount; ++i)
@@ -74,7 +69,7 @@ namespace Kostic017.Pigeon
                 var argumentType = types.RemoveFrom(argument);
                 if (argumentType != function.Parameters[i].Type)
                 {
-                    ErrorBag.ReportInvalidArgumentType(argument.GetTextSpan(), i, function.Parameters[i].Type);
+                    errorBag.ReportInvalidArgumentType(argument.GetTextSpan(), i, function.Parameters[i].Type);
                     return;
                 }
             }
@@ -85,7 +80,7 @@ namespace Kostic017.Pigeon
             var functionName = context.functionCall().ID().GetText();
             if (globalScope.TryLookupFunction(functionName, out var function))
             {
-                ErrorBag.ReportUndeclaredFunction(context.GetTextSpan(), functionName);
+                errorBag.ReportUndeclaredFunction(context.GetTextSpan(), functionName);
                 return;
             }
             types.Put(context, function.ReturnType);
@@ -134,7 +129,7 @@ namespace Kostic017.Pigeon
             var name = context.ID().GetText();
             var type = types.RemoveFrom(context.expr());
             if (scope.IsVariableDeclaredHere(name))
-                ErrorBag.ReportVariableRedeclaration(context.GetTextSpan(), name);
+                errorBag.ReportVariableRedeclaration(context.GetTextSpan(), name);
             else
                 scope.DeclareVariable(type, name, context.accessType.Text == "const");
         }
@@ -147,24 +142,24 @@ namespace Kostic017.Pigeon
             if (scope.TryLookupVariable(name, out var variable))
             {
                 if (variable.ReadOnly)
-                    ErrorBag.ReportRedefiningReadOnlyVariable(context.GetTextSpan(), name);
+                    errorBag.ReportRedefiningReadOnlyVariable(context.GetTextSpan(), name);
                 if (!AssignmentOperator.IsAssignable(context.op.Text, variable.Type, valueType))
-                    ErrorBag.ReportInvalidTypeAssignment(context.GetTextSpan(), name, variable.Type, valueType);
+                    errorBag.ReportInvalidTypeAssignment(context.GetTextSpan(), name, variable.Type, valueType);
             }
             else
-                ErrorBag.ReportUndeclaredVariable(context.variable().GetTextSpan(), name);
+                errorBag.ReportUndeclaredVariable(context.variable().GetTextSpan(), name);
         }
 
         public override void ExitBreakStatement([NotNull] PigeonParser.BreakStatementContext context)
         {
             if (!IsInLoop(context))
-                ErrorBag.ReportStatementNotInLoop(context.Start.GetTextSpan(), "break");
+                errorBag.ReportStatementNotInLoop(context.Start.GetTextSpan(), "break");
         }
 
         public override void ExitContinueStatement([NotNull] PigeonParser.ContinueStatementContext context)
         {
             if (!IsInLoop(context))
-                ErrorBag.ReportStatementNotInLoop(context.Start.GetTextSpan(), "continue");
+                errorBag.ReportStatementNotInLoop(context.Start.GetTextSpan(), "continue");
         }
 
         public override void ExitNumberLiteral([NotNull] PigeonParser.NumberLiteralContext context)
@@ -192,7 +187,7 @@ namespace Kostic017.Pigeon
             var left = types.RemoveFrom(context.expr(0));
             var right = types.RemoveFrom(context.expr(1));
             if (!BinaryOperator.TryGetResType(context.op.Text, left, right, out var type))
-                ErrorBag.ReportInvalidTypeBinaryOperator(context.op.GetTextSpan(), context.op.Text, left, right);
+                errorBag.ReportInvalidTypeBinaryOperator(context.op.GetTextSpan(), context.op.Text, left, right);
             types.Put(context, type);
         }
 
@@ -200,7 +195,7 @@ namespace Kostic017.Pigeon
         {
             var operandType = types.RemoveFrom(context.expr());
             if (!UnaryOperator.TryGetResType(context.op.Text, operandType , out var type))
-                ErrorBag.ReportInvalidTypeUnaryOperator(context.op.GetTextSpan(), context.op.Text, type);
+                errorBag.ReportInvalidTypeUnaryOperator(context.op.GetTextSpan(), context.op.Text, type);
             types.Put(context, type);
         }
 
@@ -211,7 +206,7 @@ namespace Kostic017.Pigeon
             var whenTrue = types.RemoveFrom(context.expr(1));
             var whenFalse = types.RemoveFrom(context.expr(2));
             if (!TernaryOperator.TryGetResType(whenTrue, whenFalse, out var type))
-                ErrorBag.ReportInvalidTypeTernaryOperator(context.GetTextSpan(), whenTrue, whenFalse);
+                errorBag.ReportInvalidTypeTernaryOperator(context.GetTextSpan(), whenTrue, whenFalse);
             
             types.Put(context, type);
         }
@@ -222,7 +217,7 @@ namespace Kostic017.Pigeon
             if (scope.TryLookupVariable(name, out var variable))
                 types.Put(context.variable(), variable.Type);
             else
-                ErrorBag.ReportUndeclaredVariable(context.GetTextSpan(), name);
+                errorBag.ReportUndeclaredVariable(context.GetTextSpan(), name);
         }
 
         public override void ExitReturnStatement([NotNull] PigeonParser.ReturnStatementContext context)
@@ -237,16 +232,14 @@ namespace Kostic017.Pigeon
             globalScope.TryLookupFunction(functionName, out var function);
             
             if (returnType != function.ReturnType)
-            {
-                ErrorBag.ReportUnexpectedType(context.expr().GetTextSpan(), returnType, function.ReturnType);
-            }
+                errorBag.ReportUnexpectedType(context.expr().GetTextSpan(), returnType, function.ReturnType);
         }
 
         private void CheckExprType(PigeonParser.ExprContext context, PigeonType expected)
         {
             var actual = types.RemoveFrom(context);
             if (actual != expected)
-                ErrorBag.ReportUnexpectedType(context.GetTextSpan(), actual, expected);
+                errorBag.ReportUnexpectedType(context.GetTextSpan(), actual, expected);
         }
 
         private bool IsInLoop(RuleContext node)
