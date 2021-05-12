@@ -7,18 +7,13 @@ functionCall : ID '(' functionArgs? ')' ;
 functionArgs : expr (',' expr)* ;
 
 varAssign
-    : variable op='=' expr SEP
-    | variable op='+=' expr SEP
-    | variable op='-=' expr SEP
-    | variable op='*=' expr SEP
-    | variable op='/=' expr SEP
-    | variable op='%=' expr SEP
-    | variable op='^=' expr SEP
-    ;
-
-variable
-    : ID
-    | ID '[' expr ']'
+    : ID op='=' expr SEP
+    | ID op='+=' expr SEP
+    | ID op='-=' expr SEP
+    | ID op='*=' expr SEP
+    | ID op='/=' expr SEP
+    | ID op='%=' expr SEP
+    | ID op='^=' expr SEP
     ;
 
 stmt
@@ -43,7 +38,7 @@ expr
     : BOOL                                # boolLiteral
     | NUMBER                              # numberLiteral
     | STRING                              # stringLiteral
-    | variable                            # variableExpression
+    | ID                                  # variableExpression
     | '(' expr ')'                        # parenthesizedExpression
     | functionCall                        # functionCallExpression
     | op='-' expr                         # unaryExpression

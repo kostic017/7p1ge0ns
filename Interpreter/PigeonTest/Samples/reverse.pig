@@ -8,5 +8,5 @@ void main() {
         n /= 10
     }
 
-    print("rev = ", rev)
+    print("rev = " + rev)
 }
