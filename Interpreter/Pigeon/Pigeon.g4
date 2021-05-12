@@ -1,24 +1,19 @@
 grammar Pigeon;
 
-program : (varDecl | functionDecl)+ EOF ;
+program : (varAssign | functionDecl)+ EOF ;
 functionDecl : TYPE ID '(' functionParams? ')' stmtBlock ;
 functionParams : TYPE ID (',' TYPE ID)* ;
 functionCall : ID '(' functionArgs? ')' ;
 functionArgs : expr (',' expr)* ;
 
-varDecl
-    : accessType='let' ID '=' expr ';'
-    | accessType='const' ID '=' expr ';'
-    ;
-
 varAssign
-    : variable op='=' expr ';'
-    | variable op='+=' expr ';'
-    | variable op='-=' expr ';'
-    | variable op='*=' expr ';'
-    | variable op='/=' expr ';'
-    | variable op='%=' expr ';'
-    | variable op='^=' expr ';'
+    : variable op='=' expr SEP
+    | variable op='+=' expr SEP
+    | variable op='-=' expr SEP
+    | variable op='*=' expr SEP
+    | variable op='/=' expr SEP
+    | variable op='%=' expr SEP
+    | variable op='^=' expr SEP
     ;
 
 variable
@@ -27,12 +22,11 @@ variable
     ;
 
 stmt
-    : varDecl                                          # variableDeclaration
-    | varAssign                                        # variableAsignment
-    | functionCall ';'                                 # functionCallStatement
-    | 'return' expr ';'                                # returnStatement
-    | 'break' ';'                                      # breakStatement
-    | 'continue' ';'                                   # continueStatement
+    : varAssign                                        # variableAsignment
+    | functionCall SEP                                 # functionCallStatement
+    | 'return' expr SEP                                # returnStatement
+    | 'break' SEP                                      # breakStatement
+    | 'continue' SEP                                   # continueStatement
     | 'while' expr stmtBlock                           # whileStatement
     | 'do' stmtBlock 'while' expr                      # doWhileStatement
     | 'if' expr stmtBlock ('else' stmtBlock)?          # ifStatement
@@ -96,7 +90,8 @@ NUMBER
     ;
 
 ID : ('_'|LETTER)('_'|LETTER|DIGIT)* ;
-WHITESPACE : [ \r\n\t]+ -> skip ;
+SEP : '\n' ;
+WHITESPACE : [ \r\t]+ -> skip ;
 
 fragment
 DIGIT : [0-9] ;

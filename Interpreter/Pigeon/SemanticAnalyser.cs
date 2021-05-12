@@ -124,30 +124,24 @@ namespace Kostic017.Pigeon
             CheckExprType(context.expr(), PigeonType.Bool);
         }
 
-        public override void ExitVarDecl([NotNull] PigeonParser.VarDeclContext context)
-        {
-            var name = context.ID().GetText();
-            var type = types.RemoveFrom(context.expr());
-            if (scope.IsVariableDeclaredHere(name))
-                errorBag.ReportVariableRedeclaration(context.GetTextSpan(), name);
-            else
-                scope.DeclareVariable(type, name, context.accessType.Text == "const");
-        }
-
         public override void ExitVarAssign([NotNull] PigeonParser.VarAssignContext context)
         {
-            var name = context.variable().ID().GetText();
-            var valueType = types.RemoveFrom(context.expr());
+            var varName = context.variable().ID().GetText();
+            var varType = types.RemoveFrom(context.expr());
 
-            if (scope.TryLookupVariable(name, out var variable))
+            if (scope.TryLookupVariable(varName, out var variable))
             {
                 if (variable.ReadOnly)
-                    errorBag.ReportRedefiningReadOnlyVariable(context.GetTextSpan(), name);
-                if (!AssignmentOperator.IsAssignable(context.op.Text, variable.Type, valueType))
-                    errorBag.ReportInvalidTypeAssignment(context.GetTextSpan(), name, variable.Type, valueType);
+                    errorBag.ReportRedefiningReadOnlyVariable(context.GetTextSpan(), varName);
+                if (!AssignmentOperator.IsAssignable(context.op.Text, variable.Type, varType))
+                    errorBag.ReportInvalidTypeAssignment(context.GetTextSpan(), varName, variable.Type, varType);
             }
+            else if (scope.IsVariableDeclaredHere(varName))
+                errorBag.ReportVariableRedeclaration(context.GetTextSpan(), varName);
+            else if (context.op.Text == "=")
+                scope.DeclareVariable(varType, varName, IsAllUpper(varName));
             else
-                errorBag.ReportUndeclaredVariable(context.variable().GetTextSpan(), name);
+                errorBag.ReportUndeclaredVariable(context.variable().GetTextSpan(), varName);
         }
 
         public override void ExitBreakStatement([NotNull] PigeonParser.BreakStatementContext context)
@@ -254,6 +248,14 @@ namespace Kostic017.Pigeon
                 node = node.Parent;
             }
             return false;
+        }
+
+        private bool IsAllUpper(string input)
+        {
+            for (int i = 0; i < input.Length; i++)
+                if (char.IsLetter(input[i]) && !char.IsUpper(input[i]))
+                    return false;
+            return true;
         }
     }
 }
