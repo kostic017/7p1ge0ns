@@ -126,7 +126,7 @@ namespace Kostic017.Pigeon
 
         public override void ExitVarAssign([NotNull] PigeonParser.VarAssignContext context)
         {
-            var varName = context.variable().ID().GetText();
+            var varName = context.ID().GetText();
             var varType = types.RemoveFrom(context.expr());
 
             if (scope.TryLookupVariable(varName, out var variable))
@@ -141,7 +141,7 @@ namespace Kostic017.Pigeon
             else if (context.op.Text == "=")
                 scope.DeclareVariable(varType, varName, IsAllUpper(varName));
             else
-                errorBag.ReportUndeclaredVariable(context.variable().GetTextSpan(), varName);
+                errorBag.ReportUndeclaredVariable(context.GetTextSpan(), varName);
         }
 
         public override void ExitBreakStatement([NotNull] PigeonParser.BreakStatementContext context)
@@ -207,9 +207,9 @@ namespace Kostic017.Pigeon
 
         public override void ExitVariableExpression([NotNull] PigeonParser.VariableExpressionContext context)
         {
-            var name = context.variable().ID().GetText();
+            var name = context.ID().GetText();
             if (scope.TryLookupVariable(name, out var variable))
-                types.Put(context.variable(), variable.Type);
+                types.Put(context, variable.Type);
             else
                 errorBag.ReportUndeclaredVariable(context.GetTextSpan(), name);
         }

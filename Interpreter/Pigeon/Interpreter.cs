@@ -32,6 +32,11 @@ namespace Kostic017.Pigeon
             tree.PrintTree(writer, parser.RuleNames);
         }
 
+        public string ToStringTree()
+        {
+            return tree.ToStringTree();
+        }
+
         public void PrintErrors(TextWriter writer)
         {
             foreach (var error in errorBag)
