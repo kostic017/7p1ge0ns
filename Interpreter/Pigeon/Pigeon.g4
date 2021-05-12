@@ -85,7 +85,7 @@ NUMBER
     ;
 
 ID : ('_'|LETTER)('_'|LETTER|DIGIT)* ;
-SEP : '\n' ;
+SEP : ';' ;
 WHITESPACE : [ \r\t]+ -> skip ;
 
 fragment

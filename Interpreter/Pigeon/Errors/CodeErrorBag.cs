@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Kostic017.Pigeon.Errors
 {
-    internal class CodeErrorBag : IEnumerable<CodeError>
+    public class CodeErrorBag : IEnumerable<CodeError>
     {
         private readonly List<CodeError> errors = new List<CodeError>();
 

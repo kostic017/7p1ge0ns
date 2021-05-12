@@ -87,7 +87,7 @@ namespace Kostic017.Pigeon.Operators
                 }
             },
             {
-                "*",
+                "%",
                 new []
                 {
                     new BinaryOperator(PigeonType.Int, PigeonType.Int, PigeonType.Int),

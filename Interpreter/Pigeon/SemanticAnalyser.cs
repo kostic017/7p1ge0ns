@@ -12,7 +12,7 @@ namespace Kostic017.Pigeon
     {
         private Scope scope;
         private readonly CodeErrorBag errorBag;
-        private readonly Scope globalScope = new Scope(null);
+        private readonly GlobalScope globalScope = new GlobalScope();
         private readonly ParseTreeProperty<PigeonType> types = new ParseTreeProperty<PigeonType>();
 
         internal SemanticAnalyser(CodeErrorBag errorBag)
@@ -52,7 +52,7 @@ namespace Kostic017.Pigeon
         public override void ExitFunctionCall([NotNull] PigeonParser.FunctionCallContext context)
         {
             var functionName = context.ID().GetText();
-            if (!globalScope.TryLookupFunction(functionName, out var function))
+            if (!globalScope.TryGetFunction(functionName, out var function))
             {
                 errorBag.ReportUndeclaredFunction(context.GetTextSpan(), functionName);
                 return;
@@ -78,12 +78,10 @@ namespace Kostic017.Pigeon
         public override void ExitFunctionCallExpression([NotNull] PigeonParser.FunctionCallExpressionContext context)
         {
             var functionName = context.functionCall().ID().GetText();
-            if (globalScope.TryLookupFunction(functionName, out var function))
-            {
+            if (globalScope.TryGetFunction(functionName, out var function))
+                types.Put(context, function.ReturnType);
+            else
                 errorBag.ReportUndeclaredFunction(context.GetTextSpan(), functionName);
-                return;
-            }
-            types.Put(context, function.ReturnType);
         }
 
         public override void EnterStmtBlock([NotNull] PigeonParser.StmtBlockContext context)
@@ -129,7 +127,7 @@ namespace Kostic017.Pigeon
             var varName = context.ID().GetText();
             var varType = types.RemoveFrom(context.expr());
 
-            if (scope.TryLookupVariable(varName, out var variable))
+            if (scope.TryGetVariable(varName, out var variable))
             {
                 if (variable.ReadOnly)
                     errorBag.ReportRedefiningReadOnlyVariable(context.GetTextSpan(), varName);
@@ -208,7 +206,7 @@ namespace Kostic017.Pigeon
         public override void ExitVariableExpression([NotNull] PigeonParser.VariableExpressionContext context)
         {
             var name = context.ID().GetText();
-            if (scope.TryLookupVariable(name, out var variable))
+            if (scope.TryGetVariable(name, out var variable))
                 types.Put(context, variable.Type);
             else
                 errorBag.ReportUndeclaredVariable(context.GetTextSpan(), name);
@@ -223,7 +221,7 @@ namespace Kostic017.Pigeon
                 node = node.Parent;
             
             var functionName = ((PigeonParser.FunctionDeclContext)node).ID().GetText();
-            globalScope.TryLookupFunction(functionName, out var function);
+            globalScope.TryGetFunction(functionName, out var function);
             
             if (returnType != function.ReturnType)
                 errorBag.ReportUnexpectedType(context.expr().GetTextSpan(), returnType, function.ReturnType);

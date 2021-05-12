@@ -10,20 +10,20 @@ namespace Kostic017.Pigeon
     {
         private readonly IParseTree tree;
         private readonly PigeonParser parser;
-        private readonly CodeErrorBag errorBag;
+        public CodeErrorBag ErrorBag { get; }
 
         public Interpreter(string code)
         {
-            errorBag = new CodeErrorBag();
+            ErrorBag = new CodeErrorBag();
             var inputStream = new AntlrInputStream(code);
             var lexer = new PigeonLexer(inputStream);
             var tokenStream = new CommonTokenStream(lexer);
             parser = new PigeonParser(tokenStream);
-            var errorListener = new CodeErrorListener(errorBag);
+            var errorListener = new CodeErrorListener(ErrorBag);
             parser.AddErrorListener(errorListener);
             tree = parser.program();
             var walker = new ParseTreeWalker();
-            var analyzer = new SemanticAnalyser(errorBag);
+            var analyzer = new SemanticAnalyser(ErrorBag);
             walker.Walk(analyzer, tree);
         }
 
@@ -32,14 +32,9 @@ namespace Kostic017.Pigeon
             tree.PrintTree(writer, parser.RuleNames);
         }
 
-        public string ToStringTree()
-        {
-            return tree.ToStringTree();
-        }
-
         public void PrintErrors(TextWriter writer)
         {
-            foreach (var error in errorBag)
+            foreach (var error in ErrorBag)
                 writer.WriteLine(error.ToString());
         }
 
