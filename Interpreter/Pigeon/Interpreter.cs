@@ -17,7 +17,7 @@ namespace Kostic017.Pigeon
         public Interpreter(string code, BuiltinSymbols builtinSymbols)
         {
             errorBag = new CodeErrorBag();
-
+            
             var inputStream = new AntlrInputStream(code);
             var lexer = new PigeonLexer(inputStream);
             var tokenStream = new CommonTokenStream(lexer);
@@ -26,8 +26,14 @@ namespace Kostic017.Pigeon
             parser.AddErrorListener(errorListener);
             tree = parser.program();
 
-            var analyzer = new SemanticAnalyser(errorBag, builtinSymbols);
             var walker = new ParseTreeWalker();
+            var globalScope = new GlobalScope();
+            
+            builtinSymbols.Register(globalScope);
+            var functionDeclarer = new FunctionDeclarer(errorBag, globalScope);
+            walker.Walk(functionDeclarer, tree);
+
+            var analyzer = new SemanticAnalyser(errorBag, globalScope);
             walker.Walk(analyzer, tree);
         }
 

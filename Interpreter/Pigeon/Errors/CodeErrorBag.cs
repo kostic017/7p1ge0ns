@@ -33,6 +33,11 @@ namespace Kostic017.Pigeon.Errors
             Report($"Variable '{variableName}' of type {variableType.Name} cannot have value of type {valueType.Name}", textSpan);
         }
 
+        internal void ReportDuplicatedArgument(TextSpan textSpan, string parameterName)
+        {
+            Report($"Parameter '{parameterName}' was already declared", textSpan);
+        }
+
         internal void ReportInvalidTypeUnaryOperator(TextSpan textSpan, string op, PigeonType type)
         {
             Report($"Operator {op} is not defined for type {type.Name}", textSpan);

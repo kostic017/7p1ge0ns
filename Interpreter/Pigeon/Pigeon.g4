@@ -1,6 +1,6 @@
 grammar Pigeon;
 
-program : (varAssign | functionDecl)+ EOF ;
+program : (stmt | functionDecl)+ EOF ;
 functionDecl : TYPE ID '(' functionParams? ')' stmtBlock ;
 functionParams : TYPE ID (',' TYPE ID)* ;
 functionCall : ID '(' functionArgs? ')' ;

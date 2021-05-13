@@ -4,7 +4,6 @@ using Antlr4.Runtime.Tree;
 using Kostic017.Pigeon.Errors;
 using Kostic017.Pigeon.Symbols;
 using Kostic017.Pigeon.Operators;
-using System.Collections.Generic;
 
 namespace Kostic017.Pigeon
 {
@@ -12,13 +11,13 @@ namespace Kostic017.Pigeon
     {
         private Scope scope;
         private readonly CodeErrorBag errorBag;
-        private readonly GlobalScope globalScope = new GlobalScope();
+        private readonly GlobalScope globalScope;
         private readonly ParseTreeProperty<PigeonType> types = new ParseTreeProperty<PigeonType>();
 
-        internal SemanticAnalyser(CodeErrorBag errorBag, BuiltinSymbols pigeonBuiltin)
+        internal SemanticAnalyser(CodeErrorBag errorBag, GlobalScope globalScope)
         {
             this.errorBag = errorBag;
-            pigeonBuiltin.Register(globalScope);
+            this.globalScope = globalScope;
         }
 
         public override void EnterProgram([NotNull] PigeonParser.ProgramContext context)
@@ -29,20 +28,9 @@ namespace Kostic017.Pigeon
         public override void EnterFunctionDecl([NotNull] PigeonParser.FunctionDeclContext context)
         {
             scope = new Scope(scope);
-
-            var parameters = new List<Variable>();
-            var returnType = PigeonType.FromName(context.TYPE().GetText());
-            var parameterCount = context.functionParams() != null ? context.functionParams().ID().Length : 0;
-
-            for (var i = 0; i < parameterCount; ++i)
-            {
-                var parameterType = PigeonType.FromName(context.functionParams().TYPE(i).GetText());
-                var parameterName = context.functionParams().ID(i).GetText();
-                var parameter = scope.DeclareVariable(parameterType, parameterName, false);
-                parameters.Add(parameter);
-            }
-            
-            globalScope.DeclareFunction(returnType, context.ID().GetText(), parameters.ToArray());
+            globalScope.TryGetFunction(context.ID().GetText(), out var function);
+            foreach (var parameter in function.Parameters)
+                scope.DeclareVariable(parameter.Type, parameter.Name, parameter.ReadOnly);
         }
 
         public override void ExitFunctionDecl([NotNull] PigeonParser.FunctionDeclContext context)

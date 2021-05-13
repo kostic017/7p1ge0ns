@@ -1,6 +1,6 @@
 ﻿namespace Kostic017.Pigeon
 {
-    class Evaluator
+    class Evaluator : PigeonBaseListener
     {
 /*
         private readonly Stack<Scope> scopes;

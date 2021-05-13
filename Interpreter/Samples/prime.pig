@@ -1,3 +1,11 @@
+n = 0;
+prompt("n: ", n);
+
+if prime(n)
+    print("prime");
+else
+    print("composite");
+
 bool prime(int n) {
     if (n == 1)
         return false;
@@ -10,14 +18,4 @@ bool prime(int n) {
     }
 
     return true;
-}
-
-void main() {
-    n = 0;
-    prompt("n: ", n);
-
-    if prime(n)
-        print("prime");
-    else
-        print("composite");
 }

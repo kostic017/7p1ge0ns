@@ -2,7 +2,7 @@
 
 namespace Kostic017.Pigeon.Symbols
 {
-    internal class Scope
+    class Scope
     {
         private readonly Dictionary<string, Variable> variables = new Dictionary<string, Variable>();
 

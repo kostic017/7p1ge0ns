@@ -1,4 +1,6 @@
-﻿// Count ones in binary representation of a number
+﻿n = 0;
+prompt("n: ", n);
+print(ones(n));
 
 int ones(int n) {
     i = 0;
@@ -8,10 +10,4 @@ int ones(int n) {
         n = n / 2;
     }
     return i;
-}
-
-void main() {
-    n = 0;
-    prompt("n: ", n);
-    print(ones(n));
 }

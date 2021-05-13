@@ -19,15 +19,13 @@ namespace TestProject
                 new Variable(PigeonType.Any),
             }, Print);
 
-            builtinSymbols.RegisterFunction(PigeonType.Void, "print", new Variable[]
-            {
+            builtinSymbols.RegisterFunction(PigeonType.Void, "print", new Variable[] {
                 new Variable(PigeonType.Any)
             }, Prompt);
         }
         
         private void ExecuteCode(string code)
         {
-            Console.WriteLine();
             var interpreter = new Interpreter(code, builtinSymbols);
             interpreter.PrintTree(Console.Out);
             interpreter.PrintErrors(Console.Out);

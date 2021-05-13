@@ -6,12 +6,10 @@
     return 1;
 }
 
-void main() {
-    a = 0;
-    b = 0;
+a = 0;
+b = 0;
 
-    prompt("a: ", a);
-    prompt("b: ", b);
+prompt("a: ", a);
+prompt("b: ", b);
 
-    print(gcd(a, b));
-}
+print(gcd(a, b));
