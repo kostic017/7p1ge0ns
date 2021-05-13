@@ -5,8 +5,33 @@ using System.IO;
 
 namespace Kostic017.Pigeon
 {
-    public static class ParseTreePrinter
+    public static class AntlrExtensions
     {
+        public static IParseTree GetRightSibling(this ParserRuleContext context)
+        {
+            int index = GetNodeIndex(context);
+
+            return index >= 0 && index < context.Parent.ChildCount - 1 
+                ? context.Parent.GetChild(index + 1) 
+                : null;
+        }
+
+        public static int GetNodeIndex(this ParserRuleContext context)
+        {
+            RuleContext parent = context?.Parent;
+
+            if (parent == null)
+                return -1;
+
+            for (int i = 0; i < parent.ChildCount; i++)
+            {
+                if (parent.GetChild(i) == context)
+                    return i;
+            }
+
+            return -1;
+        }
+
         public static void PrintTree(this IParseTree tree, TextWriter writer, string[] ruleNames, string indent = "", bool isLastChild = true)
         {
             writer.Write(indent);

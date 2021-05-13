@@ -1,8 +1,243 @@
-﻿namespace Kostic017.Pigeon
+﻿using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
+using Kostic017.Pigeon.Symbols;
+using System.Globalization;
+
+namespace Kostic017.Pigeon
 {
-    class Evaluator : PigeonBaseListener
+    class Evaluator : PigeonBaseVisitor<object>
     {
-/*
+        private readonly ParseTreeProperty<PigeonType> types;
+
+        public Evaluator(ParseTreeProperty<PigeonType> types)
+        {
+            this.types = types;
+        }
+
+        public override object VisitProgram([NotNull] PigeonParser.ProgramContext context)
+        {
+            return base.VisitProgram(context);
+        }
+
+        public override object VisitParenthesizedExpression([NotNull] PigeonParser.ParenthesizedExpressionContext context)
+        {
+            return VisitExpr(context.expr());
+        }
+
+        public override object VisitBoolLiteral([NotNull] PigeonParser.BoolLiteralContext context)
+        {
+            return bool.Parse(context.BOOL().GetText());
+        }
+
+        public override object VisitNumberLiteral([NotNull] PigeonParser.NumberLiteralContext context)
+        {
+            return types.Get(context) == PigeonType.Int
+                ? int.Parse(context.NUMBER().GetText())
+                : float.Parse(context.NUMBER().GetText(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+        }
+
+        public override object VisitUnaryExpression([NotNull] PigeonParser.UnaryExpressionContext context)
+        {
+            var operand = VisitExpr(context.expr());
+            var resType = types.Get(context);;
+            switch (context.op.Text)
+            {
+                case "+":
+                    return resType == PigeonType.Int ? (int) operand : (float) (int) operand;
+                case "-":
+                    return resType == PigeonType.Int ? - (int) operand : - (float) operand;
+                case "!":
+                    return ! (bool) operand;
+                default:
+                    throw new InternalErrorException($"Unsupported unary operator {context.op.Text}");
+            }
+        }
+
+        public override object VisitBinaryExpression([NotNull] PigeonParser.BinaryExpressionContext context)
+        {
+            var left = VisitExpr(context.expr(0));
+            var right = VisitExpr(context.expr(1));
+            var resType = types.Get(context);
+
+            switch (context.op.Text)
+            {
+                case "==":
+                    return left == right;
+
+                case "!=":
+                    return left != right;
+
+                case "&&":
+                    return (bool) left && (bool) right;
+
+                case "||":
+                    return (bool) left || (bool) right;
+
+                case "<":
+                    return resType == PigeonType.Int ? (int) left < (int) right : (float) left < (float) right;
+
+                case ">":
+                    return resType == PigeonType.Int ? (int) left > (int) right : (float) left > (float) right;
+
+                case "<=":
+                    return resType == PigeonType.Int ? (int) left <= (int) right : (float) left <= (float) right;
+
+                case ">=":
+                    return resType == PigeonType.Int ? (int) left >= (int) right : (float) left >= (float) right;
+
+                case "+":
+                    if (resType == PigeonType.Int)
+                        return (int) left + (int) right;
+                    else if (resType == PigeonType.Float)
+                        return (float) left + (float) right;
+                    else
+                        return left.ToString() + right.ToString();
+
+                case "-":
+                    return resType == PigeonType.Int ? (int) left - (int) right : (float) left - (float) right;
+
+                case "*":
+                    return resType == PigeonType.Int ? (int) left * (int) right : (float) left * (float) right;
+
+                case "/":
+                    return resType == PigeonType.Int ? (int) left / (int) right : (float) left / (float) right;
+
+                case "%":
+                    return (int) left % (int) right;
+
+                default:
+                    throw new InternalErrorException($"Unsupported binary operator {context.op.Text}");
+            }
+        }
+
+        public override object VisitBreakStatement([NotNull] PigeonParser.BreakStatementContext context)
+        {
+            return base.VisitBreakStatement(context);
+        }
+
+        public override object VisitContinueStatement([NotNull] PigeonParser.ContinueStatementContext context)
+        {
+            return base.VisitContinueStatement(context);
+        }
+
+        public override object VisitIfStatement([NotNull] PigeonParser.IfStatementContext context)
+        {
+            if ((bool) VisitExpr(context.expr()))
+                VisitStmtBlock(context.stmtBlock(0));
+            else if (context.stmtBlock(1) != null)
+                VisitStmtBlock(context.stmtBlock(1));
+            return null;
+        }
+
+        public override object VisitDoWhileStatement([NotNull] PigeonParser.DoWhileStatementContext context)
+        {
+            do
+                VisitStmtBlock(context.stmtBlock());
+            while ((bool) VisitExpr(context.expr()));
+            return null;
+        }
+
+        public override object VisitWhileStatement([NotNull] PigeonParser.WhileStatementContext context)
+        {
+            while ((bool) VisitExpr(context.expr()))
+                VisitStmtBlock(context.stmtBlock());
+            return null;
+        }
+
+        public override object VisitForStatement([NotNull] PigeonParser.ForStatementContext context)
+        {
+            var startValue = (int) VisitExpr(context.expr(0));
+            var targetValue = (int) VisitExpr(context.expr(1));
+            var isIncrementing = context.dir.Text == "to";
+
+            var i = startValue;
+            while (isIncrementing ? i <= targetValue : i >= targetValue)
+            {
+                //var scope = new Scope();
+                //scope.Declare(node.CounterVariable, i);
+                VisitStmtBlock(context.stmtBlock());
+                i += isIncrementing ? 1 : -1;
+            }
+
+            return null;
+        }
+
+        public override object VisitExpr([NotNull] PigeonParser.ExprContext context)
+        {
+            return base.VisitExpr(context);
+        }
+
+        public override object VisitFunctionArgs([NotNull] PigeonParser.FunctionArgsContext context)
+        {
+            return base.VisitFunctionArgs(context);
+        }
+
+        public override object VisitFunctionCall([NotNull] PigeonParser.FunctionCallContext context)
+        {
+            return base.VisitFunctionCall(context);
+        }
+
+        public override object VisitFunctionCallExpression([NotNull] PigeonParser.FunctionCallExpressionContext context)
+        {
+            return base.VisitFunctionCallExpression(context);
+        }
+
+        public override object VisitFunctionCallStatement([NotNull] PigeonParser.FunctionCallStatementContext context)
+        {
+            return base.VisitFunctionCallStatement(context);
+        }
+
+        public override object VisitFunctionDecl([NotNull] PigeonParser.FunctionDeclContext context)
+        {
+            return base.VisitFunctionDecl(context);
+        }
+
+        public override object VisitFunctionParams([NotNull] PigeonParser.FunctionParamsContext context)
+        {
+            return base.VisitFunctionParams(context);
+        }
+
+        public override object VisitReturnStatement([NotNull] PigeonParser.ReturnStatementContext context)
+        {
+            return base.VisitReturnStatement(context);
+        }
+
+        public override object VisitStmt([NotNull] PigeonParser.StmtContext context)
+        {
+            return base.VisitStmt(context);
+        }
+
+        public override object VisitStmtBlock([NotNull] PigeonParser.StmtBlockContext context)
+        {
+            return base.VisitStmtBlock(context);
+        }
+
+        public override object VisitStringLiteral([NotNull] PigeonParser.StringLiteralContext context)
+        {
+            return base.VisitStringLiteral(context);
+        }
+
+        public override object VisitTernaryExpression([NotNull] PigeonParser.TernaryExpressionContext context)
+        {
+            return base.VisitTernaryExpression(context);
+        }
+
+        public override object VisitVarAssign([NotNull] PigeonParser.VarAssignContext context)
+        {
+            return base.VisitVarAssign(context);
+        }
+
+        public override object VisitVariableAsignment([NotNull] PigeonParser.VariableAsignmentContext context)
+        {
+            return base.VisitVariableAsignment(context);
+        }
+
+        public override object VisitVariableExpression([NotNull] PigeonParser.VariableExpressionContext context)
+        {
+            return base.VisitVariableExpression(context);
+        }
+
+        /*
         private readonly Stack<Scope> scopes;
         private readonly TypedAstRoot typedAstRoot;
 
@@ -60,54 +295,12 @@
             }
         }
 
-        private void EvaluateExpressionStatement(TypedExpressionStatement node)
-        {
-            EvaluateExpression(node.Expression);
-        }
-
         private void EvaluateStatementBlock(TypedStatementBlock node, Scope predefinedScope = null)
         {
             scopes.Push(predefinedScope ?? new Scope());
             foreach (var statement in node.Statements)
                 EvaluateStatement(statement);
             scopes.Pop();
-        }
-
-        private void EvaluateIfStatement(TypedIfStatement node)
-        {
-            if ((bool) EvaluateExpression(node.Condition))
-                EvaluateStatementBlock(node.ThenBlock);
-            else if (node.ElseBlock != null)
-                EvaluateStatementBlock(node.ElseBlock);
-        }
-
-        private void EvaluateForStatement(TypedForStatement node)
-        {
-            var startValue = (int) EvaluateExpression(node.StartValue);
-            var targetValue = (int) EvaluateExpression(node.TargetValue);
-            var isIncrementing = node.Direction == LoopDirection.To;
-
-            var i = startValue;
-            while (isIncrementing ? i <= targetValue : i >= targetValue)
-            {
-                var scope = new Scope();
-                scope.Declare(node.CounterVariable, i);
-                EvaluateStatementBlock(node.Body, scope);
-                i += isIncrementing ? 1 : -1;
-            }
-        }
-
-        private void EvaluateWhileStatement(TypedWhileStatement node)
-        {
-            while ((bool) EvaluateExpression(node.Condition))
-                EvaluateStatementBlock(node.Body);
-        }
-
-        private void EvaluateDoWhileStatement(TypedDoWhileStatement node)
-        {
-            do
-                EvaluateStatementBlock(node.Body);
-            while ((bool) EvaluateExpression(node.Condition));
         }
 
         private void EvaluateVariableDeclaration(TypedVariableDeclaration node)
@@ -161,25 +354,6 @@
                     break;
             }
         }
-    
-        private object EvaluateExpression(TypedExpression node)
-        {
-            switch (node.Kind)
-            {
-                case NodeKind.LiteralExpression:
-                    return ((TypedLiteralExpression) node).Value;
-                case NodeKind.UnaryExpression:
-                    return EvaluateUnaryExpression((TypedUnaryExpression) node);
-                case NodeKind.BinaryExpression:
-                    return EvaluateBinaryExpression((TypedBinaryExpression) node);
-                case NodeKind.VariableExpression:
-                    return EvaluateVariableExpression((TypedVariableExpression) node);
-                case NodeKind.FunctionCallExpression:
-                    return EvaluateFunctionCallExpression((TypedFunctionCallExpression) node);
-                default:
-                    throw new InternalErrorException($"Unsupported expression kind {node.Kind.GetDescription()}");
-            }
-        }
 
         private object EvaluateFunctionCallExpression(TypedFunctionCallExpression node)
         {
@@ -192,129 +366,11 @@
             return builtinFunction.Action(argumentValues.ToArray());
         }
 
-        private object EvaluateUnaryExpression(TypedUnaryExpression node)
-        {
-            switch (node.Op.Kind)
-            {
-                case UnaryOperator.Plus:
-                    return node.Type == TypeSymbol.Int
-                        ? (int) EvaluateExpression(node.Operand)
-                        : (float) (int) EvaluateExpression(node.Operand);
-                case UnaryOperator.Minus:
-                    return node.Type == TypeSymbol.Int
-                        ? - (int) EvaluateExpression(node.Operand)
-                        : - (float) EvaluateExpression(node.Operand);
-                case UnaryOperator.Negation:
-                    return ! (bool) EvaluateExpression(node.Operand);
-                default:
-                    throw new InternalErrorException($"Unsupported unary operator {node.Op.Kind.GetDescription()}");
-            }
-        }
-
         private object EvaluateVariableExpression(TypedVariableExpression node)
         {
             return GetVariableValue(node.Variable);
         }
-
-        private object EvaluateBinaryExpression(TypedBinaryExpression node)
-        {
-            switch (node.Op.Kind)
-            {
-                case BinaryOperator.Equal:
-                    return EvaluateExpression(node.Left) == EvaluateExpression(node.Right);
-
-                case BinaryOperator.NotEqual:
-                    return EvaluateExpression(node.Left) != EvaluateExpression(node.Right);
-
-                case BinaryOperator.And:
-                    return (bool) EvaluateExpression(node.Left) && (bool) EvaluateExpression(node.Right);
-
-                case BinaryOperator.Or:
-                    return (bool) EvaluateExpression(node.Left) || (bool) EvaluateExpression(node.Right);
-                
-                case BinaryOperator.LessThan:
-                {
-                    var left = EvaluateExpression(node.Left);
-                    var right = EvaluateExpression(node.Right);
-                    return node.Op.ResultType == TypeSymbol.Int
-                        ? (int) left < (int) right
-                        : (float) left < (float) right;
-                }
-
-                case BinaryOperator.GreaterTan:
-                {
-                    var left = EvaluateExpression(node.Left);
-                    var right = EvaluateExpression(node.Right);
-                    return node.Op.ResultType == TypeSymbol.Int
-                        ? (int) left > (int) right
-                        : (float) left > (float) right;
-                }
-                
-                case BinaryOperator.LessOrEqual:
-                {
-                    var left = EvaluateExpression(node.Left);
-                    var right = EvaluateExpression(node.Right);
-                    return node.Op.ResultType == TypeSymbol.Int
-                        ? (int)left <= (int)right
-                        : (float)left <= (float)right;
-                }
-
-                case BinaryOperator.GreaterOrEqual:
-                {
-                    var left = EvaluateExpression(node.Left);
-                    var right = EvaluateExpression(node.Right);
-                    return node.Op.ResultType == TypeSymbol.Int
-                        ? (int)left >= (int)right
-                        : (float)left >= (float)right;
-                }
-
-                case BinaryOperator.Plus:
-                {
-                    var left = EvaluateExpression(node.Left);
-                    var right = EvaluateExpression(node.Right);
-                    if (node.Op.ResultType == TypeSymbol.Int)
-                        return (int) left + (int) right;
-                    else if (node.Op.ResultType == TypeSymbol.Float)
-                        return (float) left + (float) right;
-                    else
-                        return left.ToString() + right.ToString();
-                }
-
-                case BinaryOperator.Minus:
-                {
-                    var left = EvaluateExpression(node.Left);
-                    var right = EvaluateExpression(node.Right);
-                    return node.Op.ResultType == TypeSymbol.Int
-                        ? (int)left - (int)right
-                        : (float)left - (float)right;
-                }
-
-                case BinaryOperator.Mul:
-                {
-                    var left = EvaluateExpression(node.Left);
-                    var right = EvaluateExpression(node.Right);
-                    return node.Op.ResultType == TypeSymbol.Int
-                        ? (int)left * (int)right
-                        : (float)left * (float)right;
-                }
-
-                case BinaryOperator.Div:
-                {
-                    var left = EvaluateExpression(node.Left);
-                    var right = EvaluateExpression(node.Right);
-                    return node.Op.ResultType == TypeSymbol.Int
-                        ? (int)left / (int)right
-                        : (float)left / (float)right;
-                }
-
-                case BinaryOperator.Mod:
-                    return (int) EvaluateExpression(node.Left) % (int) EvaluateExpression(node.Right);
-
-                default:
-                    throw new InternalErrorException($"Unsupported binary operator {node.Op.Kind.GetDescription()}");
-            }
-
-        }
-*/
+        */
+        
     }
 }

@@ -17,15 +17,15 @@ varAssign
     ;
 
 stmt
-    : varAssign                                        # variableAsignment
-    | functionCall SEP                                 # functionCallStatement
-    | 'return' expr SEP                                # returnStatement
-    | 'break' SEP                                      # breakStatement
-    | 'continue' SEP                                   # continueStatement
-    | 'while' expr stmtBlock                           # whileStatement
-    | 'do' stmtBlock 'while' expr                      # doWhileStatement
-    | 'if' expr stmtBlock ('else' stmtBlock)?          # ifStatement
-    | 'for' ID '=' expr ('to'|'downto') expr stmtBlock # forStatement
+    : varAssign                                            # variableAsignment
+    | functionCall SEP                                     # functionCallStatement
+    | 'return' expr SEP                                    # returnStatement
+    | 'break' SEP                                          # breakStatement
+    | 'continue' SEP                                       # continueStatement
+    | 'while' expr stmtBlock                               # whileStatement
+    | 'do' stmtBlock 'while' expr                          # doWhileStatement
+    | 'if' expr stmtBlock ('else' stmtBlock)?              # ifStatement
+    | 'for' ID '=' expr dir=('to'|'downto') expr stmtBlock # forStatement
     ;
 
 stmtBlock
@@ -35,10 +35,10 @@ stmtBlock
     ;
 
 expr
-    : BOOL                                # boolLiteral
+    : ID                                  # variableExpression
+    | BOOL                                # boolLiteral
     | NUMBER                              # numberLiteral
     | STRING                              # stringLiteral
-    | ID                                  # variableExpression
     | '(' expr ')'                        # parenthesizedExpression
     | functionCall                        # functionCallExpression
     | op='-' expr                         # unaryExpression
