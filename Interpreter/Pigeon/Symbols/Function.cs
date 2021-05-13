@@ -5,14 +5,12 @@
         internal string Name { get; }
         internal PigeonType ReturnType { get; }
         internal Variable[] Parameters { get; }
-        internal FuncPointer Func { get; }
 
-        internal Function(PigeonType returnType, string name, Variable[] parameters, FuncPointer func = default)
+        internal Function(PigeonType returnType, string name, Variable[] parameters)
         {
             Name = name;
             ReturnType = returnType;
             Parameters = parameters;
-            Func = func;
         }
     }
 }
