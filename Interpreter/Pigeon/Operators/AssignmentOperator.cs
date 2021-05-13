@@ -6,18 +6,18 @@ namespace Kostic017.Pigeon.Operators
 {
     class AssignmentOperator
     {
-        internal PigeonType VariableType { get; }
-        internal PigeonType ValueType { get; }
+        private readonly PigeonType variableType;
+        private readonly PigeonType valueType;
 
-        internal AssignmentOperator(PigeonType variableType, PigeonType valueType)
+        private AssignmentOperator(PigeonType variableType, PigeonType valueType)
         {
-            VariableType = variableType;
-            ValueType = valueType;
+            this.variableType = variableType;
+            this.valueType = valueType;
         }
 
         private bool Supports(PigeonType variableType, PigeonType valueType)
         {
-            return VariableType == variableType && ValueType == valueType;
+            return this.variableType == variableType && this.valueType == valueType;
         }
 
         internal static bool IsAssignable(string op, PigeonType variableType, PigeonType valueType)

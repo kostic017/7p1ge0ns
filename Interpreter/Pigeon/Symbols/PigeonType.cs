@@ -1,13 +1,15 @@
 ﻿namespace Kostic017.Pigeon.Symbols
 {
-    class PigeonType
+    public class PigeonType
     {
         internal static readonly PigeonType Error = new PigeonType("?");
-        internal static readonly PigeonType Bool = new PigeonType("bool");
-        internal static readonly PigeonType Int = new PigeonType("int");
-        internal static readonly PigeonType Float = new PigeonType("float");
-        internal static readonly PigeonType String = new PigeonType("string");
-        internal static readonly PigeonType Void = new PigeonType("void");
+
+        public static readonly PigeonType Any = new PigeonType("*");
+        public static readonly PigeonType Bool = new PigeonType("bool");
+        public static readonly PigeonType Int = new PigeonType("int");
+        public static readonly PigeonType Float = new PigeonType("float");
+        public static readonly PigeonType String = new PigeonType("string");
+        public static readonly PigeonType Void = new PigeonType("void");
 
         internal static PigeonType FromName(string name)
         {

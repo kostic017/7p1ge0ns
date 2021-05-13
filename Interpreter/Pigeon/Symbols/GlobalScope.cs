@@ -2,18 +2,18 @@
 
 namespace Kostic017.Pigeon.Symbols
 {
-    class GlobalScope : Scope
+    public class GlobalScope : Scope
     {
-        readonly Dictionary<string, Function> functions = new Dictionary<string, Function>();
+        private readonly Dictionary<string, Function> functions = new Dictionary<string, Function>();
 
-        internal GlobalScope() : base(null)
+        public GlobalScope() : base(null)
         {
         }
 
-        internal Function DeclareFunction(PigeonType returnType, string name, Variable[] parameters)
+        public Function DeclareFunction(PigeonType returnType, string name, Variable[] parameters, FuncPointer func = default)
         {
-            var function = new Function(returnType, name, parameters);
-            functions.Add(name, function);
+            var function = new Function(returnType, name, parameters, func);
+            functions.Add(function.Name, function);
             return function;
         }
 

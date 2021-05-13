@@ -6,9 +6,9 @@ namespace Kostic017.Pigeon.Operators
 {
     class BinaryOperator
     {
-        readonly PigeonType leftType;
-        readonly PigeonType rightType;
-        readonly PigeonType resultType;
+        private readonly PigeonType leftType;
+        private readonly PigeonType rightType;
+        private readonly PigeonType resultType;
     
         private BinaryOperator(PigeonType left, PigeonType right, PigeonType result)
         {

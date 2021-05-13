@@ -6,7 +6,7 @@ namespace Kostic017.Pigeon.Operators
 {
     class UnaryOperator
     {
-        readonly PigeonType resultType;
+        private readonly PigeonType resultType;
 
         private UnaryOperator(PigeonType type)
         {

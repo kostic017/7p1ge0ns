@@ -1,6 +1,6 @@
 ﻿namespace Kostic017.Pigeon.Symbols
 {
-    class Variable
+    public class Variable
     {
         internal PigeonType Type { get; }
         internal string Name { get; }
@@ -8,6 +8,11 @@
 
         internal bool IsArray { get; set; }
         internal object Value { get; set; }
+
+        public Variable(PigeonType type)
+        {
+            Type = type;
+        }
 
         internal Variable(PigeonType type, string name, bool readOnly)
         {

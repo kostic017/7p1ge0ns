@@ -4,7 +4,6 @@
         f *= i;
     }
     return f;
-
 }
 
 int comb(int n, int k) {

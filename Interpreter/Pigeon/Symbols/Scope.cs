@@ -2,21 +2,21 @@
 
 namespace Kostic017.Pigeon.Symbols
 {
-    class Scope
+    public class Scope
     {
+        private readonly Dictionary<string, Variable> variables = new Dictionary<string, Variable>();
+
         internal Scope Parent { get; }
-        
-        readonly Dictionary<string, Variable> variables = new Dictionary<string, Variable>();
 
         internal Scope(Scope parent)
         {
             Parent = parent;
         }
 
-        internal Variable DeclareVariable(PigeonType type, string name, bool readOnly)
+        public Variable DeclareVariable(PigeonType type, string name, bool readOnly)
         {
             var variable = new Variable(type, name, readOnly);
-            variables.Add(name, variable);
+            variables.Add(variable.Name, variable);
             return variable;
         }
 

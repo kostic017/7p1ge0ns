@@ -12,12 +12,13 @@ namespace Kostic017.Pigeon
     {
         private Scope scope;
         private readonly CodeErrorBag errorBag;
-        private readonly GlobalScope globalScope = new GlobalScope();
+        private readonly GlobalScope globalScope;
         private readonly ParseTreeProperty<PigeonType> types = new ParseTreeProperty<PigeonType>();
 
-        internal SemanticAnalyser(CodeErrorBag errorBag)
+        internal SemanticAnalyser(CodeErrorBag errorBag, GlobalScope globalScope)
         {
             this.errorBag = errorBag;
+            this.globalScope = globalScope;
         }
 
         public override void EnterProgram([NotNull] PigeonParser.ProgramContext context)

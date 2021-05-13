@@ -1,9 +1,9 @@
 ﻿namespace Kostic017.Pigeon.Errors
 {
-    public class CodeError
+    class CodeError
     {
-        public string Message { get; }
-        public TextSpan TextSpan { get; }
+        internal string Message { get; }
+        internal TextSpan TextSpan { get; }
 
         internal CodeError(string message, TextSpan textSpan)
         {

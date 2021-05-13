@@ -1,29 +1,33 @@
 ﻿using Antlr4.Runtime;
-using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Kostic017.Pigeon.Errors;
+using Kostic017.Pigeon.Symbols;
 using System.IO;
 
 namespace Kostic017.Pigeon
 {
+    public delegate object FuncPointer(params object[] arguments);
+
     public class Interpreter
     {
         private readonly IParseTree tree;
         private readonly PigeonParser parser;
-        public CodeErrorBag ErrorBag { get; }
+        private readonly CodeErrorBag errorBag;
 
-        public Interpreter(string code)
+        public Interpreter(string code, GlobalScope globalScope)
         {
-            ErrorBag = new CodeErrorBag();
+            errorBag = new CodeErrorBag();
+
             var inputStream = new AntlrInputStream(code);
             var lexer = new PigeonLexer(inputStream);
             var tokenStream = new CommonTokenStream(lexer);
             parser = new PigeonParser(tokenStream);
-            var errorListener = new CodeErrorListener(ErrorBag);
+            var errorListener = new CodeErrorListener(errorBag);
             parser.AddErrorListener(errorListener);
             tree = parser.program();
+
+            var analyzer = new SemanticAnalyser(errorBag, globalScope);
             var walker = new ParseTreeWalker();
-            var analyzer = new SemanticAnalyser(ErrorBag);
             walker.Walk(analyzer, tree);
         }
 
@@ -34,7 +38,7 @@ namespace Kostic017.Pigeon
 
         public void PrintErrors(TextWriter writer)
         {
-            foreach (var error in ErrorBag)
+            foreach (var error in errorBag)
                 writer.WriteLine(error.ToString());
         }
 
@@ -45,20 +49,5 @@ namespace Kostic017.Pigeon
         //    var evaluator = new Evaluator(analysisResult.TypedAstRoot);
         //    evaluator.Evaluate();
         //}
-    }
-
-    class CodeErrorListener : BaseErrorListener
-    {
-        private readonly CodeErrorBag errorBag;
-
-        public CodeErrorListener(CodeErrorBag errorBag)
-        {
-            this.errorBag = errorBag;
-        }
-
-        public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
-        {
-            errorBag.Report(msg, new TextSpan(offendingSymbol.Line, offendingSymbol.Column, offendingSymbol.StartIndex, offendingSymbol.StopIndex));
-        }
     }
 }

@@ -5,11 +5,11 @@ namespace Kostic017.Pigeon.Operators
 {
     class TernaryOperator
     {
-        readonly PigeonType whenTrueType;
-        readonly PigeonType whenFalseType;
-        readonly PigeonType resultType;
+        private readonly PigeonType whenTrueType;
+        private readonly PigeonType whenFalseType;
+        private readonly PigeonType resultType;
 
-        TernaryOperator(PigeonType whenTrueType, PigeonType whenFalseType, PigeonType resultType)
+        private TernaryOperator(PigeonType whenTrueType, PigeonType whenFalseType, PigeonType resultType)
         {
             this.whenTrueType = whenTrueType;
             this.whenFalseType = whenFalseType;
@@ -36,12 +36,12 @@ namespace Kostic017.Pigeon.Operators
 
         private static readonly TernaryOperator[] combinations = new TernaryOperator[]
         {
-            new TernaryOperator(PigeonType.Int, PigeonType.Int, PigeonType.Bool),
-            new TernaryOperator(PigeonType.Int, PigeonType.Float, PigeonType.Bool),
-            new TernaryOperator(PigeonType.Float, PigeonType.Int, PigeonType.Bool),
-            new TernaryOperator(PigeonType.Float, PigeonType.Float, PigeonType.Bool),
+            new TernaryOperator(PigeonType.Int, PigeonType.Int, PigeonType.Int),
+            new TernaryOperator(PigeonType.Int, PigeonType.Float, PigeonType.Float),
+            new TernaryOperator(PigeonType.Float, PigeonType.Int, PigeonType.Float),
+            new TernaryOperator(PigeonType.Float, PigeonType.Float, PigeonType.Float),
             new TernaryOperator(PigeonType.Bool, PigeonType.Bool, PigeonType.Bool),
-            new TernaryOperator(PigeonType.String, PigeonType.String, PigeonType.Bool),
+            new TernaryOperator(PigeonType.String, PigeonType.String, PigeonType.String),
         };
     }
 }
