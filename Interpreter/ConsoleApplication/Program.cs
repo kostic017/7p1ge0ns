@@ -10,42 +10,37 @@ namespace TestProject
     {
         private static readonly string SAMPLES_FOLDER = "..\\..\\..\\..\\Samples";
 
-        static void Main()
-        {
-            var globalScope = new GlobalScope();
+        private readonly BuiltinSymbols builtinSymbols = new BuiltinSymbols();
 
-            globalScope.DeclareFunction(PigeonType.Void, "prompt", new Variable[] {
+        private Program()
+        {
+            builtinSymbols.RegisterFunction(PigeonType.Void, "prompt", new Variable[] {
                 new Variable(PigeonType.String),
                 new Variable(PigeonType.Any),
             }, Print);
 
-            globalScope.DeclareFunction(PigeonType.Void, "print", new Variable[]
+            builtinSymbols.RegisterFunction(PigeonType.Void, "print", new Variable[]
             {
                 new Variable(PigeonType.Any)
             }, Prompt);
-
-            while (true)
-            {
-                var sb = new StringBuilder();
-                var line = Console.ReadLine();
-
-                if (HandleCommand(line))
-                    continue;
-                
-                while (!string.IsNullOrWhiteSpace(line))
-                {
-                    sb.AppendLine(line);
-                    Console.Write("| ");
-                    line = Console.ReadLine();
-                }
-
-                ExecuteCode(sb.ToString(), globalScope);
-
-                Console.Write("> ");
-            }
+        }
+        
+        private void ExecuteCode(string code)
+        {
+            Console.WriteLine();
+            var interpreter = new Interpreter(code, builtinSymbols);
+            interpreter.PrintTree(Console.Out);
+            interpreter.PrintErrors(Console.Out);
         }
 
-        private static bool HandleCommand(string line)
+        private void ExecuteFile(string file)
+        {
+            var name = Path.GetFileNameWithoutExtension(file);
+            Console.WriteLine($"### {name} ###");
+            ExecuteCode(File.ReadAllText(file));
+        }
+
+        private bool HandleCommand(string line)
         {
             if (!line.StartsWith("#"))
                 return false;
@@ -75,19 +70,28 @@ namespace TestProject
             return true;
         }
 
-        private static void ExecuteCode(string code, GlobalScope globalScope)
+        static void Main()
         {
-            Console.WriteLine();
-            var interpreter = new Interpreter(code, globalScope);
-            interpreter.PrintTree(Console.Out);
-            interpreter.PrintErrors(Console.Out);
-        }
+            var program = new Program();
 
-        private static void ExecuteFile(string file)
-        {
-            var name = Path.GetFileNameWithoutExtension(file);
-            Console.WriteLine($"### {name} ###");
-            ExecuteCode(File.ReadAllText(file));
+            while (true)
+            {
+                Console.Write("> ");
+                var sb = new StringBuilder();
+                var line = Console.ReadLine();
+
+                if (program.HandleCommand(line))
+                    continue;
+                
+                while (!string.IsNullOrWhiteSpace(line))
+                {
+                    sb.AppendLine(line);
+                    Console.Write("| ");
+                    line = Console.ReadLine();
+                }
+
+                program.ExecuteCode(sb.ToString());
+            }
         }
 
         private static object Print(object[] arg)

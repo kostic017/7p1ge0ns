@@ -14,7 +14,7 @@ namespace Kostic017.Pigeon
         private readonly PigeonParser parser;
         private readonly CodeErrorBag errorBag;
 
-        public Interpreter(string code, GlobalScope globalScope)
+        public Interpreter(string code, BuiltinSymbols builtinSymbols)
         {
             errorBag = new CodeErrorBag();
 
@@ -26,7 +26,7 @@ namespace Kostic017.Pigeon
             parser.AddErrorListener(errorListener);
             tree = parser.program();
 
-            var analyzer = new SemanticAnalyser(errorBag, globalScope);
+            var analyzer = new SemanticAnalyser(errorBag, builtinSymbols);
             var walker = new ParseTreeWalker();
             walker.Walk(analyzer, tree);
         }

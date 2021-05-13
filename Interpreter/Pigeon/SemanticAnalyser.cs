@@ -12,13 +12,13 @@ namespace Kostic017.Pigeon
     {
         private Scope scope;
         private readonly CodeErrorBag errorBag;
-        private readonly GlobalScope globalScope;
+        private readonly GlobalScope globalScope = new GlobalScope();
         private readonly ParseTreeProperty<PigeonType> types = new ParseTreeProperty<PigeonType>();
 
-        internal SemanticAnalyser(CodeErrorBag errorBag, GlobalScope globalScope)
+        internal SemanticAnalyser(CodeErrorBag errorBag, BuiltinSymbols pigeonBuiltin)
         {
             this.errorBag = errorBag;
-            this.globalScope = globalScope;
+            pigeonBuiltin.Register(globalScope);
         }
 
         public override void EnterProgram([NotNull] PigeonParser.ProgramContext context)
@@ -60,19 +60,13 @@ namespace Kostic017.Pigeon
             }
             var argumentCount = context.functionArgs() != null ? context.functionArgs().expr().Length : 0;
             if (argumentCount != function.Parameters.Length)
-            {
                 errorBag.ReportInvalidNumberOfArguments(context.GetTextSpan(), functionName, argumentCount);
-                return;
-            }
             for (var i = 0; i < argumentCount; ++i)
             {
                 var argument = context.functionArgs().expr(i);
                 var argumentType = types.RemoveFrom(argument);
-                if (argumentType != function.Parameters[i].Type)
-                {
+                if (function.Parameters[i].Type != PigeonType.Any && argumentType != function.Parameters[i].Type)
                     errorBag.ReportInvalidArgumentType(argument.GetTextSpan(), i, function.Parameters[i].Type);
-                    return;
-                }
             }
         }
 
