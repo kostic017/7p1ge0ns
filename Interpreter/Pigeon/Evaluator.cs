@@ -1,10 +1,13 @@
 ﻿using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Kostic017.Pigeon.Symbols;
+using System;
 using System.Globalization;
 
 namespace Kostic017.Pigeon
 {
+    class BreakLoopException : Exception { }
+
     class Evaluator : PigeonBaseVisitor<object>
     {
         private readonly ParseTreeProperty<PigeonType> types;
@@ -29,6 +32,11 @@ namespace Kostic017.Pigeon
             return bool.Parse(context.BOOL().GetText());
         }
 
+        public override object VisitStringLiteral([NotNull] PigeonParser.StringLiteralContext context)
+        {
+            return context.STRING().GetText();
+        }
+
         public override object VisitNumberLiteral([NotNull] PigeonParser.NumberLiteralContext context)
         {
             return types.Get(context) == PigeonType.Int
@@ -43,7 +51,7 @@ namespace Kostic017.Pigeon
             switch (context.op.Text)
             {
                 case "+":
-                    return resType == PigeonType.Int ? (int) operand : (float) (int) operand;
+                    return resType == PigeonType.Int ? (int) operand : (float) operand;
                 case "-":
                     return resType == PigeonType.Int ? - (int) operand : - (float) operand;
                 case "!":
@@ -110,16 +118,6 @@ namespace Kostic017.Pigeon
             }
         }
 
-        public override object VisitBreakStatement([NotNull] PigeonParser.BreakStatementContext context)
-        {
-            return base.VisitBreakStatement(context);
-        }
-
-        public override object VisitContinueStatement([NotNull] PigeonParser.ContinueStatementContext context)
-        {
-            return base.VisitContinueStatement(context);
-        }
-
         public override object VisitIfStatement([NotNull] PigeonParser.IfStatementContext context)
         {
             if ((bool) VisitExpr(context.expr()))
@@ -132,7 +130,14 @@ namespace Kostic017.Pigeon
         public override object VisitDoWhileStatement([NotNull] PigeonParser.DoWhileStatementContext context)
         {
             do
-                VisitStmtBlock(context.stmtBlock());
+                try
+                {
+                    VisitStmtBlock(context.stmtBlock());
+                }
+                catch (BreakLoopException)
+                {
+                    return null;
+                }
             while ((bool) VisitExpr(context.expr()));
             return null;
         }
@@ -140,7 +145,14 @@ namespace Kostic017.Pigeon
         public override object VisitWhileStatement([NotNull] PigeonParser.WhileStatementContext context)
         {
             while ((bool) VisitExpr(context.expr()))
-                VisitStmtBlock(context.stmtBlock());
+                try
+                {
+                    VisitStmtBlock(context.stmtBlock());
+                }
+                catch (BreakLoopException)
+                {
+                    return null;
+                }
             return null;
         }
 
@@ -153,12 +165,37 @@ namespace Kostic017.Pigeon
             var i = startValue;
             while (isIncrementing ? i <= targetValue : i >= targetValue)
             {
-                //var scope = new Scope();
-                //scope.Declare(node.CounterVariable, i);
-                VisitStmtBlock(context.stmtBlock());
+                try
+                {
+                    VisitStmtBlock(context.stmtBlock());
+                }
+                catch (BreakLoopException)
+                {
+                    return null;
+                }
                 i += isIncrementing ? 1 : -1;
             }
 
+            return null;
+        }
+
+        public override object VisitReturnStatement([NotNull] PigeonParser.ReturnStatementContext context)
+        {
+            return VisitExpr(context.expr());
+        }
+
+        public override object VisitStmtBlock([NotNull] PigeonParser.StmtBlockContext context)
+        {
+            foreach (var statement in context.stmt())
+            {
+                var r = VisitStmt(statement);
+                if (statement is PigeonParser.ReturnStatementContext)
+                    return r;
+                if (statement is PigeonParser.ContinueStatementContext)
+                    return null;
+                if (statement is PigeonParser.BreakStatementContext)
+                    throw new BreakLoopException()
+            }
             return null;
         }
 
@@ -197,24 +234,9 @@ namespace Kostic017.Pigeon
             return base.VisitFunctionParams(context);
         }
 
-        public override object VisitReturnStatement([NotNull] PigeonParser.ReturnStatementContext context)
-        {
-            return base.VisitReturnStatement(context);
-        }
-
         public override object VisitStmt([NotNull] PigeonParser.StmtContext context)
         {
             return base.VisitStmt(context);
-        }
-
-        public override object VisitStmtBlock([NotNull] PigeonParser.StmtBlockContext context)
-        {
-            return base.VisitStmtBlock(context);
-        }
-
-        public override object VisitStringLiteral([NotNull] PigeonParser.StringLiteralContext context)
-        {
-            return base.VisitStringLiteral(context);
         }
 
         public override object VisitTernaryExpression([NotNull] PigeonParser.TernaryExpressionContext context)
@@ -260,39 +282,6 @@ namespace Kostic017.Pigeon
         private object GetVariableValue(VariableSymbol variable)
         {
             return scopes.Peek().Evaluate(variable);
-        }
-
-        private void EvaluateStatement(TypedStatement node)
-        {
-            switch (node.Kind)
-            {
-                case NodeKind.StatementBlock:
-                    EvaluateStatementBlock((TypedStatementBlock) node);
-                    break;
-                case NodeKind.IfStatement:
-                    EvaluateIfStatement((TypedIfStatement) node);
-                    break;
-                case NodeKind.ForStatement:
-                    EvaluateForStatement((TypedForStatement) node);
-                    break;
-                case NodeKind.WhileStatement:
-                    EvaluateWhileStatement((TypedWhileStatement) node);
-                    break;
-                case NodeKind.DoWhileStatement:
-                    EvaluateDoWhileStatement((TypedDoWhileStatement) node);
-                    break;
-                case NodeKind.VariableDeclaration:
-                    EvaluateVariableDeclaration((TypedVariableDeclaration) node);
-                    break;
-                case NodeKind.VariableAssignment:
-                    EvaluateVariableAssignment((TypedVariableAssignment) node);
-                    break;
-                case NodeKind.ExpressionStatement:
-                    EvaluateExpressionStatement((TypedExpressionStatement) node);
-                    break;
-                default:
-                    throw new InternalErrorException($"Unsupported node '{node.Kind}'");
-            }
         }
 
         private void EvaluateStatementBlock(TypedStatementBlock node, Scope predefinedScope = null)

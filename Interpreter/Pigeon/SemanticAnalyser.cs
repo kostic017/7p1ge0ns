@@ -70,12 +70,14 @@ namespace Kostic017.Pigeon
 
         public override void EnterStmtBlock([NotNull] PigeonParser.StmtBlockContext context)
         {
-            scope = new Scope(scope);
+            if (ShouldCreateScope(context))
+                scope = new Scope(scope);
         }
 
         public override void ExitStmtBlock([NotNull] PigeonParser.StmtBlockContext context)
         {
-            scope = scope.Parent;
+            if (ShouldCreateScope(context))
+                scope = scope.Parent;
         }
 
         public override void EnterForStatement([NotNull] PigeonParser.ForStatementContext context)
@@ -216,6 +218,15 @@ namespace Kostic017.Pigeon
             var actual = Types.Get(context);
             if (actual != expected)
                 errorBag.ReportUnexpectedType(context.GetTextSpan(), actual, expected);
+        }
+
+        private bool ShouldCreateScope(PigeonParser.StmtBlockContext context)
+        {
+            if (
+                context.Parent is PigeonParser.FunctionDeclContext ||
+                context.Parent is PigeonParser.ForStatementContext
+            ) return false;
+            return true;
         }
 
         private bool IsInLoop(RuleContext node)
