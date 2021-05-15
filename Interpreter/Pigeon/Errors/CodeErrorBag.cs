@@ -58,19 +58,19 @@ namespace Kostic017.Pigeon.Errors
             Report($"Variable '{name}' is read-only", textSpan);
         }
 
-        internal void ReportUnexpectedType(TextSpan textSpan, PigeonType actualType, PigeonType expectedType)
+        internal void ReportUnexpectedType(TextSpan textSpan, PigeonType expectedType, PigeonType actualType)
         {
             Report($"Got value of type {actualType.Name} instead of {expectedType.Name}", textSpan);
         }
 
         internal void ReportInvalidNumberOfArguments(TextSpan textSpan, string functionName, int numOfArgs)
         {
-            Report($"Function {functionName} expects {numOfArgs}", textSpan);
+            Report($"Function {functionName} expects {numOfArgs} argument(s)", textSpan);
         }
 
-        internal void ReportInvalidArgumentType(TextSpan textSpan, int argCnt, PigeonType expectedType)
+        internal void ReportInvalidArgumentType(TextSpan textSpan, int argCnt, PigeonType expectedType, PigeonType actualType)
         {
-            Report($"Argument {argCnt} should be of type {expectedType.Name}", textSpan);
+            Report($"Argument {argCnt} should be of type {expectedType.Name} instead of {actualType.Name}", textSpan);
         }
 
         internal void ReportStatementNotInLoop(TextSpan textSpan, string statement)
@@ -86,6 +86,11 @@ namespace Kostic017.Pigeon.Errors
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        internal bool IsEmpty()
+        {
+            return errors.Count == 0;
         }
     }
 }

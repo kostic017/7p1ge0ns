@@ -17,7 +17,7 @@ varAssign
     ;
 
 stmt
-    : varAssign                                            # variableAsignment
+    : varAssign                                            # variableAssignmentStatement
     | functionCall SEP                                     # functionCallStatement
     | 'return' expr SEP                                    # returnStatement
     | 'break' SEP                                          # breakStatement

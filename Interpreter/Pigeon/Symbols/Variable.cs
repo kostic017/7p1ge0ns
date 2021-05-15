@@ -5,8 +5,6 @@
         internal PigeonType Type { get; }
         internal string Name { get; }
         internal bool ReadOnly { get; }
-
-        internal bool IsArray { get; set; }
         internal object Value { get; set; }
 
         public Variable(PigeonType type)

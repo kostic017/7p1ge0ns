@@ -1,6 +1,7 @@
 ﻿using Kostic017.Pigeon;
 using Kostic017.Pigeon.Symbols;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -10,29 +11,30 @@ namespace TestProject
     {
         private static readonly string SAMPLES_FOLDER = "..\\..\\..\\..\\Samples";
 
-        private readonly BuiltinSymbols builtinSymbols = new BuiltinSymbols();
+        private bool printTree = false;
+        private readonly Builtins builtins = new Builtins();
 
         private Program()
         {
-            builtinSymbols.RegisterFunction(PigeonType.Void, "prompt", new Variable[] {
-                new Variable(PigeonType.String),
-                new Variable(PigeonType.Any),
-            }, Print);
-
-            builtinSymbols.RegisterFunction(PigeonType.Void, "print", new Variable[] {
-                new Variable(PigeonType.Any)
-            }, Prompt);
+            builtins.RegisterFunction(PigeonType.String, "prompt", new Variable[] { new Variable(PigeonType.String) }, Prompt);
+            builtins.RegisterFunction(PigeonType.Int, "prompt_i", new Variable[] { new Variable(PigeonType.String) }, PromptI);
+            builtins.RegisterFunction(PigeonType.Float, "prompt_f", new Variable[] { new Variable(PigeonType.String) }, PromptF);
+            builtins.RegisterFunction(PigeonType.Bool, "prompt_b", new Variable[] { new Variable(PigeonType.String) }, PromptB);
+            builtins.RegisterFunction(PigeonType.Void, "print", new Variable[] { new Variable(PigeonType.Any) }, Print);
         }
         
         private void ExecuteCode(string code)
         {
-            var interpreter = new Interpreter(code, builtinSymbols);
-            interpreter.PrintTree(Console.Out);
-            interpreter.PrintErrors(Console.Out);
+            var interpreter = new Interpreter(code, builtins);
+            if (printTree)
+                interpreter.PrintTree(Console.Out);
+            interpreter.PrintErr(Console.Out);
+            interpreter.Evaluate();
         }
 
         private void ExecuteFile(string file)
         {
+            Console.WriteLine();
             var name = Path.GetFileNameWithoutExtension(file);
             Console.WriteLine($"### {name} ###");
             ExecuteCode(File.ReadAllText(file));
@@ -56,9 +58,13 @@ namespace TestProject
                     else
                         foreach (var file in Directory.GetFiles(SAMPLES_FOLDER, "*.pig"))
                             ExecuteFile(file);
+                    Console.WriteLine();
                     break;
                 case "#cls:":
                     Console.Clear();
+                    break;
+                case "#tree":
+                    printTree = !printTree;
                     break;
                 default:
                     Console.WriteLine($"Valid commands: #list, #exec [file], #cls");
@@ -101,7 +107,25 @@ namespace TestProject
         private static object Prompt(object[] arg)
         {
             Console.Write(arg[0]);
-            return null;
+            return Console.ReadLine();
+        }
+
+        private static object PromptI(object[] arg)
+        {
+            Console.Write(arg[0]);
+            return int.Parse(Console.ReadLine());
+        }
+
+        private static object PromptF(object[] arg)
+        {
+            Console.Write(arg[0]);
+            return float.Parse(Console.ReadLine(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+        }
+
+        private static object PromptB(object[] arg)
+        {
+            Console.Write(arg[0]);
+            return bool.Parse(Console.ReadLine());
         }
     }
 }

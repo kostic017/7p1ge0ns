@@ -10,9 +10,9 @@ namespace Kostic017.Pigeon.Symbols
         {
         }
 
-        internal Function DeclareFunction(PigeonType returnType, string name, Variable[] parameters)
+        internal Function DeclareFunction(PigeonType returnType, string name, Variable[] parameters, object funcBody)
         {
-            var function = new Function(returnType, name, parameters);
+            var function = new Function(returnType, name, parameters, funcBody);
             functions.Add(function.Name, function);
             return function;
         }

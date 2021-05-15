@@ -1,9 +1,8 @@
-n = 0;
 sum = 0;
-prompt("n: ", n);
+n = prompt_i("n: ");
 
 for i = 1 to n {
     sum += i;
 }
 
-print("sum = " + sum);
+print("Sum: " + sum);

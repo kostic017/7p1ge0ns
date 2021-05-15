@@ -13,8 +13,9 @@ namespace Kostic017.Pigeon
         private readonly IParseTree tree;
         private readonly PigeonParser parser;
         private readonly CodeErrorBag errorBag;
+        private readonly SemanticAnalyser analyser;
 
-        public Interpreter(string code, BuiltinSymbols builtinSymbols)
+        public Interpreter(string code, Builtins builtins)
         {
             errorBag = new CodeErrorBag();
             
@@ -29,12 +30,19 @@ namespace Kostic017.Pigeon
             var walker = new ParseTreeWalker();
             var globalScope = new GlobalScope();
             
-            builtinSymbols.Register(globalScope);
-            var functionDeclarer = new FunctionDeclarer(errorBag, globalScope);
-            walker.Walk(functionDeclarer, tree);
+            builtins.Register(globalScope);
+            var funcDeclHandler = new FuncDeclHandler(errorBag, globalScope);
+            walker.Walk(funcDeclHandler, tree);
 
-            var analyzer = new SemanticAnalyser(errorBag, globalScope);
-            walker.Walk(analyzer, tree);
+            analyser = new SemanticAnalyser(errorBag, globalScope);
+            walker.Walk(analyser, tree);
+        }
+
+        public void Evaluate()
+        {
+            if (!errorBag.IsEmpty())
+                throw new IllegalUsageException("Cannot evaluate because of parsing and other errors");
+            new Evaluator(analyser).Visit(tree);
         }
 
         public void PrintTree(TextWriter writer)
@@ -42,18 +50,10 @@ namespace Kostic017.Pigeon
             tree.PrintTree(writer, parser.RuleNames);
         }
 
-        public void PrintErrors(TextWriter writer)
+        public void PrintErr(TextWriter writer)
         {
             foreach (var error in errorBag)
                 writer.WriteLine(error.ToString());
         }
-
-        //public static void Evaluate(AnalysisResult analysisResult)
-        //{
-        //    if (analysisResult.Errors.AllErrors.Length > 0)
-        //        throw new IllegalUsageException("There were errors in this analysis result");
-        //    var evaluator = new Evaluator(analysisResult.TypedAstRoot);
-        //    evaluator.Evaluate();
-        //}
     }
 }

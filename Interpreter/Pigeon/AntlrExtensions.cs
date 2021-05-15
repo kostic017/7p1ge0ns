@@ -9,8 +9,7 @@ namespace Kostic017.Pigeon
     {
         public static IParseTree GetRightSibling(this ParserRuleContext context)
         {
-            int index = GetNodeIndex(context);
-
+            var index = GetNodeIndex(context);
             return index >= 0 && index < context.Parent.ChildCount - 1 
                 ? context.Parent.GetChild(index + 1) 
                 : null;
@@ -18,7 +17,7 @@ namespace Kostic017.Pigeon
 
         public static int GetNodeIndex(this ParserRuleContext context)
         {
-            RuleContext parent = context?.Parent;
+            var parent = context?.Parent;
 
             if (parent == null)
                 return -1;

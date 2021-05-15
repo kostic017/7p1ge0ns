@@ -6,12 +6,12 @@ using System.Linq;
 
 namespace Kostic017.Pigeon
 {
-    internal class FunctionDeclarer : PigeonBaseListener
+    internal class FuncDeclHandler : PigeonBaseListener
     {
         private readonly CodeErrorBag errorBag;
         private readonly GlobalScope globalScope;
 
-        public FunctionDeclarer(CodeErrorBag errorBag, GlobalScope globalScope)
+        public FuncDeclHandler(CodeErrorBag errorBag, GlobalScope globalScope)
         {
             this.errorBag = errorBag;
             this.globalScope = globalScope;
@@ -21,7 +21,7 @@ namespace Kostic017.Pigeon
         {
             var parameters = new List<Variable>();
             var returnType = PigeonType.FromName(context.TYPE().GetText());
-            var parameterCount = context.functionParams() != null ? context.functionParams().ID().Length : 0;
+            var parameterCount = context.functionParams()?.ID()?.Length ?? 0;
 
             for (var i = 0; i < parameterCount; ++i)
             {
@@ -34,7 +34,7 @@ namespace Kostic017.Pigeon
                 parameters.Add(new Variable(parameterType, parameterName, false));
             }
             
-            globalScope.DeclareFunction(returnType, context.ID().GetText(), parameters.ToArray());
+            globalScope.DeclareFunction(returnType, context.ID().GetText(), parameters.ToArray(), context.stmtBlock());
         }
     }
 }

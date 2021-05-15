@@ -11,25 +11,31 @@ namespace Kostic017.Pigeon
     {
         private Scope scope;
         private readonly CodeErrorBag errorBag;
-        private readonly GlobalScope globalScope;
 
+        internal GlobalScope GlobalScope { get; }
+        internal ParseTreeProperty<Scope> Scopes { get; } = new ParseTreeProperty<Scope>();
         internal ParseTreeProperty<PigeonType> Types { get; } = new ParseTreeProperty<PigeonType>();
 
         internal SemanticAnalyser(CodeErrorBag errorBag, GlobalScope globalScope)
         {
             this.errorBag = errorBag;
-            this.globalScope = globalScope;
+            GlobalScope = globalScope;
+        }
+
+        public override void ExitEveryRule([NotNull] ParserRuleContext context)
+        {
+            Scopes.Put(context, scope);
         }
 
         public override void EnterProgram([NotNull] PigeonParser.ProgramContext context)
         {
-            scope = globalScope;
+            scope = GlobalScope;
         }
 
         public override void EnterFunctionDecl([NotNull] PigeonParser.FunctionDeclContext context)
         {
-            scope = new Scope(scope);
-            globalScope.TryGetFunction(context.ID().GetText(), out var function);
+            NewScope();
+            GlobalScope.TryGetFunction(context.ID().GetText(), out var function);
             foreach (var parameter in function.Parameters)
                 scope.DeclareVariable(parameter.Type, parameter.Name, parameter.ReadOnly);
         }
@@ -42,27 +48,34 @@ namespace Kostic017.Pigeon
         public override void ExitFunctionCall([NotNull] PigeonParser.FunctionCallContext context)
         {
             var functionName = context.ID().GetText();
-            if (!globalScope.TryGetFunction(functionName, out var function))
+            
+            if (!GlobalScope.TryGetFunction(functionName, out var function))
             {
                 errorBag.ReportUndeclaredFunction(context.GetTextSpan(), functionName);
                 return;
             }
-            var argumentCount = context.functionArgs() != null ? context.functionArgs().expr().Length : 0;
+
+            var argumentCount = context.functionArgs()?.expr()?.Length ?? 0;
+            
             if (argumentCount != function.Parameters.Length)
+            {
                 errorBag.ReportInvalidNumberOfArguments(context.GetTextSpan(), functionName, argumentCount);
+                return;
+            }
+
             for (var i = 0; i < argumentCount; ++i)
             {
                 var argument = context.functionArgs().expr(i);
                 var argumentType = Types.Get(argument);
                 if (function.Parameters[i].Type != PigeonType.Any && argumentType != function.Parameters[i].Type)
-                    errorBag.ReportInvalidArgumentType(argument.GetTextSpan(), i, function.Parameters[i].Type);
+                    errorBag.ReportInvalidArgumentType(argument.GetTextSpan(), i + 1, function.Parameters[i].Type, argumentType);
             }
         }
 
         public override void ExitFunctionCallExpression([NotNull] PigeonParser.FunctionCallExpressionContext context)
         {
             var functionName = context.functionCall().ID().GetText();
-            if (globalScope.TryGetFunction(functionName, out var function))
+            if (GlobalScope.TryGetFunction(functionName, out var function))
                 Types.Put(context, function.ReturnType);
             else
                 errorBag.ReportUndeclaredFunction(context.GetTextSpan(), functionName);
@@ -71,7 +84,7 @@ namespace Kostic017.Pigeon
         public override void EnterStmtBlock([NotNull] PigeonParser.StmtBlockContext context)
         {
             if (ShouldCreateScope(context))
-                scope = new Scope(scope);
+                NewScope();
         }
 
         public override void ExitStmtBlock([NotNull] PigeonParser.StmtBlockContext context)
@@ -82,7 +95,7 @@ namespace Kostic017.Pigeon
 
         public override void EnterForStatement([NotNull] PigeonParser.ForStatementContext context)
         {
-            scope = new Scope(scope);
+            NewScope();
             scope.DeclareVariable(PigeonType.Int, context.ID().GetText(), false);
         }
 
@@ -120,7 +133,7 @@ namespace Kostic017.Pigeon
                 if (!AssignmentOperator.IsAssignable(context.op.Text, variable.Type, varType))
                     errorBag.ReportInvalidTypeAssignment(context.GetTextSpan(), varName, variable.Type, varType);
             }
-            else if (scope.IsVariableDeclaredHere(varName))
+            else if (scope.IsDeclaredHere(varName))
                 errorBag.ReportVariableRedeclaration(context.GetTextSpan(), varName);
             else if (context.op.Text == "=")
                 scope.DeclareVariable(varType, varName, IsAllUpper(varName));
@@ -207,17 +220,23 @@ namespace Kostic017.Pigeon
                 node = node.Parent;
             
             var functionName = ((PigeonParser.FunctionDeclContext)node).ID().GetText();
-            globalScope.TryGetFunction(functionName, out var function);
+            GlobalScope.TryGetFunction(functionName, out var function);
             
             if (returnType != function.ReturnType)
-                errorBag.ReportUnexpectedType(context.expr().GetTextSpan(), returnType, function.ReturnType);
+                errorBag.ReportUnexpectedType(context.expr().GetTextSpan(), function.ReturnType, returnType);
+        }
+
+        private void NewScope()
+        {
+            scope.Child = new Scope(scope);
+            scope = scope.Child;
         }
 
         private void CheckExprType(PigeonParser.ExprContext context, PigeonType expected)
         {
             var actual = Types.Get(context);
             if (actual != expected)
-                errorBag.ReportUnexpectedType(context.GetTextSpan(), actual, expected);
+                errorBag.ReportUnexpectedType(context.GetTextSpan(), expected, actual);
         }
 
         private bool ShouldCreateScope(PigeonParser.StmtBlockContext context)

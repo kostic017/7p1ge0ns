@@ -1,5 +1,4 @@
-﻿n = 0;
-prompt("n: ", n);
+﻿n = prompt_i("n: ");
 print(ones(n));
 
 int ones(int n) {

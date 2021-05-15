@@ -1,10 +1,9 @@
-n = 0;
-prompt("n: ", n);
+n = prompt_i("n: ");
 
 if prime(n)
-    print("prime");
+    print("Number is prime");
 else
-    print("composite");
+    print("Number is composite");
 
 bool prime(int n) {
     if (n == 1)
