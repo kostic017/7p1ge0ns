@@ -1,27 +1,59 @@
-﻿using Kostic017.Pigeon.Errors;
+﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
+using Kostic017.Pigeon.Errors;
+using Kostic017.Pigeon.Symbols;
+using System.IO;
 
 namespace Kostic017.Pigeon
 {
-    public static class Interpreter
+    public delegate object FuncPointer(params object[] arguments);
+
+    public class Interpreter
     {
-        public static AnalysisResult Analyze(string code, int tabSize = 4)
+        private readonly IParseTree tree;
+        private readonly PigeonParser parser;
+        private readonly CodeErrorBag errorBag;
+        private readonly SemanticAnalyser analyser;
+
+        public Interpreter(string code, Builtins builtins)
         {
-            var lexer = new Lexer(code, tabSize);
-            var tokens = lexer.Lex();
-            var parser = new Parser(tokens);
-            var ast = parser.Parse();
-            var typeChecker = new TypeChecker(ast);
-            var typedAst = typeChecker.Anaylize();
-            var errorBag = new SyntaxErrorBag(lexer.ErrorBag, parser.ErrorBag, typeChecker.ErrorBag);
-            return new AnalysisResult(tokens, ast, typedAst, errorBag);
+            errorBag = new CodeErrorBag();
+            
+            var inputStream = new AntlrInputStream(code);
+            var lexer = new PigeonLexer(inputStream);
+            var tokenStream = new CommonTokenStream(lexer);
+            parser = new PigeonParser(tokenStream);
+            var errorListener = new CodeErrorListener(errorBag);
+            parser.AddErrorListener(errorListener);
+            tree = parser.program();
+
+            var walker = new ParseTreeWalker();
+            var globalScope = new GlobalScope();
+            
+            builtins.Register(globalScope);
+            var funcDeclHandler = new FuncDeclHandler(errorBag, globalScope);
+            walker.Walk(funcDeclHandler, tree);
+
+            analyser = new SemanticAnalyser(errorBag, globalScope);
+            walker.Walk(analyser, tree);
         }
 
-        public static void Evaluate(AnalysisResult analysisResult)
+        public void Evaluate()
         {
-            if (analysisResult.Errors.AllErrors.Length > 0)
-                throw new IllegalUsageException("There were errors in this analysis result");
-            var evaluator = new Evaluator(analysisResult.TypedAstRoot);
-            evaluator.Evaluate();
+            if (!errorBag.IsEmpty())
+                throw new IllegalUsageException("Cannot evaluate because of parsing and other errors");
+            new Evaluator(analyser).Visit(tree);
+        }
+
+        public void PrintTree(TextWriter writer)
+        {
+            tree.PrintTree(writer, parser.RuleNames);
+        }
+
+        public void PrintErr(TextWriter writer)
+        {
+            foreach (var error in errorBag)
+                writer.WriteLine(error.ToString());
         }
     }
 }
