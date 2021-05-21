@@ -31,8 +31,8 @@ namespace Kostic017.Pigeon
             var globalScope = new GlobalScope();
             
             builtins.Register(globalScope);
-            var funcDeclHandler = new FuncDeclHandler(errorBag, globalScope);
-            walker.Walk(funcDeclHandler, tree);
+            var functionDeclarator = new FunctionDeclarator(errorBag, globalScope);
+            walker.Walk(functionDeclarator, tree);
 
             analyser = new SemanticAnalyser(errorBag, globalScope);
             walker.Walk(analyser, tree);

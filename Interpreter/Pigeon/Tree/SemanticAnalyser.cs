@@ -11,9 +11,8 @@ namespace Kostic017.Pigeon
     {
         private Scope scope;
         private readonly CodeErrorBag errorBag;
-
+        
         internal GlobalScope GlobalScope { get; }
-        internal ParseTreeProperty<Scope> Scopes { get; } = new ParseTreeProperty<Scope>();
         internal ParseTreeProperty<PigeonType> Types { get; } = new ParseTreeProperty<PigeonType>();
 
         internal SemanticAnalyser(CodeErrorBag errorBag, GlobalScope globalScope)
@@ -22,19 +21,14 @@ namespace Kostic017.Pigeon
             GlobalScope = globalScope;
         }
 
-        public override void ExitEveryRule([NotNull] ParserRuleContext context)
-        {
-            Scopes.Put(context, scope);
-        }
-
         public override void EnterProgram([NotNull] PigeonParser.ProgramContext context)
         {
-            scope = GlobalScope;
+            scope = new Scope(GlobalScope);
         }
 
         public override void EnterFunctionDecl([NotNull] PigeonParser.FunctionDeclContext context)
         {
-            NewScope();
+            scope = new Scope(GlobalScope);
             GlobalScope.TryGetFunction(context.ID().GetText(), out var function);
             foreach (var parameter in function.Parameters)
                 scope.DeclareVariable(parameter.Type, parameter.Name, parameter.ReadOnly);
@@ -84,7 +78,7 @@ namespace Kostic017.Pigeon
         public override void EnterStmtBlock([NotNull] PigeonParser.StmtBlockContext context)
         {
             if (ShouldCreateScope(context))
-                NewScope();
+                scope = new Scope(scope);
         }
 
         public override void ExitStmtBlock([NotNull] PigeonParser.StmtBlockContext context)
@@ -95,7 +89,7 @@ namespace Kostic017.Pigeon
 
         public override void EnterForStatement([NotNull] PigeonParser.ForStatementContext context)
         {
-            NewScope();
+            scope = new Scope(scope);
             scope.DeclareVariable(PigeonType.Int, context.ID().GetText(), false);
         }
 
@@ -224,12 +218,6 @@ namespace Kostic017.Pigeon
             
             if (returnType != function.ReturnType)
                 errorBag.ReportUnexpectedType(context.expr().GetTextSpan(), function.ReturnType, returnType);
-        }
-
-        private void NewScope()
-        {
-            scope.Child = new Scope(scope);
-            scope = scope.Child;
         }
 
         private void CheckExprType(PigeonParser.ExprContext context, PigeonType expected)

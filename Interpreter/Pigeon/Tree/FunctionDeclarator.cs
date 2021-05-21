@@ -6,12 +6,12 @@ using System.Linq;
 
 namespace Kostic017.Pigeon
 {
-    internal class FuncDeclHandler : PigeonBaseListener
+    internal class FunctionDeclarator : PigeonBaseListener
     {
         private readonly CodeErrorBag errorBag;
         private readonly GlobalScope globalScope;
 
-        public FuncDeclHandler(CodeErrorBag errorBag, GlobalScope globalScope)
+        internal FunctionDeclarator(CodeErrorBag errorBag, GlobalScope globalScope)
         {
             this.errorBag = errorBag;
             this.globalScope = globalScope;
