@@ -1,8 +1,8 @@
-sum = 0;
+s = 0;
 n = prompt_i("n: ");
 
 for i = 1 to n {
-    sum += i;
+    s += i;
 }
 
-print("Sum: " + sum);
+print(s);

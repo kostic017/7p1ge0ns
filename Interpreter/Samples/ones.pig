@@ -1,5 +1,6 @@
 ﻿n = prompt_i("n: ");
-print(ones(n));
+r = ones(n);
+print(r);
 
 int ones(int n) {
     i = 0;

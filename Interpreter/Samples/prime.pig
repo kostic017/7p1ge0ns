@@ -1,9 +1,9 @@
 n = prompt_i("n: ");
 
 if prime(n)
-    print("Number is prime");
+    print("prime");
 else
-    print("Number is composite");
+    print("composite");
 
 bool prime(int n) {
     if (n == 1)

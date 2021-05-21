@@ -4,9 +4,7 @@ for i = 0 to 9
     print(fibonacci(i));
 
 int fibonacci(int i) {
-    if (i == 0)
-        return 0;
-    if (i == 1)
-        return 1;
+    if (i == 0 || i == 1)
+        return i;
     return fibonacci(i - 1) + fibonacci(i - 2);
 }

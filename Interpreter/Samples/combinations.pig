@@ -1,6 +1,7 @@
 ﻿n = prompt_i("n: ");
 k = prompt_i("k: ");
-print(comb(n, k));
+r = comb(n, k);
+print(r);
 
 int comb(int n, int k) {
     return fact(n) / (fact(k) * fact(n - k));
