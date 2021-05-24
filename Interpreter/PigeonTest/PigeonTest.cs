@@ -25,42 +25,44 @@ namespace Kostic017.Pigeon.Tests
             builtins.RegisterFunction(PigeonType.Void, "print", new Variable[] { new Variable(PigeonType.Any) }, Print);
         }
 
-        [Fact]
-        public void Test()
+        [Theory]
+        [MemberData(nameof(TestCases))]
+        public void Test(string sample)
         {
-            foreach (var outFile in Directory.GetFiles(SAMPLES_FOLDER, "*.out"))
+            var inFile = Path.Combine(SAMPLES_FOLDER, sample + ".in");
+            var code = File.ReadAllText(Path.Combine(SAMPLES_FOLDER, sample + ".pig"));
+            var outputs = ReadCases(Path.Combine(SAMPLES_FOLDER, sample + ".out"));
+
+            if (File.Exists(inFile))
             {
-                var sample = Path.GetFileNameWithoutExtension(outFile);
-                var inFile = Path.Combine(SAMPLES_FOLDER, sample + ".in");
-                var code = File.ReadAllText(Path.Combine(SAMPLES_FOLDER, sample + ".pig"));
-                var outputs = ReadCases(outFile);
-
-                if (File.Exists(inFile))
+                var inputs = ReadCases(inFile);
+                for (var i = 0; i < inputs.Length; ++i)
                 {
-                    var inputs = ReadCases(inFile);
-                    for (var i = 0; i < inputs.Length; ++i)
-                    {
                         
-                        inputStream = new Queue<string>();
-                        outputStream = new StringWriter();
-                        
-                        foreach (var input in inputs[i].Split('\n'))
-                            inputStream.Enqueue(input);
-
-                        Execute(code);
-
-                        Assert.Equal(outputs[i], Output());
-                    
-                    }
-                }
-                else
-                {
+                    inputStream = new Queue<string>();
                     outputStream = new StringWriter();
-                    Execute(code);
-                    Assert.Equal(outputs[0], Output());
-                }
+                        
+                    foreach (var input in inputs[i].Split('\n'))
+                        inputStream.Enqueue(input);
 
+                    Execute(code);
+
+                    Assert.Equal(outputs[i], Output());
+                    
+                }
             }
+            else
+            {
+                outputStream = new StringWriter();
+                Execute(code);
+                Assert.Equal(outputs[0], Output());
+            }
+        }
+
+        public static IEnumerable<object[]> TestCases()
+        {
+            foreach (var sample in Directory.GetFiles(SAMPLES_FOLDER, "*.out"))
+                yield return new string[] { Path.GetFileNameWithoutExtension(sample) };
         }
 
         private string Output()
