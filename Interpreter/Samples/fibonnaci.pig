@@ -1,6 +1,6 @@
 n = prompt_i("n: ");
 
-for i = 0 to 9
+for i = 1 to n
     print(fibonacci(i));
 
 int fibonacci(int i) {

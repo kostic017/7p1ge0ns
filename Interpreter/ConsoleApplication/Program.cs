@@ -29,7 +29,8 @@ namespace TestProject
             if (printTree)
                 interpreter.PrintTree(Console.Out);
             interpreter.PrintErr(Console.Out);
-            interpreter.Evaluate();
+            if (interpreter.NoErrors())
+                interpreter.Evaluate();
         }
 
         private void ExecuteFile(string file)

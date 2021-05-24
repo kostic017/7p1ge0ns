@@ -65,7 +65,7 @@ namespace Kostic017.Pigeon.Tests
 
         private string Output()
         {
-            return outputStream.ToString().Trim();
+            return outputStream.ToString().Replace("\r\n", "\n").Trim();
         }
 
         private string[] ReadCases(string file)

@@ -50,6 +50,11 @@ namespace Kostic017.Pigeon
             tree.PrintTree(writer, parser.RuleNames);
         }
 
+        public bool NoErrors()
+        {
+            return errorBag.IsEmpty();
+        }
+
         public void PrintErr(TextWriter writer)
         {
             foreach (var error in errorBag)
