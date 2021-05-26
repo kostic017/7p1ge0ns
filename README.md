@@ -1,1 +1,0 @@
-The interpreter project is separated from the Unity project. The main reason for that is reusability outside of this game. The output of the builds is DLL which is automatically copied to the Assets folder after each build.
