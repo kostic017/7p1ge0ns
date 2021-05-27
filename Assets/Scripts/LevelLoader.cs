@@ -7,6 +7,7 @@ public class LevelLoader : MonoBehaviour
     public Vector3 tileSize;
     public float tileSpacing;
     public LevelObject[] levelObjects;
+    public ProgrammableObject[] programmables;
 
     private Level level;
 
@@ -16,9 +17,6 @@ public class LevelLoader : MonoBehaviour
     {
         level = new Level(map.width, map.height);
 
-        var cx = map.width * (tileSize.x + tileSpacing) * 0.5f;
-        Camera.main.transform.position = new Vector3(cx, Camera.main.transform.position.y, Camera.main.transform.position.z);
-        
         foreach (var levelObject in levelObjects)
             mappings.Add(levelObject.mapColor, levelObject);
 
@@ -30,22 +28,29 @@ public class LevelLoader : MonoBehaviour
                 var z = r * (tileSize.z + tileSpacing);
                 
                 var levelObject = mappings[map.GetPixel(c, r)];
-                var position = new Vector3(x, Mathf.Abs(levelObject.height - tileSize.y) * 0.5f, z);
+                var position = new Vector3(x, levelObject.height * 0.5f, z);
                 var gameObject = Instantiate(levelObject.prefab, position, Quaternion.identity);
                 
-                level.Tiles[r, c] = levelObject.prefab.name;
+                level.Tiles[r, c] = levelObject;
                 gameObject.transform.localScale = new Vector3(tileSize.x, levelObject.height, tileSize.z);
 
-                if (levelObject.prefab.name == "Start")
+                if (levelObject.prefab.name == "Spawner")
                 {
-                    level.StartTiles.Add(new Vector2Int(c, r));
-                    Camera.main.transform.LookAt(gameObject.transform);
+                    level.Spawners.Add(new Vector2Int(c, r));
                 }
                 else if (levelObject.prefab.name == "Finish")
                 {
                     level.FinishTiles.Add(new Vector2Int(c, r));
                 }
             }
+        }
+
+        foreach (var programmable in programmables)
+        {
+            var x = programmable.position.x * (tileSize.x + tileSpacing);
+            var z = programmable.position.y * (tileSize.z + tileSpacing);
+            var y = level.Tiles[programmable.position.y, programmable.position.x].height;
+            Instantiate(programmable.prefab, new Vector3(x, y, z), Quaternion.identity);
         }
     }
 
