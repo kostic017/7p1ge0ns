@@ -1,1 +1,0 @@
-Requires [InGame Code Editor](https://assetstore.unity.com/packages/tools/gui/ingame-code-editor-144254).
