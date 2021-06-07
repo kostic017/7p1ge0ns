@@ -29,7 +29,7 @@ namespace TestProject
             if (printTree)
                 interpreter.PrintTree(Console.Out);
             interpreter.PrintErr(Console.Out);
-            if (interpreter.NoErrors())
+            if (interpreter.HasNoErrors())
                 interpreter.Evaluate();
         }
 

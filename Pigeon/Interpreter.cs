@@ -50,7 +50,7 @@ namespace Kostic017.Pigeon
             tree.PrintTree(writer, parser.RuleNames);
         }
 
-        public bool NoErrors()
+        public bool HasNoErrors()
         {
             return errorBag.IsEmpty();
         }
