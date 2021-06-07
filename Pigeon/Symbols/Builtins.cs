@@ -10,7 +10,7 @@ namespace Kostic017.Pigeon.Symbols
         internal void Register(GlobalScope globalScope)
         {
             foreach (var v in variables.Values)
-                globalScope.DeclareVariable(v.Type, v.Name, v.ReadOnly);
+                globalScope.DeclareVariable(v.Type, v.Name, v.ReadOnly, v.Value);
             foreach (var f in functions.Values)
                 globalScope.DeclareFunction(f.ReturnType, f.Name, f.Parameters, f.FuncBody);
         }

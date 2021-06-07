@@ -13,9 +13,9 @@ namespace Kostic017.Pigeon.Symbols
             Parent = parent;
         }
 
-        internal Variable DeclareVariable(PigeonType type, string name, bool readOnly = false)
+        internal Variable DeclareVariable(PigeonType type, string name, bool readOnly = false, object value = null)
         {
-            var variable = new Variable(type, name, readOnly);
+            var variable = new Variable(type, name, readOnly) { Value = value };
             variables.Add(variable.Name, variable);
             return variable;
         }

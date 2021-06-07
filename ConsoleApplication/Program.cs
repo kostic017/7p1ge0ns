@@ -16,6 +16,7 @@ namespace TestProject
 
         private Program()
         {
+            builtins.RegisterVariable(PigeonType.String, "author", true, "Nikola Kostic Koce");
             builtins.RegisterFunction(PigeonType.String, "prompt", new Variable[] { new Variable(PigeonType.String) }, Prompt);
             builtins.RegisterFunction(PigeonType.Int, "prompt_i", new Variable[] { new Variable(PigeonType.String) }, PromptI);
             builtins.RegisterFunction(PigeonType.Float, "prompt_f", new Variable[] { new Variable(PigeonType.String) }, PromptF);

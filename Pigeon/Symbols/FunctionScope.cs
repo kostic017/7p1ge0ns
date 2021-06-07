@@ -18,7 +18,7 @@
 
         internal object Evaluate(string name)
         {
-            return scope.Evaluate(name);
+            return scope.Evaluate(name) ?? scope.Parent.Evaluate(name);
         }
 
         internal void EnterScope()
