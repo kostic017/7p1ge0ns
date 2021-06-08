@@ -53,7 +53,7 @@ namespace Kostic017.Pigeon
             
             if (argumentCount != function.Parameters.Length)
             {
-                errorBag.ReportInvalidNumberOfArguments(context.GetTextSpan(), functionName, argumentCount);
+                errorBag.ReportInvalidNumberOfArguments(context.GetTextSpan(), functionName, function.Parameters.Length);
                 return;
             }
 
