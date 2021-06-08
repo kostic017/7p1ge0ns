@@ -329,8 +329,10 @@ namespace Kostic017.Pigeon
             analyser.GlobalScope.TryGetFunction(context.ID().GetText(), out var function);
 
             var argValues = new List<object>();
-            foreach (var arg in context.functionArgs().expr())
-                argValues.Add(VisitExpr(arg));
+
+            if (context.functionArgs() != null)
+                foreach (var arg in context.functionArgs().expr())
+                    argValues.Add(VisitExpr(arg));
 
             if (function.FuncBody is FuncPointer fp)
                 return fp(argValues.ToArray());

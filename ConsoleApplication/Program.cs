@@ -12,21 +12,21 @@ namespace TestProject
         private static readonly string SAMPLES_FOLDER = "..\\..\\..\\..\\Samples";
 
         private bool printTree = false;
-        private readonly Builtins builtins = new Builtins();
+        private readonly Builtins b = new Builtins();
 
         private Program()
         {
-            builtins.RegisterVariable(PigeonType.String, "author", true, "Nikola Kostic Koce");
-            builtins.RegisterFunction(PigeonType.String, "prompt", new Variable[] { new Variable(PigeonType.String) }, Prompt);
-            builtins.RegisterFunction(PigeonType.Int, "prompt_i", new Variable[] { new Variable(PigeonType.String) }, PromptI);
-            builtins.RegisterFunction(PigeonType.Float, "prompt_f", new Variable[] { new Variable(PigeonType.String) }, PromptF);
-            builtins.RegisterFunction(PigeonType.Bool, "prompt_b", new Variable[] { new Variable(PigeonType.String) }, PromptB);
-            builtins.RegisterFunction(PigeonType.Void, "print", new Variable[] { new Variable(PigeonType.Any) }, Print);
+            b.RegisterVariable(PigeonType.String, "author", true, "Nikola Kostic Koce");
+            b.RegisterFunction(PigeonType.String, "prompt", new Variable[] { new Variable(PigeonType.String) }, Prompt);
+            b.RegisterFunction(PigeonType.Int, "prompt_i", new Variable[] { new Variable(PigeonType.String) }, PromptI);
+            b.RegisterFunction(PigeonType.Float, "prompt_f", new Variable[] { new Variable(PigeonType.String) }, PromptF);
+            b.RegisterFunction(PigeonType.Bool, "prompt_b", new Variable[] { new Variable(PigeonType.String) }, PromptB);
+            b.RegisterFunction(PigeonType.Void, "print", new Variable[] { new Variable(PigeonType.Any) }, Print);
         }
         
         private void ExecuteCode(string code)
         {
-            var interpreter = new Interpreter(code, builtins);
+            var interpreter = new Interpreter(code, b);
             if (printTree)
                 interpreter.PrintTree(Console.Out);
             interpreter.PrintErr(Console.Out);

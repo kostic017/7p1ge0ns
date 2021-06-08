@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y &quot;$(ProjectDir)$(OutDir)$(TargetFileName)&quot; &quot;$(SolutionDir)..\TheArchitect\Assets\Imports&quot;" />
+    <Exec Command="copy /y &quot;$(ProjectDir)$(OutDir)$(TargetFileName)&quot; &quot;$(SolutionDir)..\architect\Assets\Imports&quot;" />
   </Target>
 
   <ItemGroup>
