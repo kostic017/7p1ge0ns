@@ -373,7 +373,11 @@ namespace Kostic017.Pigeon
                 return VisitReturnStatement(ctxr);
             if (context is PigeonParser.VariableAssignmentStatementContext ctxv)
                 return VisitVariableAssignmentStatement(ctxv);
-            throw new InternalErrorException($"Unsupported statement type {context.GetType()}");
+            if (context is PigeonParser.BreakStatementContext)
+                return null;
+            if (context is PigeonParser.ContinueStatementContext)
+                return null;
+            throw new InternalErrorException($"Unsupported statement type {context.GetType().Name}");
         }
 
         public override object VisitExpr([NotNull] PigeonParser.ExprContext context)
@@ -396,7 +400,7 @@ namespace Kostic017.Pigeon
                 return VisitTernaryExpression(ctxt);
             if (context is PigeonParser.VariableExpressionContext ctxv)
                 return VisitVariableExpression(ctxv);
-            throw new InternalErrorException($"Unsupported expression type {context.GetType()}");
+            throw new InternalErrorException($"Unsupported expression type {context.GetType().Name}");
         }
 
         private void Assign(string name, object value, PigeonType type = null)
