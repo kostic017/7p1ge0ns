@@ -22,7 +22,17 @@ namespace Kostic017.Pigeon.Symbols
 
         public void RegisterFunction(PigeonType returnType, string name, Variable[] parameters, FuncPointer funcPointer)
         {
-            functions.Add(name, new Function(returnType, name, parameters, funcPointer));
+            if (returnType == PigeonType.Any)
+            {
+                functions.Add(name, new Function(PigeonType.String, name, parameters, funcPointer));
+                functions.Add(name + "_i", new Function(PigeonType.Int, name + "_i", parameters, funcPointer));
+                functions.Add(name + "_f", new Function(PigeonType.Float, name + "_f", parameters, funcPointer));
+                functions.Add(name + "_b", new Function(PigeonType.Bool, name + "_b", parameters, funcPointer));
+            }
+            else
+            {
+                functions.Add(name, new Function(returnType, name, parameters, funcPointer));
+            }
         }
     }
 }

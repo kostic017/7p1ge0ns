@@ -70,9 +70,14 @@ namespace Kostic017.Pigeon
         {
             var functionName = context.functionCall().ID().GetText();
             if (GlobalScope.TryGetFunction(functionName, out var function))
+            {
                 Types.Put(context, function.ReturnType);
+            }
             else
+            {
+                Types.Put(context, PigeonType.Error);
                 errorBag.ReportUndeclaredFunction(context.GetTextSpan(), functionName);
+            }
         }
 
         public override void EnterStmtBlock([NotNull] PigeonParser.StmtBlockContext context)
