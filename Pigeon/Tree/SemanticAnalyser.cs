@@ -192,12 +192,10 @@ namespace Kostic017.Pigeon
         public override void ExitTernaryExpression([NotNull] PigeonParser.TernaryExpressionContext context)
         {
             CheckExprType(context.expr(0), PigeonType.Bool);
-            
             var whenTrue = Types.Get(context.expr(1));
             var whenFalse = Types.Get(context.expr(2));
             if (!TernaryOperator.TryGetResType(whenTrue, whenFalse, out var type))
                 errorBag.ReportInvalidTypeTernaryOperator(context.GetTextSpan(), whenTrue, whenFalse);
-            
             Types.Put(context, type);
         }
 
@@ -205,14 +203,19 @@ namespace Kostic017.Pigeon
         {
             var name = context.ID().GetText();
             if (scope.TryGetVariable(name, out var variable))
+            {
                 Types.Put(context, variable.Type);
+            }
             else
+            {
+                Types.Put(context, PigeonType.Error);
                 errorBag.ReportUndeclaredVariable(context.GetTextSpan(), name);
+            }
         }
 
         public override void ExitReturnStatement([NotNull] PigeonParser.ReturnStatementContext context)
         {
-            var returnType = Types.Get(context.expr());
+            var returnType = context.expr() != null ? Types.Get(context.expr()) : PigeonType.Void;
             
             RuleContext node = context;
             while (!(node is PigeonParser.FunctionDeclContext))

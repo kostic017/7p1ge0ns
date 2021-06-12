@@ -100,33 +100,33 @@ namespace TestProject
             }
         }
 
-        private static object Print(object[] arg)
+        private static object Print(object[] args)
         {
-            Console.WriteLine(arg[0]);
+            Console.WriteLine(args[0]);
             return null;
         }
 
-        private static object Prompt(object[] arg)
+        private static object Prompt(object[] args)
         {
-            Console.Write(arg[0]);
+            Console.Write(args[0]);
             return Console.ReadLine();
         }
 
-        private static object PromptI(object[] arg)
+        private static object PromptI(object[] args)
         {
-            Console.Write(arg[0]);
+            Console.Write(args[0]);
             return int.Parse(Console.ReadLine());
         }
 
-        private static object PromptF(object[] arg)
+        private static object PromptF(object[] args)
         {
-            Console.Write(arg[0]);
+            Console.Write(args[0]);
             return float.Parse(Console.ReadLine(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
         }
 
-        private static object PromptB(object[] arg)
+        private static object PromptB(object[] args)
         {
-            Console.Write(arg[0]);
+            Console.Write(args[0]);
             return bool.Parse(Console.ReadLine());
         }
     }

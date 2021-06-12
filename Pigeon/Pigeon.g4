@@ -19,7 +19,7 @@ varAssign
 stmt
     : varAssign                                            # variableAssignmentStatement
     | functionCall SEP                                     # functionCallStatement
-    | 'return' expr SEP                                    # returnStatement
+    | 'return' expr? SEP                                   # returnStatement
     | 'break' SEP                                          # breakStatement
     | 'continue' SEP                                       # continueStatement
     | 'while' expr stmtBlock                               # whileStatement

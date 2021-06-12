@@ -265,7 +265,7 @@ namespace Kostic017.Pigeon
 
         public override object VisitReturnStatement([NotNull] PigeonParser.ReturnStatementContext context)
         {
-            return VisitExpr(context.expr());
+            return context.expr() != null ? VisitExpr(context.expr()) : null;
         }
 
         public override object VisitVariableAssignmentStatement([NotNull] PigeonParser.VariableAssignmentStatementContext context)
