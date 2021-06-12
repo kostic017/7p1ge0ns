@@ -17,11 +17,11 @@ namespace TestProject
         private Program()
         {
             b.RegisterVariable(PigeonType.String, "author", true, "Nikola Kostic Koce");
-            b.RegisterFunction(PigeonType.String, "prompt", new Variable[] { new Variable(PigeonType.String) }, Prompt);
-            b.RegisterFunction(PigeonType.Int, "prompt_i", new Variable[] { new Variable(PigeonType.String) }, PromptI);
-            b.RegisterFunction(PigeonType.Float, "prompt_f", new Variable[] { new Variable(PigeonType.String) }, PromptF);
-            b.RegisterFunction(PigeonType.Bool, "prompt_b", new Variable[] { new Variable(PigeonType.String) }, PromptB);
-            b.RegisterFunction(PigeonType.Void, "print", new Variable[] { new Variable(PigeonType.Any) }, Print);
+            b.RegisterFunction(PigeonType.String, "prompt", Prompt, PigeonType.String);
+            b.RegisterFunction(PigeonType.Int, "prompt_i", PromptI, PigeonType.String);
+            b.RegisterFunction(PigeonType.Float, "prompt_f", PromptF, PigeonType.String);
+            b.RegisterFunction(PigeonType.Bool, "prompt_b", PromptB, PigeonType.String);
+            b.RegisterFunction(PigeonType.Void, "print", Print, PigeonType.Any);
         }
         
         private void ExecuteCode(string code)

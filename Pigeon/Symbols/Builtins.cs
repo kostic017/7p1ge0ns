@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Kostic017.Pigeon.Symbols
 {
@@ -20,19 +21,20 @@ namespace Kostic017.Pigeon.Symbols
             variables.Add(name, new Variable(type, name, readOnly) { Value = value });
         }
 
-        public void RegisterFunction(PigeonType returnType, string name, Variable[] parameters, FuncPointer funcPointer)
+        public void RegisterFunction(PigeonType returnType, string name, FuncPointer funcPointer, params PigeonType[] parameters)
         {
             if (returnType == PigeonType.Any)
             {
-                functions.Add(name, new Function(PigeonType.String, name, parameters, funcPointer));
-                functions.Add(name + "_i", new Function(PigeonType.Int, name + "_i", parameters, funcPointer));
-                functions.Add(name + "_f", new Function(PigeonType.Float, name + "_f", parameters, funcPointer));
-                functions.Add(name + "_b", new Function(PigeonType.Bool, name + "_b", parameters, funcPointer));
+                functions.Add(name, new Function(PigeonType.String, name, parameters.Select(p => new Variable(p)).ToArray(), funcPointer));
+                functions.Add(name + "_i", new Function(PigeonType.Int, name + "_i", parameters.Select(p => new Variable(p)).ToArray(), funcPointer));
+                functions.Add(name + "_f", new Function(PigeonType.Float, name + "_f", parameters.Select(p => new Variable(p)).ToArray(), funcPointer));
+                functions.Add(name + "_b", new Function(PigeonType.Bool, name + "_b", parameters.Select(p => new Variable(p)).ToArray(), funcPointer));
             }
             else
             {
-                functions.Add(name, new Function(returnType, name, parameters, funcPointer));
+                functions.Add(name, new Function(returnType, name, parameters.Select(p => new Variable(p)).ToArray(), funcPointer));
             }
         }
+
     }
 }

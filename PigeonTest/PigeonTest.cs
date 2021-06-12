@@ -18,11 +18,11 @@ namespace Kostic017.Pigeon.Tests
 
         public PigeonTest()
         {
-            builtins.RegisterFunction(PigeonType.String, "prompt", new Variable[] { new Variable(PigeonType.String) }, Prompt);
-            builtins.RegisterFunction(PigeonType.Int, "prompt_i", new Variable[] { new Variable(PigeonType.String) }, PromptI);
-            builtins.RegisterFunction(PigeonType.Float, "prompt_f", new Variable[] { new Variable(PigeonType.String) }, PromptF);
-            builtins.RegisterFunction(PigeonType.Bool, "prompt_b", new Variable[] { new Variable(PigeonType.String) }, PromptB);
-            builtins.RegisterFunction(PigeonType.Void, "print", new Variable[] { new Variable(PigeonType.Any) }, Print);
+            builtins.RegisterFunction(PigeonType.String, "prompt", Prompt, PigeonType.String);
+            builtins.RegisterFunction(PigeonType.Int, "prompt_i", PromptI, PigeonType.String);
+            builtins.RegisterFunction(PigeonType.Float, "prompt_f", PromptF, PigeonType.String);
+            builtins.RegisterFunction(PigeonType.Bool, "prompt_b", PromptB, PigeonType.String);
+            builtins.RegisterFunction(PigeonType.Void, "print", Print, PigeonType.Any);
         }
 
         [Theory]
