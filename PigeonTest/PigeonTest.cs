@@ -14,15 +14,15 @@ namespace Kostic017.Pigeon.Tests
         private TextWriter outputStream;
         private Queue<string> inputStream;
         
-        private readonly Builtins builtins = new Builtins();
+        private readonly Builtins b = new Builtins();
 
         public PigeonTest()
         {
-            builtins.RegisterFunction(PigeonType.String, "prompt", Prompt, PigeonType.String);
-            builtins.RegisterFunction(PigeonType.Int, "prompt_i", PromptI, PigeonType.String);
-            builtins.RegisterFunction(PigeonType.Float, "prompt_f", PromptF, PigeonType.String);
-            builtins.RegisterFunction(PigeonType.Bool, "prompt_b", PromptB, PigeonType.String);
-            builtins.RegisterFunction(PigeonType.Void, "print", Print, PigeonType.Any);
+            b.RegisterFunction(PigeonType.String, "prompt", Prompt, PigeonType.String);
+            b.RegisterFunction(PigeonType.Int, "prompt_i", PromptI, PigeonType.String);
+            b.RegisterFunction(PigeonType.Float, "prompt_f", PromptF, PigeonType.String);
+            b.RegisterFunction(PigeonType.Bool, "prompt_b", PromptB, PigeonType.String);
+            b.RegisterFunction(PigeonType.Void, "print", Print, PigeonType.Any);
         }
 
         [Theory]
@@ -30,7 +30,7 @@ namespace Kostic017.Pigeon.Tests
         public void Test(string sample)
         {
             var inFile = Path.Combine(SAMPLES_FOLDER, sample + ".in");
-            var code = File.ReadAllText(Path.Combine(SAMPLES_FOLDER, sample + ".pig"));
+            var code = Normalize(File.ReadAllText(Path.Combine(SAMPLES_FOLDER, sample + ".pig")));
             var outputs = ReadCases(Path.Combine(SAMPLES_FOLDER, sample + ".out"));
 
             if (File.Exists(inFile))
@@ -67,17 +67,22 @@ namespace Kostic017.Pigeon.Tests
 
         private string Output()
         {
-            return outputStream.ToString().Replace("\r\n", "\n").Trim();
+            return Normalize(outputStream.ToString());
         }
 
         private string[] ReadCases(string file)
         {
-            return File.ReadAllText(file).Split("---").Select(v => v.Trim()).ToArray();
+            return Normalize(File.ReadAllText(file)).Split("---").Select(v => v.Trim()).ToArray();
+        }
+
+        private string Normalize(string str)
+        {
+            return str.Replace("\r\n", "\n").Trim();
         }
 
         private void Execute(string code)
         {
-            var interpreter = new Interpreter(code, builtins);
+            var interpreter = new Interpreter(code, b);
             interpreter.PrintErr(outputStream);
             interpreter.Evaluate();
         }
