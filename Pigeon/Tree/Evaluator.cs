@@ -108,45 +108,45 @@ namespace Kostic017.Pigeon
                 case "<":
                     if (areBothInt)
                         return (int)left < (int)right;
-                    return (float)left < (float)right;
+                    return Convert.ToSingle(left) < Convert.ToSingle(right);
 
                 case ">":
                     if (areBothInt)
                         return (int)left > (int)right;
-                    return (float)left > (float)right;
+                    return Convert.ToSingle(left) > Convert.ToSingle(right);
 
                 case "<=":
                     if (areBothInt)
                         return (int)left <= (int)right;
-                    return (float)left <= (float)right;
+                    return Convert.ToSingle(left) <= Convert.ToSingle(right);
 
                 case ">=":
                     if (areBothInt)
                         return (int)left >= (int)right;
-                    return (float)left >= (float)right;
+                    return Convert.ToSingle(left) >= Convert.ToSingle(right);
 
                 case "+":
                     if (resType == PigeonType.Int)
                         return (int)left + (int)right;
                     else if (resType == PigeonType.Float)
-                        return (float)left + (float)right;
+                        return Convert.ToSingle(left) + Convert.ToSingle(right);
                     else
                         return left.ToString() + right.ToString();
 
                 case "-":
                     if (resType == PigeonType.Int)
                         return (int)left - (int)right;
-                    return (float)left - (float)right;
+                    return Convert.ToSingle(left) - Convert.ToSingle(right);
 
                 case "*":
                     if (resType == PigeonType.Int)
                         return (int)left * (int)right;
-                    return (float)left * (float)right;
+                    return Convert.ToSingle(left) * Convert.ToSingle(right);
 
                 case "/":
                     if (resType == PigeonType.Int)
                         return (int)left / (int)right;
-                    return (float)left / (float)right;
+                    return Convert.ToSingle(left) / Convert.ToSingle(right);
 
                 case "%":
                     return (int)left % (int)right;

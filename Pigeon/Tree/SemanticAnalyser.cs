@@ -11,7 +11,7 @@ namespace Kostic017.Pigeon
     {
         private Scope scope;
         private readonly CodeErrorBag errorBag;
-        
+
         internal GlobalScope GlobalScope { get; }
         internal ParseTreeProperty<PigeonType> Types { get; } = new ParseTreeProperty<PigeonType>();
 
@@ -42,7 +42,7 @@ namespace Kostic017.Pigeon
         public override void ExitFunctionCall([NotNull] PigeonParser.FunctionCallContext context)
         {
             var functionName = context.ID().GetText();
-            
+
             if (!GlobalScope.TryGetFunction(functionName, out var function))
             {
                 errorBag.ReportUndeclaredFunction(context.GetTextSpan(), functionName);
@@ -50,7 +50,7 @@ namespace Kostic017.Pigeon
             }
 
             var argumentCount = context.functionArgs()?.expr()?.Length ?? 0;
-            
+
             if (argumentCount != function.Parameters.Length)
             {
                 errorBag.ReportInvalidNumberOfArguments(context.GetTextSpan(), functionName, function.Parameters.Length);
@@ -171,7 +171,7 @@ namespace Kostic017.Pigeon
         {
             Types.Put(context, Types.Get(context.expr()));
         }
-        
+
         public override void ExitBinaryExpression([NotNull] PigeonParser.BinaryExpressionContext context)
         {
             var left = Types.Get(context.expr(0));
@@ -184,7 +184,7 @@ namespace Kostic017.Pigeon
         public override void ExitUnaryExpression([NotNull] PigeonParser.UnaryExpressionContext context)
         {
             var operandType = Types.Get(context.expr());
-            if (!UnaryOperator.TryGetResType(context.op.Text, operandType , out var type))
+            if (!UnaryOperator.TryGetResType(context.op.Text, operandType, out var type))
                 errorBag.ReportInvalidTypeUnaryOperator(context.op.GetTextSpan(), context.op.Text, type);
             Types.Put(context, type);
         }
@@ -216,16 +216,22 @@ namespace Kostic017.Pigeon
         public override void ExitReturnStatement([NotNull] PigeonParser.ReturnStatementContext context)
         {
             var returnType = context.expr() != null ? Types.Get(context.expr()) : PigeonType.Void;
-            
+
             RuleContext node = context;
             while (!(node is PigeonParser.FunctionDeclContext))
                 node = node.Parent;
-            
+
             var functionName = ((PigeonParser.FunctionDeclContext)node).ID().GetText();
             GlobalScope.TryGetFunction(functionName, out var function);
-            
+
             if (returnType != function.ReturnType)
-                errorBag.ReportUnexpectedType(context.expr().GetTextSpan(), function.ReturnType, returnType);
+                if (!NumberTypes(returnType, function.ReturnType))
+                    errorBag.ReportUnexpectedType(context.expr().GetTextSpan(), function.ReturnType, returnType);
+        }
+
+        bool NumberTypes(PigeonType t1, PigeonType t2)
+        {
+            return (t1 == PigeonType.Int && t2 == PigeonType.Float) || (t1 == PigeonType.Float && t2 == PigeonType.Int);
         }
 
         private void CheckExprType(PigeonParser.ExprContext context, PigeonType expected)
