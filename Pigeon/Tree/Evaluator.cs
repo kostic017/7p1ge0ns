@@ -262,6 +262,7 @@ namespace Kostic017.Pigeon
                 }
                 i += isIncrementing ? 1 : -1;
                 Assign(context.ID().GetText(), i);
+                targetValue = (int) VisitExpr(context.expr(1));
             }
 
             functionScopes.Peek().ExitScope();
