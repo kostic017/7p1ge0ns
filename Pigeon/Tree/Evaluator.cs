@@ -7,6 +7,7 @@ using System.Globalization;
 namespace Kostic017.Pigeon
 {
     class BreakLoopException : Exception { }
+    class ContinueLoopException : Exception { }
     
     class FuncReturnValueException : Exception
     {
@@ -191,7 +192,7 @@ namespace Kostic017.Pigeon
             {
                 var r = VisitStmt(statement);
                 if (statement is PigeonParser.ContinueStatementContext)
-                    return null;
+                    throw new ContinueLoopException();
                 if (statement is PigeonParser.BreakStatementContext)
                     throw new BreakLoopException();
                 if (statement is PigeonParser.ReturnStatementContext)
@@ -211,6 +212,9 @@ namespace Kostic017.Pigeon
                 {
                     return null;
                 }
+                catch (ContinueLoopException)
+                {
+                }
             while ((bool) VisitExpr(context.expr()));
             return null;
         }
@@ -225,6 +229,9 @@ namespace Kostic017.Pigeon
                 catch (BreakLoopException)
                 {
                     return null;
+                }
+                catch (ContinueLoopException)
+                {
                 }
             return null;
         }
@@ -249,6 +256,9 @@ namespace Kostic017.Pigeon
                 catch (BreakLoopException)
                 {
                     return null;
+                }
+                catch (ContinueLoopException)
+                {
                 }
                 i += isIncrementing ? 1 : -1;
                 Assign(context.ID().GetText(), i);
