@@ -250,10 +250,9 @@ namespace Kostic017.Pigeon
             var targetValue = (int) VisitExpr(context.expr(1));
             var counter = context.ID().GetText();
             var isIncrementing = context.dir.Text == "to";
+            var i = startValue;
 
             functionScopes.Peek().EnterScope();
-
-            var i = startValue;
             Declare(PigeonType.Int, counter, i);
             
             while (isIncrementing ? i <= targetValue : i >= targetValue)
@@ -261,6 +260,9 @@ namespace Kostic017.Pigeon
                 try
                 {
                     VisitStmtBlock(context.stmtBlock());
+                    functionScopes.Peek().ExitScope();
+                    functionScopes.Peek().EnterScope();
+                    Declare(PigeonType.Int, counter, i);
                 }
                 catch (BreakLoopException)
                 {
@@ -273,8 +275,6 @@ namespace Kostic017.Pigeon
                 Assign(counter, i);
                 targetValue = (int) VisitExpr(context.expr(1));
             }
-
-            functionScopes.Peek().ExitScope();
             return null;
         }
 
