@@ -120,6 +120,18 @@ namespace Kostic017.Pigeon
             CheckExprType(context.expr(), PigeonType.Bool);
         }
 
+        public override void ExitVarDecl([NotNull] PigeonParser.VarDeclContext context)
+        {
+            var name = context.ID().GetText();
+            var type = Types.Get(context.expr());
+            var readOnly = context.keyword.Text == "const";
+
+            if (scope.IsDeclaredHere(name))
+                errorBag.ReportVariableRedeclaration(context.GetTextSpan(), name);
+            else
+                scope.DeclareVariable(type, name, readOnly);
+        }
+
         public override void ExitVarAssign([NotNull] PigeonParser.VarAssignContext context)
         {
             var varName = context.ID().GetText();
@@ -132,10 +144,6 @@ namespace Kostic017.Pigeon
                 if (!AssignmentOperator.IsAssignable(context.op.Text, variable.Type, varType))
                     errorBag.ReportInvalidTypeAssignment(context.GetTextSpan(), varName, variable.Type, varType);
             }
-            else if (scope.IsDeclaredHere(varName))
-                errorBag.ReportVariableRedeclaration(context.GetTextSpan(), varName);
-            else if (context.op.Text == "=")
-                scope.DeclareVariable(varType, varName, IsAllUpper(varName));
             else
                 errorBag.ReportUndeclaredVariable(context.GetTextSpan(), varName);
         }
@@ -262,14 +270,6 @@ namespace Kostic017.Pigeon
                 node = node.Parent;
             }
             return false;
-        }
-
-        private bool IsAllUpper(string input)
-        {
-            for (int i = 0; i < input.Length; i++)
-                if (char.IsLetter(input[i]) && !char.IsUpper(input[i]))
-                    return false;
-            return true;
         }
     }
 }

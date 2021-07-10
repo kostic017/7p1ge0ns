@@ -1,6 +1,6 @@
-﻿n = prompt_i("n: ");
-k = prompt_i("k: ");
-r = comb(n, k);
+﻿let n = prompt_i("n: ");
+let k = prompt_i("k: ");
+let r = comb(n, k);
 print(r);
 
 int comb(int n, int k) {
@@ -8,7 +8,7 @@ int comb(int n, int k) {
 }
 
 int fact(int n) {
-    f = 1;
+    let f = 1;
     for i = 1 to n {
         f *= i;
     }

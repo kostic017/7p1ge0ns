@@ -1,9 +1,9 @@
-﻿n = prompt_i("n: ");
-r = ones(n);
+﻿let n = prompt_i("n: ");
+let r = ones(n);
 print(r);
 
 int ones(int n) {
-    i = 0;
+    let i = 0;
     while (n > 0) {
         if (n % 2 == 1)
             i += 1;

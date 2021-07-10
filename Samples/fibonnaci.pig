@@ -1,4 +1,4 @@
-n = prompt_i("n: ");
+let n = prompt_i("n: ");
 
 for i = 1 to n
     print(fibonacci(i));

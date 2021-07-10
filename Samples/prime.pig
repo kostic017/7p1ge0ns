@@ -1,4 +1,4 @@
-n = prompt_i("n: ");
+let n = prompt_i("n: ");
 
 if prime(n)
     print("prime");
@@ -9,7 +9,7 @@ bool prime(int n) {
     if (n == 1)
         return false;
 
-    i = 2;
+    let i = 2;
     while (i <= n / 2) {
         if (n % i == 0)
             return false;

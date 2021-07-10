@@ -9,10 +9,14 @@
             scope = new Scope(globalScope);
         }
 
-        internal void Assign(string name, object value, PigeonType type = null)
+        internal void Declare(PigeonType type, string name, object value)
         {
-            if (type != null && !scope.TryGetVariable(name, out _))
-                scope.DeclareVariable(type, name);
+            scope.DeclareVariable(type, name, false);
+            Assign(name, value);
+        }
+
+        internal void Assign(string name, object value)
+        {
             scope.Assign(name, value);
         }
 

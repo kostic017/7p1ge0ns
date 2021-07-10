@@ -188,15 +188,23 @@ namespace Kostic017.Pigeon
         {
             if (ShouldCreateScope(context))
                 functionScopes.Peek().EnterScope();
-            foreach (var statement in context.stmt())
+            try
             {
-                var r = VisitStmt(statement);
-                if (statement is PigeonParser.ContinueStatementContext)
-                    throw new ContinueLoopException();
-                if (statement is PigeonParser.BreakStatementContext)
-                    throw new BreakLoopException();
-                if (statement is PigeonParser.ReturnStatementContext)
-                    throw new FuncReturnValueException(r);
+                foreach (var statement in context.stmt())
+                {
+                    var r = VisitStmt(statement);
+                    if (statement is PigeonParser.ContinueStatementContext)
+                        throw new ContinueLoopException();
+                    if (statement is PigeonParser.BreakStatementContext)
+                        throw new BreakLoopException();
+                    if (statement is PigeonParser.ReturnStatementContext)
+                        throw new FuncReturnValueException(r);
+                }
+            }
+            finally
+            {
+                if (ShouldCreateScope(context))
+                    functionScopes.Peek().ExitScope();
             }
             return null;
         }
@@ -240,12 +248,13 @@ namespace Kostic017.Pigeon
         {
             var startValue = (int) VisitExpr(context.expr(0));
             var targetValue = (int) VisitExpr(context.expr(1));
+            var counter = context.ID().GetText();
             var isIncrementing = context.dir.Text == "to";
 
             functionScopes.Peek().EnterScope();
 
             var i = startValue;
-            Assign(context.ID().GetText(), i, PigeonType.Int);
+            Declare(PigeonType.Int, counter, i);
             
             while (isIncrementing ? i <= targetValue : i >= targetValue)
             {
@@ -261,7 +270,7 @@ namespace Kostic017.Pigeon
                 {
                 }
                 i += isIncrementing ? 1 : -1;
-                Assign(context.ID().GetText(), i);
+                Assign(counter, i);
                 targetValue = (int) VisitExpr(context.expr(1));
             }
 
@@ -284,6 +293,15 @@ namespace Kostic017.Pigeon
             return VisitVarAssign(context.varAssign());
         }
 
+        public override object VisitVariableDeclarationStatement([NotNull] PigeonParser.VariableDeclarationStatementContext context)
+        {
+            var name = context.varDecl().ID().GetText();
+            var type = analyser.Types.Get(context.varDecl().expr());
+            var value = VisitExpr(context.varDecl().expr());
+            Declare(type, name, value);
+            return null;
+        }
+
         public override object VisitVarAssign([NotNull] PigeonParser.VarAssignContext context)
         {
             var name = context.ID().GetText();
@@ -294,7 +312,7 @@ namespace Kostic017.Pigeon
             switch (context.op.Text)
             {
                 case "=":
-                    Assign(name, value, type);
+                    Assign(name, value);
                     break;
 
                 case "+=":
@@ -352,7 +370,7 @@ namespace Kostic017.Pigeon
             functionScopes.Push(new FunctionScope(analyser.GlobalScope));
             
             for (var i = 0; i < argValues.Count; ++i)
-                Assign(function.Parameters[i].Name, argValues[i], function.Parameters[i].Type);
+                Declare(function.Parameters[i].Type, function.Parameters[i].Name, argValues[i]);
 
             try
             {
@@ -384,6 +402,8 @@ namespace Kostic017.Pigeon
                 return VisitReturnStatement(ctxr);
             if (context is PigeonParser.VariableAssignmentStatementContext ctxv)
                 return VisitVariableAssignmentStatement(ctxv);
+            if (context is PigeonParser.VariableDeclarationStatementContext ctxvd)
+                return VisitVariableDeclarationStatement(ctxvd);
             if (context is PigeonParser.BreakStatementContext)
                 return null;
             if (context is PigeonParser.ContinueStatementContext)
@@ -414,9 +434,14 @@ namespace Kostic017.Pigeon
             throw new InternalErrorException($"Unsupported expression type {context.GetType().Name}");
         }
 
-        private void Assign(string name, object value, PigeonType type = null)
+        private void Declare(PigeonType type, string name, object value)
         {
-            functionScopes.Peek().Assign(name, value, type);
+            functionScopes.Peek().Declare(type, name, value);
+        }
+
+        private void Assign(string name, object value)
+        {
+            functionScopes.Peek().Assign(name, value);
         }
 
         private bool ShouldCreateScope(PigeonParser.StmtBlockContext context)

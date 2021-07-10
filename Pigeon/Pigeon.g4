@@ -6,6 +6,11 @@ functionParams : TYPE ID (',' TYPE ID)* ;
 functionCall : ID '(' functionArgs? ')' ;
 functionArgs : expr (',' expr)* ;
 
+varDecl
+    : keyword='let' ID '=' expr SEP
+    | keyword='const' ID '=' expr SEP
+    ;
+
 varAssign
     : ID op='=' expr SEP
     | ID op='+=' expr SEP
@@ -17,7 +22,8 @@ varAssign
     ;
 
 stmt
-    : varAssign                                            # variableAssignmentStatement
+    : varDecl                                              # variableDeclarationStatement
+    | varAssign                                            # variableAssignmentStatement
     | functionCall SEP                                     # functionCallStatement
     | 'return' expr? SEP                                   # returnStatement
     | 'break' SEP                                          # breakStatement
